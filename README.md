@@ -78,6 +78,73 @@ The AI moderator, **Clara** (Candidate B persona: smart, youthful tech lead in C
 
 ---
 
+## How Knowledge Repositories Work in GECX
+
+In GECX (Google Enterprise Customer Experience / Dialogflow CX), conversational agents ground their responses through **Playbook Tools**. Rather than querying public search indiscriminately, GECX Playbooks orchestrate specialized tool connectors based on the user's intent:
+
+```
+                              ┌──────────────────────────────────────────────┐
+                              │     GECX Playbook ("Clara Moderator")        │
+                              └──────────────────────┬───────────────────────┘
+                                                     │ Tool Call
+                      ┌──────────────────────────────┼──────────────────────────────┐
+                      ▼                              ▼                              ▼
+          [Data Store Tool]                  [Web Grounding Tool]          [Webhook / API Tool]
+         (Vertex AI Search)                 (Enterprise Web Search)          (Con Ed REST APIs)
+                  │                                  │                              │
+         ┌────────┴────────┐                         │                              │
+         ▼                 ▼                         ▼                              ▼
+    GCS Bucket        BigQuery / FAQ           Public Google Search        Internal System / CRM
+ (PDFs, PPTXs, Specs) (Structured Tables)     (Citations & Real-time)      (Live Grid / Outages)
+```
+
+```mermaid
+flowchart TD
+    Playbook["GECX Playbook<br>('Clara Moderator')"]
+    
+    DataStore["Data Store Tool<br>(Vertex AI Search)"]
+    WebGrounding["Web Grounding Tool<br>(Enterprise Web Search)"]
+    WebhookTool["Webhook / API Tool<br>(Con Ed REST APIs)"]
+    
+    GCS["GCS Bucket<br>(PDFs, PPTXs, Specs)"]
+    BQ["BigQuery / FAQ<br>(Structured Tables)"]
+    GoogleSearch["Public Google Search<br>(Citations & Real-time)"]
+    CRM["Internal Systems / CRM<br>(Live Grid / Outages)"]
+
+    Playbook -->|"Tool Call"| DataStore
+    Playbook -->|"Tool Call"| WebGrounding
+    Playbook -->|"Tool Call"| WebhookTool
+
+    DataStore --> GCS
+    DataStore --> BQ
+    WebGrounding --> GoogleSearch
+    WebhookTool --> CRM
+
+    classDef primary fill:#1a73e8,stroke:#1557b0,color:#ffffff,stroke-width:2px;
+    classDef tool fill:#174ea6,stroke:#1a73e8,color:#ffffff;
+    classDef repo fill:#202124,stroke:#5f6368,color:#ffffff;
+
+    class Playbook primary;
+    class DataStore,WebGrounding,WebhookTool tool;
+    class GCS,BQ,GoogleSearch,CRM repo;
+```
+
+### Knowledge Grounding Capabilities:
+
+1. **Vertex AI Search Data Store (Private Enterprise Repository)**:
+   - Connects to private Google Cloud Storage (GCS) buckets containing Con Edison technical documentation, slide decks, talk tracks, and speaker bios.
+   - Extracts semantic embeddings and provides grounded citations with verifiable page numbers.
+   - Eliminates hallucination by constraining Clara's generative answers to official utility material.
+
+2. **Web Grounding Tool (Curated & Public Search)**:
+   - Connects to Google Search Grounding to pull real-time external facts, energy market updates, or regulatory rulings with web source links.
+   - Can also be constrained to authorized enterprise domains (e.g. `coned.com`, `nyiso.com`).
+
+3. **Webhook / API Tools (Dynamic System Integration)**:
+   - Directly executes REST or gRPC calls to internal Con Edison APIs (e.g. OMS/outage management, billing calculation engines, or fleet telemetry) to retrieve live runtime state.
+
+---
+
 ## 📂 Repository Structure
 
 ```

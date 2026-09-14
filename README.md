@@ -6,13 +6,6 @@ The AI moderator, **Clara** (Candidate B persona: smart, youthful tech lead in C
 
 ---
 
-## 🌟 Live Cloud Deployment
-
-* **Cloud Run URL**: [https://coned-tech-day-832497031659.us-central1.run.app](https://coned-tech-day-832497031659.us-central1.run.app)
-* **Status**: 100% active and serving traffic in `us-central1`.
-
----
-
 ## 🚀 Key Features
 
 1. **3D Photo-Realistic Avatar (Candidate B - "Clara")**:

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Three.js Avatar Preview - Con Ed Tech Day</title>
+  <style>
+    body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #070d19; font-family: sans-serif; }
+    #canvas-container { width: 100%; height: 100%; }
+    #info { position: absolute; top: 16px; left: 16px; color: #00d2ff; font-size: 13px; font-weight: 600; background: rgba(7,13,25,0.85); padding: 10px 18px; border-radius: 8px; border: 1px solid rgba(0,210,255,0.3); z-index: 10; }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+  <div id="info">CON EDISON TECH DAY // 3D PHOTOREALISTIC AVATAR PREVIEW</div>
+  <div id="canvas-container"></div>
+  <script>
+    const container = document.getElementById("canvas-container");
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x060c18);
+
+    const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.set(0, 1.55, 0.95);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.outputEncoding = THREE.sRGBEncoding;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.2;
+    container.appendChild(renderer.domElement);
+
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.target.set(0, 1.50, 0);
+    controls.update();
+
+    // Studio lighting
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+    scene.add(ambientLight);
+
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1.4);
+    dirLight.position.set(1, 2, 2);
+    scene.add(dirLight);
+
+    const fillLight = new THREE.DirectionalLight(0x00d2ff, 1.0);
+    fillLight.position.set(-2, 1, 1);
+    scene.add(fillLight);
+
+    const rimLight = new THREE.DirectionalLight(0x00ffff, 1.2);
+    rimLight.position.set(0, 2, -2);
+    scene.add(rimLight);
+
+    const params = new URLSearchParams(window.location.search);
+    const modelName = params.get('model') || 'brunette';
+    const loader = new THREE.GLTFLoader();
+
+    loader.load(`/public/assets/avatars/${modelName}.glb`, function (gltf) {
+      const model = gltf.scene;
+      console.log("Model loaded successfully!");
+
+      // Enable proper transparency and shadows
+      model.traverse((o) => {
+        if (o.isMesh) {
+          o.castShadow = true;
+          o.receiveShadow = true;
+          if (o.material) {
+            o.material.depthWrite = true;
+            if (o.material.map) o.material.map.encoding = THREE.sRGBEncoding;
+          }
+          // Smile morph target test
+          if (o.morphTargetDictionary && o.morphTargetInfluences) {
+            const smileIdx = o.morphTargetDictionary['mouthSmile'] || o.morphTargetDictionary['viseme_aa'];
+            if (smileIdx !== undefined) {
+              o.morphTargetInfluences[smileIdx] = 0.3;
+            }
+          }
+        }
+      });
+
+      scene.add(model);
+      window.loaded = true;
+    }, undefined, function (error) {
+      console.error(error);
+    });
+
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    animate();
+  </script>
+</body>
+</html>

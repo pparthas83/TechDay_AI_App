@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Watts // Babylon.js Holographic Stage</title>
+  <!-- Babylon.js Core Engine -->
+  <script src="https://cdn.babylonjs.com/babylon.js"></script>
+  <!-- Babylon.js Loaders -->
+  <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+  <!-- Babylon.js Native GUI Library -->
+  <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: radial-gradient(circle at center, #06101e 0%, #02050b 100%);
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+      color: #00f0ff;
+    }
+    #renderCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      outline: none;
+      touch-action: none;
+    }
+    /* Holographic Scanline Overlay */
+    .scanlines {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+                  linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+      background-size: 100% 4px, 6px 100%;
+      z-index: 10;
+    }
+    /* Top HUD Header */
+    .hud-header {
+      position: absolute;
+      top: 20px;
+      left: 24px;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    .hud-badge {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #00f0ff;
+      box-shadow: 0 0 10px #00f0ff, 0 0 20px #00f0ff;
+      animation: pulse 2s infinite ease-in-out;
+    }
+    .hud-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #00f0ff;
+      text-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
+    }
+    .hud-sub {
+      font-size: 11px;
+      color: rgba(0, 240, 255, 0.6);
+    }
+    /* Bottom Chat Bar */
+    .chat-dock {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 640px;
+      z-index: 20;
+      display: flex;
+      gap: 8px;
+      background: rgba(4, 16, 32, 0.85);
+      border: 1px solid rgba(0, 240, 255, 0.4);
+      border-radius: 28px;
+      padding: 6px 12px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 15px rgba(0, 240, 255, 0.2);
+      backdrop-filter: blur(12px);
+    }
+    .chat-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-size: 14px;
+      padding: 8px 12px;
+    }
+    .chat-input::placeholder {
+      color: rgba(0, 240, 255, 0.4);
+    }
+    .chat-btn {
+      background: rgba(0, 240, 255, 0.15);
+      border: 1px solid rgba(0, 240, 255, 0.6);
+      color: #00f0ff;
+      border-radius: 20px;
+      padding: 8px 18px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.2s ease;
+    }
+    .chat-btn:hover {
+      background: #00f0ff;
+      color: #041020;
+      box-shadow: 0 0 12px #00f0ff;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 0.4; transform: scale(0.9); }
+      50% { opacity: 1; transform: scale(1.1); }
+    }
+  </style>
+</head>
+<body>
+  <div class="scanlines"></div>
+
+  <!-- HUD Overlay -->
+  <div class="hud-header">
+    <div class="hud-badge" id="hudStatusBadge"></div>
+    <div>
+      <div class="hud-title">WATTS // BABYLON.JS HOLOGRAPHIC STAGE</div>
+      <div class="hud-sub">ENGINE: BABYLON.JS v7.X // STATUS: ONLINE // FPS: <span id="fpsCount">60</span></div>
+    </div>
+  </div>
+
+  <!-- 3D Canvas -->
+  <canvas id="renderCanvas"></canvas>
+
+  <!-- Interactive Chat Dock -->
+  <div class="chat-dock">
+    <input type="text" id="chatInput" class="chat-input" placeholder="Ask Watts a question (press Enter)...">
+    <button id="sendBtn" class="chat-btn">Transmit</button>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('renderCanvas');
+    const engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
+    
+    let isOverclocked = false;
+    let isSpeaking = false;
+    let speechTimer = 0;
+    let headMesh, jawMesh, ring1, ring2, ring3, particleSystem;
+    let hologramMaterial, wireframeMaterial, glowLayer;
+
+    // Create Scene
+    const createScene = function() {
+      const scene = new BABYLON.Scene(engine);
+      scene.clearColor = new BABYLON.Color4(0.015, 0.04, 0.08, 1);
+
+      // ArcRotateCamera (Orbit Controls)
+      const camera = new BABYLON.ArcRotateCamera('Camera', -Math.PI / 2, Math.PI / 2.2, 7.5, new BABYLON.Vector3(0, 0.4, 0), scene);
+      camera.attachControl(canvas, true);
+      camera.lowerRadiusLimit = 4;
+      camera.upperRadiusLimit = 15;
+      camera.wheelPrecision = 40;
+      camera.inertia = 0.85;
+
+      // Lighting
+      const hemiLight = new BABYLON.HemisphericLight('hemiLight', new BABYLON.Vector3(0, 1, 0), scene);
+      hemiLight.intensity = 0.3;
+      hemiLight.diffuse = new BABYLON.Color3(0, 0.9, 1);
+
+      const pointLight = new BABYLON.PointLight('coreLight', new BABYLON.Vector3(0, 0.5, 0), scene);
+      pointLight.intensity = 1.2;
+      pointLight.diffuse = new BABYLON.Color3(0, 0.94, 1);
+
+      // Glow Post-Process Layer
+      glowLayer = new BABYLON.GlowLayer('glow', scene);
+      glowLayer.intensity = 1.0;
+
+      // Hologram Materials
+      hologramMaterial = new BABYLON.StandardMaterial('holoMat', scene);
+      hologramMaterial.diffuseColor = new BABYLON.Color3(0, 0.94, 1);
+      hologramMaterial.emissiveColor = new BABYLON.Color3(0, 0.4, 0.6);
+      hologramMaterial.specularColor = new BABYLON.Color3(1, 1, 1);
+      hologramMaterial.alpha = 0.35;
+      hologramMaterial.wireframe = true;
+
+      const innerMaterial = new BABYLON.StandardMaterial('innerMat', scene);
+      innerMaterial.diffuseColor = new BABYLON.Color3(0, 0.94, 1);
+      innerMaterial.emissiveColor = new BABYLON.Color3(0, 0.2, 0.4);
+      innerMaterial.alpha = 0.15;
+
+      // 1. Procedural Holographic Cranium
+      headMesh = BABYLON.MeshBuilder.CreateIcoSphere('headMesh', {
+        radius: 1.3,
+        subdivisions: 3,
+        updatable: true
+      }, scene);
+      headMesh.position.y = 0.6;
+      headMesh.scaling = new BABYLON.Vector3(0.9, 1.2, 0.95);
+      headMesh.material = hologramMaterial;
+
+      // Inner Core Mesh
+      const innerCore = BABYLON.MeshBuilder.CreateIcoSphere('innerCore', {
+        radius: 0.9,
+        subdivisions: 2
+      }, scene);
+      innerCore.parent = headMesh;
+      innerCore.material = innerMaterial;
+
+      // 2. Holographic Jaw (Articulated Lip-Sync)
+      jawMesh = BABYLON.MeshBuilder.CreateCylinder('jawMesh', {
+        height: 0.5,
+        diameterTop: 1.1,
+        diameterBottom: 0.6,
+        tessellation: 8
+      }, scene);
+      jawMesh.position = new BABYLON.Vector3(0, -0.4, 0.2);
+      jawMesh.scaling = new BABYLON.Vector3(0.8, 0.6, 0.9);
+      jawMesh.parent = headMesh;
+      jawMesh.material = hologramMaterial;
+
+      // 3. Cybernetic Eyes
+      const eyeMat = new BABYLON.StandardMaterial('eyeMat', scene);
+      eyeMat.emissiveColor = new BABYLON.Color3(0, 1, 1);
+
+      const leftEye = BABYLON.MeshBuilder.CreateTorus('leftEye', { diameter: 0.25, thickness: 0.04, tessellation: 24 }, scene);
+      leftEye.position = new BABYLON.Vector3(-0.35, 0.25, 0.85);
+      leftEye.rotation.x = Math.PI / 2;
+      leftEye.parent = headMesh;
+      leftEye.material = eyeMat;
+
+      const rightEye = BABYLON.MeshBuilder.CreateTorus('rightEye', { diameter: 0.25, thickness: 0.04, tessellation: 24 }, scene);
+      rightEye.position = new BABYLON.Vector3(0.35, 0.25, 0.85);
+      rightEye.rotation.x = Math.PI / 2;
+      rightEye.parent = headMesh;
+      rightEye.material = eyeMat;
+
+      // 4. Orbital Containment Rings
+      const ringMat = new BABYLON.StandardMaterial('ringMat', scene);
+      ringMat.emissiveColor = new BABYLON.Color3(0, 0.9, 1);
+      ringMat.alpha = 0.6;
+      ringMat.wireframe = true;
+
+      ring1 = BABYLON.MeshBuilder.CreateTorus('ring1', { diameter: 3.6, thickness: 0.03, tessellation: 48 }, scene);
+      ring1.position.y = 0.6;
+      ring1.material = ringMat;
+
+      ring2 = BABYLON.MeshBuilder.CreateTorus('ring2', { diameter: 4.2, thickness: 0.03, tessellation: 48 }, scene);
+      ring2.position.y = 0.6;
+      ring2.rotation.x = Math.PI / 4;
+      ring2.material = ringMat;
+
+      ring3 = BABYLON.MeshBuilder.CreateTorus('ring3', { diameter: 4.8, thickness: 0.03, tessellation: 48 }, scene);
+      ring3.position.y = 0.6;
+      ring3.rotation.z = Math.PI / 3;
+      ring3.material = ringMat;
+
+      // 5. Holographic Pedestal Grid
+      const groundGrid = BABYLON.MeshBuilder.CreateGround('groundGrid', { width: 10, height: 10, subdivisions: 20 }, scene);
+      groundGrid.position.y = -1.8;
+      const gridMat = new BABYLON.StandardMaterial('gridMat', scene);
+      gridMat.diffuseColor = new BABYLON.Color3(0, 0.4, 0.6);
+      gridMat.emissiveColor = new BABYLON.Color3(0, 0.15, 0.3);
+      gridMat.wireframe = true;
+      gridMat.alpha = 0.4;
+      groundGrid.material = gridMat;
+
+      // 6. Volumetric Hologram Particle Stream
+      particleSystem = new BABYLON.ParticleSystem('particles', 500, scene);
+      // Generate procedural circular particle texture
+      const particleTexture = new BABYLON.DynamicTexture('particleTex', 64, scene);
+      const ctx = particleTexture.getContext();
+      ctx.beginPath();
+      ctx.arc(32, 32, 28, 0, 2 * Math.PI);
+      ctx.fillStyle = '#00f0ff';
+      ctx.fill();
+      particleTexture.update();
+
+      particleSystem.particleTexture = particleTexture;
+      particleSystem.emitter = new BABYLON.Vector3(0, -1.5, 0);
+      particleSystem.minEmitBox = new BABYLON.Vector3(-1.5, 0, -1.5);
+      particleSystem.maxEmitBox = new BABYLON.Vector3(1.5, 0, 1.5);
+      particleSystem.color1 = new BABYLON.Color4(0, 0.94, 1, 0.8);
+      particleSystem.color2 = new BABYLON.Color4(0, 0.4, 0.8, 0.2);
+      particleSystem.colorDead = new BABYLON.Color4(0, 0, 0, 0);
+      particleSystem.minSize = 0.05;
+      particleSystem.maxSize = 0.12;
+      particleSystem.minLifeTime = 1.5;
+      particleSystem.maxLifeTime = 3.0;
+      particleSystem.emitRate = 120;
+      particleSystem.gravity = new BABYLON.Vector3(0, 0.6, 0); // Drifts upward
+      particleSystem.direction1 = new BABYLON.Vector3(-0.2, 1, -0.2);
+      particleSystem.direction2 = new BABYLON.Vector3(0.2, 1, 0.2);
+      particleSystem.start();
+
+      // 7. Native Babylon.js 2D/3D GUI
+      const advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI('UI');
+
+      // Right-side Control Panel
+      const panel = new BABYLON.GUI.StackPanel();
+      panel.width = '240px';
+      panel.isVertical = true;
+      panel.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+      panel.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+      panel.paddingRight = '20px';
+      advancedTexture.addControl(panel);
+
+      const panelTitle = new BABYLON.GUI.TextBlock();
+      panelTitle.text = 'STAGE CONTROLS';
+      panelTitle.height = '30px';
+      panelTitle.color = '#00f0ff';
+      panelTitle.fontSize = 12;
+      panelTitle.fontWeight = 'bold';
+      panel.addControl(panelTitle);
+
+      // Button: Simulate Speech
+      const btnSpeech = BABYLON.GUI.Button.CreateSimpleButton('btnSpeech', '▶ SIMULATE VOICE');
+      btnSpeech.height = '40px';
+      btnSpeech.color = '#00f0ff';
+      btnSpeech.background = 'rgba(0, 240, 255, 0.1)';
+      btnSpeech.cornerRadius = 6;
+      btnSpeech.fontSize = 11;
+      btnSpeech.paddingBottom = '10px';
+      btnSpeech.onPointerClickObservable.add(() => {
+        triggerSpeech('Simulating Watts neural speech synthesis on Babylon.js...');
+      });
+      panel.addControl(btnSpeech);
+
+      // Button: Toggle Overclock Mode
+      const btnOverclock = BABYLON.GUI.Button.CreateSimpleButton('btnOverclock', '⚡ OVERCLOCK MODE');
+      btnOverclock.height = '40px';
+      btnOverclock.color = '#ffaa00';
+      btnOverclock.background = 'rgba(255, 170, 0, 0.1)';
+      btnOverclock.cornerRadius = 6;
+      btnOverclock.fontSize = 11;
+      btnOverclock.paddingBottom = '10px';
+      btnOverclock.onPointerClickObservable.add(() => {
+        toggleOverclock();
+      });
+      panel.addControl(btnOverclock);
+
+      // Button: Reset Camera
+      const btnResetCam = BABYLON.GUI.Button.CreateSimpleButton('btnResetCam', '⟲ RESET CAMERA');
+      btnResetCam.height = '40px';
+      btnResetCam.color = '#88aaff';
+      btnResetCam.background = 'rgba(136, 170, 255, 0.1)';
+      btnResetCam.cornerRadius = 6;
+      btnResetCam.fontSize = 11;
+      btnResetCam.paddingBottom = '10px';
+      btnResetCam.onPointerClickObservable.add(() => {
+        camera.alpha = -Math.PI / 2;
+        camera.beta = Math.PI / 2.2;
+        camera.radius = 7.5;
+      });
+      panel.addControl(btnResetCam);
+
+      return scene;
+    };
+
+    const scene = createScene();
+
+    // Trigger Speech Simulation
+    function triggerSpeech(text) {
+      isSpeaking = true;
+      speechTimer = 3.5; // 3.5s speaking duration
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 1.05;
+        utterance.pitch = 1.0;
+        utterance.onend = () => { isSpeaking = false; };
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    // Toggle Overclock Mode (Cyan <-> Amber)
+    function toggleOverclock() {
+      isOverclocked = !isOverclocked;
+      const targetColor = isOverclocked ? new BABYLON.Color3(1, 0.6, 0) : new BABYLON.Color3(0, 0.94, 1);
+      const targetEmissive = isOverclocked ? new BABYLON.Color3(0.8, 0.3, 0) : new BABYLON.Color3(0, 0.4, 0.6);
+
+      hologramMaterial.diffuseColor = targetColor;
+      hologramMaterial.emissiveColor = targetEmissive;
+      glowLayer.intensity = isOverclocked ? 1.6 : 1.0;
+
+      const badge = document.getElementById('hudStatusBadge');
+      if (badge) {
+        badge.style.background = isOverclocked ? '#ffaa00' : '#00f0ff';
+        badge.style.boxShadow = isOverclocked ? '0 0 15px #ffaa00' : '0 0 15px #00f0ff';
+      }
+    }
+
+    // Chat Box Input Handler
+    const chatInput = document.getElementById('chatInput');
+    const sendBtn = document.getElementById('sendBtn');
+    async function handleSend() {
+      const query = chatInput.value.trim();
+      if (!query) return;
+      chatInput.value = '';
+      
+      triggerSpeech(query);
+
+      // Try contacting local Gemini /api/chat if running
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt: query })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.reply) {
+            triggerSpeech(data.reply);
+          }
+        }
+      } catch (e) {
+        // Fallback for standalone demo
+      }
+    }
+    sendBtn.addEventListener('click', handleSend);
+    chatInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') handleSend();
+    });
+
+    // Check URL query params for initial mode
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('mode') === 'overclock') {
+      setTimeout(toggleOverclock, 100);
+    }
+
+    // Main 60 FPS Render Loop
+    let time = 0;
+    engine.runRenderLoop(() => {
+      time += 0.016;
+
+      // Rotate Orbital Containment Rings
+      if (ring1) ring1.rotation.y += 0.008;
+      if (ring2) ring2.rotation.x += 0.012;
+      if (ring3) ring3.rotation.z -= 0.006;
+
+      // Idle Head Floating Sine Wave
+      if (headMesh) {
+        headMesh.position.y = 0.6 + Math.sin(time * 2) * 0.06;
+        headMesh.rotation.y = Math.sin(time * 0.8) * 0.12;
+      }
+
+      // Speech Jaw Articulation & Core Pulse
+      if (isSpeaking && speechTimer > 0) {
+        speechTimer -= 0.016;
+        const jawOffset = Math.abs(Math.sin(time * 18)) * 0.22;
+        if (jawMesh) jawMesh.position.y = -0.4 - jawOffset;
+        if (hologramMaterial) hologramMaterial.alpha = 0.4 + jawOffset * 0.6;
+        if (speechTimer <= 0) {
+          isSpeaking = false;
+          if (jawMesh) jawMesh.position.y = -0.4;
+          if (hologramMaterial) hologramMaterial.alpha = 0.35;
+        }
+      }
+
+      // Update FPS Telemetry
+      const fpsElem = document.getElementById('fpsCount');
+      if (fpsElem && engine) {
+        fpsElem.innerText = Math.round(engine.getFps());
+      }
+
+      scene.render();
+    });
+
+    // Window Resize Handler
+    window.addEventListener('resize', () => {
+      engine.resize();
+    });
+  </script>
+</body>
+</html>

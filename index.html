@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Con Edison Tech Day // AI in Action Moderator</title>
+  <link rel="stylesheet" href="styles.css?v=20260914a">
+  <!-- Three.js + GLTFLoader -->
+  <script src="lib/three.min.js"></script>
+  <script>
+    if (typeof THREE === 'undefined') {
+      document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>');
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+</head>
+<body>
+
+  <!-- 3D Canvas Viewport -->
+  <div id="canvas-container"></div>
+
+  <!-- Holographic Scanline & Vignette Overlay -->
+  <div class="hologram-overlay"></div>
+
+  <!-- Exit Stage Mode Button -->
+  <button id="exit-stage-btn">✕ Exit Stage Mode [ESC]</button>
+
+  <!-- Main UI Shell -->
+  <div class="ui-shell">
+    
+    <!-- Top Navigation HUD -->
+    <header class="hud-header interactive">
+      <div class="brand-badge">
+        <div class="logo-glow"></div>
+        <div class="brand-text">
+          <h1>CON EDISON TECH DAY</h1>
+          <span>AI IN ACTION AT CON EDISON</span>
+        </div>
+      </div>
+
+      <!-- Agenda Pill Track -->
+      <nav id="agenda-nav" class="agenda-track-container" aria-label="Panel Agenda Topics">
+        <!-- Injected dynamically by stage_controller.js -->
+      </nav>
+
+      <div class="header-status">
+        <div class="telemetry-chip">
+          <span class="telemetry-dot"></span>
+          <span id="telemetry-fps">60 FPS // HD VOICE</span>
+        </div>
+
+        <button id="stage-mode-btn" class="btn-icon btn-primary-action" title="Fullscreen Hologram for Stage Display">
+          <span>⛶</span> Stage Mode
+        </button>
+      </div>
+    </header>
+
+    <!-- Center Status & Topic Pill -->
+    <div class="avatar-tag-container">
+      <div class="avatar-name">CLARA // AI PANEL MODERATOR</div>
+      <div id="topic-badge" class="avatar-status-pill">KEYNOTE INTRO</div>
+      <div id="topic-title" style="font-size: 13px; color: #80deea; margin-top: 6px; letter-spacing: 0.5px; font-weight: 500;">
+        Welcome & Opening Remarks
+      </div>
+    </div>
+
+    <!-- Speaker Lower-Third Banner -->
+    <div id="lower-third" class="lower-third">
+      <div class="lower-third-tag">FEATURED PRESENTER</div>
+      <div id="speaker-name" class="speaker-name">Clara</div>
+      <div id="speaker-title" class="speaker-title">Con Edison AI Moderator</div>
+      <div id="speaker-org" class="speaker-org">Enterprise AI & Technology Solutions</div>
+    </div>
+
+    <!-- Live Speech Subtitles / Teleprompter -->
+    <div class="subtitle-container">
+      <div id="subtitle-box" class="subtitle-box idle">
+        Click Play, press Spacebar, or use the microphone to begin the showcase
+      </div>
+    </div>
+
+    <!-- Bottom Control Bar -->
+    <footer class="bottom-control-bar interactive">
+      
+      <!-- Presenter Clicker Controls -->
+      <div class="presenter-dock">
+        <button id="prev-btn" class="clicker-btn" title="Previous Topic [Left Arrow]">◀ Prev</button>
+        <button id="play-btn" class="clicker-btn" style="min-width: 44px; font-weight: bold; background: var(--primary); color: #041426;" title="Play / Pause [Spacebar]">▶</button>
+        <button id="next-btn" class="clicker-btn" title="Next Topic [Right Arrow]">Next ▶</button>
+        
+        <button id="mic-btn" class="mic-toggle-btn" title="Ask Question / Audience Voice [M]">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+            <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+          </svg>
+        </button>
+
+        <span class="hotkey-hint">[SPACE] Next • [M] Mic • [F] Fullscreen</span>
+      </div>
+
+      <!-- Chat / Question Input Form -->
+      <form id="chat-form" class="input-container" action="javascript:void(0);" autocomplete="off">
+        <input id="chat-input" type="text" placeholder="Ask Clara a question about Con Edison AI..." autocomplete="off">
+        <button id="send-btn" type="submit" class="send-btn" title="Send question">➔</button>
+      </form>
+
+    </footer>
+
+  </div>
+
+  <!-- Stage Engine & Logic -->
+  <script src="avatar_stage.js?v=20260914a"></script>
+  <script src="stage_controller.js?v=20260914a"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. Initialize Three.js Avatar Stage (Candidate B)
+      const avatar = new AvatarStageEngine('canvas-container');
+
+      // 2. Initialize Master Stage Controller
+      const controller = new StageController(avatar);
+
+      // Wire up buttons
+      document.getElementById('play-btn').addEventListener('click', () => controller.togglePlayPause());
+      document.getElementById('prev-btn').addEventListener('click', () => controller.prevTopic());
+      document.getElementById('next-btn').addEventListener('click', () => controller.nextTopic());
+      document.getElementById('mic-btn').addEventListener('click', () => controller.toggleMicrophone());
+
+      // Chat input form
+      const chatForm = document.getElementById('chat-form');
+      const chatInput = document.getElementById('chat-input');
+      chatForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const text = chatInput.value.trim();
+        if (text) {
+          controller.askGemini(text);
+          chatInput.value = '';
+        }
+      });
+
+      // Stage Mode / Fullscreen
+      const stageBtn = document.getElementById('stage-mode-btn');
+      const exitBtn = document.getElementById('exit-stage-btn');
+
+      const toggleStageMode = () => {
+        document.body.classList.toggle('stage-mode');
+        if (document.body.classList.contains('stage-mode')) {
+          if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(() => {});
+          }
+        } else {
+          if (document.fullscreenElement) {
+            document.exitFullscreen().catch(() => {});
+          }
+        }
+      };
+
+      stageBtn.addEventListener('click', toggleStageMode);
+      exitBtn.addEventListener('click', toggleStageMode);
+
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'f' || e.key === 'F') {
+          if (e.target.tagName !== 'INPUT') {
+            e.preventDefault();
+            toggleStageMode();
+          }
+        } else if (e.key === 'Escape') {
+          if (document.body.classList.contains('stage-mode')) {
+            toggleStageMode();
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>

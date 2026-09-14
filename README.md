@@ -24,10 +24,10 @@ The AI moderator, **Clara** (Candidate B persona: smart, youthful tech lead in C
 
 4. **Con Edison Panel Agenda & Dynamic Lower-Thirds**:
    - **`00 INTRO`**: Keynote Welcome & Opening Remarks (Clara)
-   - **`01 BILLING`**: Customer Operations & Generative Billing Agent (Patrick Hooper)
+   - **`01 BILLING`**: Customer Operations & Generative Billing Agent 
    - **`02 IDLING`**: Fleet Vehicle Idling Reduction AI (Fleet Modernization Team)
    - **`03 MANHOLE`**: Subsurface Manhole Safety & Acoustic Sensing (Subsurface Engineering Team)
-   - **`04 WEATHER`**: Severe Weather Modeling & Grid Resilience (Tom Langlois)
+   - **`04 WEATHER`**: Severe Weather Modeling & Grid Resilience 
    - **`05 CLEAN HEAT`**: Customer Energy Solutions & Clean Heat AI (Clean Energy Solutions Team)
    - **`06 Q&A`**: Interactive Audience & Panel Q&A (Clara powered by Gemini or GECX)
 
@@ -185,7 +185,7 @@ npm start
 
 ### 2. Run with Native GECX Backend
 ```bash
-# Optional environment overrides (defaults to pradeep-demo-1 / us-central1)
+# Optional environment overrides 
 export GCP_PROJECT_ID=""
 export GECX_LOCATION=""
 export GECX_AGENT_ID=""

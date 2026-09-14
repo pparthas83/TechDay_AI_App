@@ -4,9 +4,12 @@
   "description": "Tech Day Hologram AI Moderator",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "start:gecx": "node server_gecx.js",
+    "test": "node test/test_gecx.js"
   },
   "dependencies": {
+    "@google-cloud/dialogflow-cx": "^6.1.0",
     "@google-cloud/text-to-speech": "^7.1.0",
     "express": "^4.21.2"
   }

@@ -18,22 +18,63 @@ The AI moderator, **Clara** (Candidate B persona: smart, youthful tech lead in C
    - Articulate, cheerful, youthful, and strictly professional (zero slang).
    - In-memory MD5 caching on the Express backend provides instantaneous (<100ms) speech playback.
 
-3. **Con Edison Panel Agenda & Dynamic Lower-Thirds**:
+3. **Dual Conversational Intelligence Backends**:
+   - **Mode A (Gemini Direct)**: Built for rapid prototyping and low-latency stage banter via Gemini 3.6 Flash.
+   - **Mode B (GECX / Dialogflow CX Enterprise)**: Connects Clara directly to Google Enterprise Customer Experience (GECX) Playbooks, Vertex AI Search grounding, and session state machines.
+
+4. **Con Edison Panel Agenda & Dynamic Lower-Thirds**:
    - **`00 INTRO`**: Keynote Welcome & Opening Remarks (Clara)
    - **`01 BILLING`**: Customer Operations & Generative Billing Agent (Patrick Hooper)
    - **`02 IDLING`**: Fleet Vehicle Idling Reduction AI (Fleet Modernization Team)
    - **`03 MANHOLE`**: Subsurface Manhole Safety & Acoustic Sensing (Subsurface Engineering Team)
    - **`04 WEATHER`**: Severe Weather Modeling & Grid Resilience (Tom Langlois)
    - **`05 CLEAN HEAT`**: Customer Energy Solutions & Clean Heat AI (Clean Energy Solutions Team)
-   - **`06 Q&A`**: Interactive Audience & Panel Q&A (Clara powered by Gemini 3.6 Flash)
+   - **`06 Q&A`**: Interactive Audience & Panel Q&A (Clara powered by Gemini or GECX)
 
-4. **Presenter Stage HUD & Hotkeys**:
+5. **Presenter Stage HUD & Hotkeys**:
    - **`Spacebar`**: Toggle Play / Pause speech.
    - **`→` (Right Arrow)**: Advance to next topic.
    - **`←` (Left Arrow)**: Return to previous topic.
    - **`M`**: Toggle live microphone for audience voice Q&A (Web Speech API).
    - **`F` / Stage Mode**: Fullscreen clean broadcast view for stage projectors or giant LED walls.
    - **URL Direct Hash**: Jump or bookmark any use case directly (e.g., `#billing`, `#weather`, `#manhole`).
+
+---
+
+## 🏛️ Architecture: Gemini Direct vs. GECX Enterprise
+
+```
+               ┌────────────────────────────────────────────────────────┐
+               │          FRONTEND: 3D HOLOGRAPHIC AVATAR STAGE         │
+               │  - Candidate B ("Clara") WebGL / Three.js Engine       │
+               │  - Audio FFT Analyser -> ARKit Morph Viseme Lip-Sync   │
+               │  - Stage HUD, Topic Tracker, Dynamic Lower-Thirds       │
+               └───────────────────────────┬────────────────────────────┘
+                                           │ Spoken / Text Input (Q&A)
+                                           ▼
+               ┌────────────────────────────────────────────────────────┐
+               │               TIER 2: EXPRESS BACKEND (Cloud Run)      │
+               │  - /api/agenda : 5 Con Edison Use Cases & Speaker Bios │
+               │  - /api/tts    : Google Cloud TTS (en-US-Journey-F)    │
+               │  - /api/chat   : Conversational Routing                │
+               └───────────────┬────────────────────────┬───────────────┘
+                               │                        │
+         [Mode A: Gemini Direct]│                        │   [Mode B: GECX Enterprise]
+                               ▼                        ▼
+               ┌────────────────────────┐      ┌─────────────────────────────────┐
+               │   Direct Gemini API    │      │         GECX BACKEND            │
+               │   (gemini-3.6-flash)   │      │  (Dialogflow CX / Vertex Agents)│
+               │  - Fast Q&A prototyping│      │  - Multi-turn Playbooks         │
+               │  - server.js           │      │  - Grounded Vertex AI Search    │
+               └────────────────────────┘      │  - Enterprise Security & Tools  │
+                                               │  - server_gecx.js & gecx_service│
+                                               └─────────────────────────────────┘
+```
+
+### Why GECX for Con Edison Enterprise?
+* **Enterprise Grounding**: GECX connects natively to Vertex AI Search data stores containing Con Edison internal documentation, operating procedures, and technical specifications.
+* **Stage Automation via Tools**: GECX Playbooks can emit custom payloads (e.g. `{ action: 'SHOW_LOWER_THIRD', speaker: 'Tom Langlois' }`) enabling conversational triggers to steer slides and stage lighting directly.
+* **Direct Tie to Featured Use Case #1**: Patrick Hooper's Generative Billing Agent is itself built on GECX, establishing a unified architectural showcase.
 
 ---
 
@@ -44,8 +85,12 @@ The AI moderator, **Clara** (Candidate B persona: smart, youthful tech lead in C
 ├── stage_controller.js      # Presentation state machine, Google Cloud TTS audio & hotkeys
 ├── index.html               # Main holographic stage broadcast interface
 ├── styles.css               # Con Edison glassmorphism HUD, lower-thirds & stage animations
-├── server.js                # Express backend: /api/tts (Journey-F), /api/chat (Gemini), /api/agenda
-├── package.json             # Node.js dependencies (@google-cloud/text-to-speech, express)
+├── server.js                # Mode A: Express backend with Gemini Direct integration
+├── server_gecx.js           # Mode B: Express backend with native GECX integration
+├── gecx_service.js          # GECX SDK client, session path builder & payload parser
+├── test/
+│   └── test_gecx.js         # Comprehensive GECX test suite (8 tests)
+├── package.json             # Node.js dependencies (@google-cloud/dialogflow-cx, etc.)
 ├── Dockerfile               # Production container definition for Cloud Run
 ├── public/
 │   ├── agenda.json          # Master talk tracks, use case metadata, speaker bios
@@ -58,37 +103,79 @@ The AI moderator, **Clara** (Candidate B persona: smart, youthful tech lead in C
 
 ---
 
-## 🛠️ Local Development
+## 🛠️ Local Development & Running
 
 ### Prerequisites
 - Node.js 18+
-- Google Cloud credentials with access to Text-to-Speech API (or Application Default Credentials)
+- Google Cloud authentication (`gcloud auth application-default login`)
 
-### Setup
+### 1. Run with Direct Gemini (Default)
 ```bash
-# Clone the repository
-git clone https://github.com/pparthas83/TechDay_AI_App.git
-cd TechDay_AI_App
-
-# Install dependencies
 npm install
-
-# Start local server
 npm start
+# Server starts on http://localhost:8080 using server.js
 ```
-Open [http://localhost:8080](http://localhost:8080) in your browser.
+
+### 2. Run with Native GECX Backend
+```bash
+# Optional environment overrides (defaults to pradeep-demo-1 / us-central1)
+export GCP_PROJECT_ID="pradeep-demo-1"
+export GECX_LOCATION="us-central1"
+export GECX_AGENT_ID="2061bead-9591-47be-83a8-5d16fedfaeb5"
+
+npm run start:gecx
+# Server starts on http://localhost:8080 using server_gecx.js
+```
+
+### 3. Verify Connected GECX Agent Info
+When running in GECX mode, you can inspect the connected agent metadata via:
+```bash
+curl http://localhost:8080/api/gecx/agent
+```
+
+---
+
+## 🧪 Testing & Validation
+
+The repository includes a dedicated test suite validating GECX service initialization, regional endpoints, canonical session path construction, response parsing, and live connectivity to Google Cloud:
+
+```bash
+npm test
+```
+
+### Test Suite Coverage:
+1. `GECXService initializes with default project and location`
+2. `GECXService properly formats regional API endpoints (global, us-central1, us-east1)`
+3. `formatSessionPath generates canonical CX resource string`
+4. `formatSessionPath supports environment qualification (draft, prod)`
+5. `detectIntent rejects invalid or empty utterances`
+6. `parseResponse extracts and sanitizes spoken text messages`
+7. `parseResponse extracts custom stage actions and metadata payloads`
+8. `Live GECX Agent Connectivity (pradeep-demo-1 / 2061bead-9591-47be-83a8-5d16fedfaeb5)`
 
 ---
 
 ## ☁️ Cloud Run Deployment
 
+To deploy either backend to Google Cloud Run:
+
 ```bash
-# Deploy to Google Cloud Run
+# Deploy Mode A (Gemini Direct)
 gcloud run deploy coned-tech-day \
   --source . \
   --region us-central1 \
   --allow-unauthenticated \
   --project pradeep-demo-1 \
+  --memory 1Gi \
+  --cpu 1
+
+# Or deploy Mode B (GECX Enterprise)
+gcloud run deploy coned-tech-day-gecx \
+  --source . \
+  --region us-central1 \
+  --allow-unauthenticated \
+  --project pradeep-demo-1 \
+  --set-env-vars DEFAULT_SERVER=server_gecx.js,GECX_LOCATION=us-central1,GECX_AGENT_ID=2061bead-9591-47be-83a8-5d16fedfaeb5 \
   --memory 1Gi \
   --cpu 1
 ```

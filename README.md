@@ -73,8 +73,8 @@ The AI moderator, **Clara** (Candidate B persona: smart, youthful tech lead in C
 
 ### Why GECX for Con Edison Enterprise?
 * **Enterprise Grounding**: GECX connects natively to Vertex AI Search data stores containing Con Edison internal documentation, operating procedures, and technical specifications.
-* **Stage Automation via Tools**: GECX Playbooks can emit custom payloads (e.g. `{ action: 'SHOW_LOWER_THIRD', speaker: 'Tom Langlois' }`) enabling conversational triggers to steer slides and stage lighting directly.
-* **Direct Tie to Featured Use Case #1**: Patrick Hooper's Generative Billing Agent is itself built on GECX, establishing a unified architectural showcase.
+* **Stage Automation via Tools**: GECX Playbooks can emit custom payloads (e.g. `{ action: 'SHOW_LOWER_THIRD', speaker: '[TBD]' }`) enabling conversational triggers to steer slides and stage lighting directly.
+* **Direct Tie to Featured Use Case #1**: [TBD's] Generative Billing Agent is itself built on GECX, establishing a unified architectural showcase.
 
 ---
 
@@ -186,9 +186,9 @@ npm start
 ### 2. Run with Native GECX Backend
 ```bash
 # Optional environment overrides (defaults to pradeep-demo-1 / us-central1)
-export GCP_PROJECT_ID="pradeep-demo-1"
-export GECX_LOCATION="us-central1"
-export GECX_AGENT_ID="668bd4db-b76d-4f1b-be6b-8e290bb741bd"
+export GCP_PROJECT_ID=""
+export GECX_LOCATION=""
+export GECX_AGENT_ID=""
 
 npm run start:gecx
 # Server starts on http://localhost:8080 using server_gecx.js
@@ -218,8 +218,8 @@ npm test
 5. `detectIntent rejects invalid or empty utterances`
 6. `parseResponse extracts and sanitizes spoken text messages`
 7. `parseResponse extracts custom stage actions and metadata payloads`
-8. `Live Con Edison Moderator Agent (pradeep-demo-1 / 668bd4db-b76d-4f1b-be6b-8e290bb741bd)`
-9. `Live Panel Topic Query: Patrick Hooper & Billing Agent`
+8. `Live Con Edison Moderator Agent `
+9. `Live Panel Topic Query: {TBD}`
 
 ---
 
@@ -233,7 +233,7 @@ gcloud run deploy coned-tech-day \
   --source . \
   --region us-central1 \
   --allow-unauthenticated \
-  --project pradeep-demo-1 \
+  --project {GCP_Project_Id} \
   --memory 1Gi \
   --cpu 1
 
@@ -242,8 +242,8 @@ gcloud run deploy coned-tech-day-gecx \
   --source . \
   --region us-central1 \
   --allow-unauthenticated \
-  --project pradeep-demo-1 \
-  --set-env-vars DEFAULT_SERVER=server_gecx.js,GECX_LOCATION=us-central1,GECX_AGENT_ID=668bd4db-b76d-4f1b-be6b-8e290bb741bd \
+  --project {GCP_Project_Id} \
+  --set-env-vars DEFAULT_SERVER=server_gecx.js,GECX_LOCATION=us-central1,GECX_AGENT_ID={GECX_AGENT_Id} \
   --memory 1Gi \
   --cpu 1
 ```

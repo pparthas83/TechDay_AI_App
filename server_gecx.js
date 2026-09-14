@@ -16,7 +16,7 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 const GCP_PROJECT_ID = process.env.GCP_PROJECT_ID || 'pradeep-demo-1';
 const GECX_LOCATION = process.env.GECX_LOCATION || 'us-central1';
-const GECX_AGENT_ID = process.env.GECX_AGENT_ID || '2061bead-9591-47be-83a8-5d16fedfaeb5';
+const GECX_AGENT_ID = process.env.GECX_AGENT_ID || '668bd4db-b76d-4f1b-be6b-8e290bb741bd';
 
 // Initialize GECX Service
 const gecxService = new GECXService({

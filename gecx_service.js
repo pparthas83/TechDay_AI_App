@@ -18,7 +18,7 @@ class GECXService {
   constructor(options = {}) {
     this.projectId = options.projectId || process.env.GCP_PROJECT_ID || 'pradeep-demo-1';
     this.location = options.location || process.env.GECX_LOCATION || 'us-central1';
-    this.agentId = options.agentId || process.env.GECX_AGENT_ID || '2061bead-9591-47be-83a8-5d16fedfaeb5';
+    this.agentId = options.agentId || process.env.GECX_AGENT_ID || '668bd4db-b76d-4f1b-be6b-8e290bb741bd';
     this.environmentId = options.environmentId || process.env.GECX_ENVIRONMENT_ID || null;
 
     // Build regional API endpoint (e.g., 'us-central1-dialogflow.googleapis.com')

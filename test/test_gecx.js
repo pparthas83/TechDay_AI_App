@@ -149,21 +149,37 @@ async function main() {
     assert.strictEqual(parsed.stagePayload.topicIndex, 4);
   });
 
-  // Test 8: Live Connectivity to GECX Agent on GCP
-  await runAsyncTest('Live GECX Agent Connectivity (pradeep-demo-1 / 2061bead-9591-47be-83a8-5d16fedfaeb5)', async () => {
+  // Test 8: Live Connectivity to Con Edison Tech Day Moderator Agent on GCP
+  await runAsyncTest('Live Con Edison Moderator Agent (pradeep-demo-1 / 668bd4db-b76d-4f1b-be6b-8e290bb741bd)', async () => {
     const service = new GECXService({
       projectId: 'pradeep-demo-1',
       location: 'us-central1',
-      agentId: '2061bead-9591-47be-83a8-5d16fedfaeb5'
+      agentId: '668bd4db-b76d-4f1b-be6b-8e290bb741bd'
     });
 
-    const testUtterance = 'hello';
+    const testUtterance = 'Who are you and what are we discussing today?';
     const result = await service.detectIntent(testUtterance, `unit-test-${Date.now()}`);
 
     assert.ok(result.reply && typeof result.reply === 'string', 'Reply must be non-empty string');
-    assert.ok(result.reply.length > 5, 'Reply should contain substantive text');
+    assert.ok(result.reply.toLowerCase().includes('clara') || result.reply.toLowerCase().includes('con edison'), 'Reply should identify Clara or Con Edison');
     assert.ok(result.match.confidence > 0, 'Match confidence should be greater than 0');
-    console.log(`    [Live GECX Output]: "${result.reply.substring(0, 90)}..." (Match: ${result.match.matchType})`);
+    console.log(`    [Live Clara GECX Output]: "${result.reply.substring(0, 110)}..." (Match: ${result.match.matchType})`);
+  });
+
+  // Test 9: Live Con Edison Panel Topic Query
+  await runAsyncTest('Live Panel Topic Query: Patrick Hooper & Billing Agent', async () => {
+    const service = new GECXService({
+      projectId: 'pradeep-demo-1',
+      location: 'us-central1',
+      agentId: '668bd4db-b76d-4f1b-be6b-8e290bb741bd'
+    });
+
+    const testUtterance = 'Tell us about Patrick Hooper and the customer billing use case';
+    const result = await service.detectIntent(testUtterance, `unit-test-topic-${Date.now()}`);
+
+    assert.ok(result.reply && typeof result.reply === 'string', 'Reply must be non-empty string');
+    assert.ok(result.reply.length > 20, 'Reply should contain detailed answer');
+    console.log(`    [Live Topic Response]: "${result.reply.substring(0, 110)}..."`);
   });
 
   console.log(`\nResults: ${passedTests} of ${totalTests} tests passed.\n`);

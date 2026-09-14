@@ -121,7 +121,7 @@ npm start
 # Optional environment overrides (defaults to pradeep-demo-1 / us-central1)
 export GCP_PROJECT_ID="pradeep-demo-1"
 export GECX_LOCATION="us-central1"
-export GECX_AGENT_ID="2061bead-9591-47be-83a8-5d16fedfaeb5"
+export GECX_AGENT_ID="668bd4db-b76d-4f1b-be6b-8e290bb741bd"
 
 npm run start:gecx
 # Server starts on http://localhost:8080 using server_gecx.js
@@ -143,7 +143,7 @@ The repository includes a dedicated test suite validating GECX service initializ
 npm test
 ```
 
-### Test Suite Coverage:
+### Test Suite Coverage (9 Tests):
 1. `GECXService initializes with default project and location`
 2. `GECXService properly formats regional API endpoints (global, us-central1, us-east1)`
 3. `formatSessionPath generates canonical CX resource string`
@@ -151,7 +151,8 @@ npm test
 5. `detectIntent rejects invalid or empty utterances`
 6. `parseResponse extracts and sanitizes spoken text messages`
 7. `parseResponse extracts custom stage actions and metadata payloads`
-8. `Live GECX Agent Connectivity (pradeep-demo-1 / 2061bead-9591-47be-83a8-5d16fedfaeb5)`
+8. `Live Con Edison Moderator Agent (pradeep-demo-1 / 668bd4db-b76d-4f1b-be6b-8e290bb741bd)`
+9. `Live Panel Topic Query: Patrick Hooper & Billing Agent`
 
 ---
 
@@ -175,7 +176,7 @@ gcloud run deploy coned-tech-day-gecx \
   --region us-central1 \
   --allow-unauthenticated \
   --project pradeep-demo-1 \
-  --set-env-vars DEFAULT_SERVER=server_gecx.js,GECX_LOCATION=us-central1,GECX_AGENT_ID=2061bead-9591-47be-83a8-5d16fedfaeb5 \
+  --set-env-vars DEFAULT_SERVER=server_gecx.js,GECX_LOCATION=us-central1,GECX_AGENT_ID=668bd4db-b76d-4f1b-be6b-8e290bb741bd \
   --memory 1Gi \
   --cpu 1
 ```

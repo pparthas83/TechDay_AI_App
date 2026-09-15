@@ -172,7 +172,7 @@ app.post('/api/chat', async (req, res) => {
       queryParams || {}
     );
 
-    console.log(`[GECX Chat] User: "${prompt.trim()}" -> Clara (GECX): "${result.reply}"`);
+    console.log(`[GECX Chat] User: "${prompt.trim()}" -> Watt (GECX): "${result.reply}"`);
     res.json({
       reply: result.reply,
       stagePayload: result.stagePayload,

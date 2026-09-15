@@ -154,15 +154,15 @@ app.post('/api/tts', async (req, res) => {
 });
 
 const SYSTEM_INSTRUCTION =
-  "You are Clara, the AI Panel Moderator for Con Edison Tech Day. " +
+  "You are Watt, the AI Panel Moderator for Con Edison Tech Day. " +
   "Persona: A woman's voice, very professional, youthful, and cheerful sounding. " +
   "Maintain high corporate polish, clear articulation, and warmth. " +
   "You must NEVER use slang, colloquial abbreviations, or informal street language. " +
   "You are moderating the 'AI in Action at Con Edison' panel featuring collaborative work between Con Edison Business teams and Enterprise Technology Solutions (ETS): " +
-  "1. Customer Operations & Generative Billing Agent (Patrick Hooper's area) " +
+  "1. Customer Operations & Generative Billing Agent (Customer Operations Team) " +
   "2. Fleet Vehicle Idling Reduction AI " +
   "3. Subsurface Manhole Safety & Predictive Acoustics " +
-  "4. Severe Weather Modeling & Grid Resilience (Tom Langlois) " +
+  "4. Severe Weather Modeling & Grid Resilience (Electric Operations & Meteorology Team) " +
   "5. Customer Energy Solutions & Clean Heat Optimization. " +
   "Keep your spoken answers concise (1 to 2 sentences max) so they flow naturally during live stage conversation. " +
   "Do NOT output markdown asterisks, bullet points, headers, or emojis since your words are read aloud by a voice synthesizer.";
@@ -248,7 +248,7 @@ app.post('/api/chat', async (req, res) => {
       const session = sessionId || `stage-session-${Date.now()}`;
       const gecxResult = await gecxService.detectIntent(trimmedPrompt, session);
       const cleanReply = gecxResult.reply.replace(/[\*\_`#]/g, '').trim();
-      console.log(`[GECX Chat] User: "${trimmedPrompt}" -> Clara (GECX Playbook): "${cleanReply}" [match: ${gecxResult.match?.matchType}]`);
+      console.log(`[GECX Chat] User: "${trimmedPrompt}" -> Watt (GECX Playbook): "${cleanReply}" [match: ${gecxResult.match?.matchType}]`);
       return res.json({
         reply: cleanReply,
         backend: 'GECX Playbook',
@@ -278,7 +278,7 @@ app.post('/api/chat', async (req, res) => {
   // 2. ROUTE TO GEMINI 3.6 FLASH
   try {
     const geminiReply = await queryGemini(trimmedPrompt);
-    console.log(`[Gemini Chat] User: "${trimmedPrompt}" -> Clara (Gemini 3.6): "${geminiReply}"`);
+    console.log(`[Gemini Chat] User: "${trimmedPrompt}" -> Watt (Gemini 3.6): "${geminiReply}"`);
     return res.json({
       reply: geminiReply,
       backend: 'Gemini 3.6 Flash',
@@ -294,5 +294,5 @@ app.post('/api/chat', async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Con Edison Tech Day Moderator Server (Clara) running on http://0.0.0.0:${PORT}`);
+  console.log(`Con Edison Tech Day Moderator Server (Watt) running on http://0.0.0.0:${PORT}`);
 });

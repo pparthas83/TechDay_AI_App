@@ -1,5 +1,5 @@
 /**
- * Con Edison Tech Day - 3D Avatar Stage Engine (Candidate B: Clara)
+ * Con Edison Tech Day - 3D Avatar Stage Engine (Candidate B: Watt)
  * Powered by Three.js & glTF 2.0
  */
 

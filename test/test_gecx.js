@@ -128,12 +128,12 @@ async function main() {
     const mockResponse = {
       queryResult: {
         responseMessages: [
-          { text: { text: ['Introducing Tom Langlois for severe weather modeling.'] } },
+          { text: { text: ['Introducing Electric Operations and Meteorology for severe weather modeling.'] } },
           {
             payload: {
               fields: {
                 action: { stringValue: 'SHOW_LOWER_THIRD' },
-                speaker: { stringValue: 'Tom Langlois' },
+                speaker: { stringValue: 'Electric Operations & Meteorology Team' },
                 topicIndex: { numberValue: 4 }
               }
             }
@@ -145,7 +145,7 @@ async function main() {
     const parsed = service.parseResponse(mockResponse);
     assert.ok(parsed.stagePayload);
     assert.strictEqual(parsed.stagePayload.action, 'SHOW_LOWER_THIRD');
-    assert.strictEqual(parsed.stagePayload.speaker, 'Tom Langlois');
+    assert.strictEqual(parsed.stagePayload.speaker, 'Electric Operations & Meteorology Team');
     assert.strictEqual(parsed.stagePayload.topicIndex, 4);
   });
 
@@ -161,20 +161,20 @@ async function main() {
     const result = await service.detectIntent(testUtterance, `unit-test-${Date.now()}`);
 
     assert.ok(result.reply && typeof result.reply === 'string', 'Reply must be non-empty string');
-    assert.ok(result.reply.toLowerCase().includes('clara') || result.reply.toLowerCase().includes('con edison'), 'Reply should identify Clara or Con Edison');
+    assert.ok(result.reply.toLowerCase().includes('watt') || result.reply.toLowerCase().includes('con edison'), 'Reply should identify Watt or Con Edison');
     assert.ok(result.match.confidence > 0, 'Match confidence should be greater than 0');
-    console.log(`    [Live Clara GECX Output]: "${result.reply.substring(0, 110)}..." (Match: ${result.match.matchType})`);
+    console.log(`    [Live Watt GECX Output]: "${result.reply.substring(0, 110)}..." (Match: ${result.match.matchType})`);
   });
 
   // Test 9: Live Con Edison Panel Topic Query
-  await runAsyncTest('Live Panel Topic Query: Patrick Hooper & Billing Agent', async () => {
+  await runAsyncTest('Live Panel Topic Query: Customer Operations Billing Agent', async () => {
     const service = new GECXService({
       projectId: 'pradeep-demo-1',
       location: 'us-central1',
       agentId: '668bd4db-b76d-4f1b-be6b-8e290bb741bd'
     });
 
-    const testUtterance = 'Tell us about Patrick Hooper and the customer billing use case';
+    const testUtterance = 'Tell us about the customer billing generative AI agent use case';
     const result = await service.detectIntent(testUtterance, `unit-test-topic-${Date.now()}`);
 
     assert.ok(result.reply && typeof result.reply === 'string', 'Reply must be non-empty string');

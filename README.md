@@ -1,14 +1,14 @@
-# Con Edison Tech Day 2026: AI in Action Panel Moderator ("Clara")
+# Con Edison Tech Day 2026: AI in Action Panel Moderator ("Watt")
 
 An interactive, holographic 3D AI Moderator application designed for the **Con Edison Tech Day: "AI in Action at Con Edison"** keynote and panel showcase.
 
-The AI moderator, **Clara** (Candidate B persona: smart, youthful tech lead in Con Edison tech wear with glasses), guides the audience through the partnership between Con Edison Business and Enterprise Technology Solutions (ETS) across five core AI use cases.
+The AI moderator, **Watt** (Candidate B persona: smart, youthful tech lead in Con Edison tech wear with glasses), guides the audience through the partnership between Con Edison Business and Enterprise Technology Solutions (ETS) across five core AI use cases.
 
 ---
 
 ## 🚀 Key Features
 
-1. **3D Photo-Realistic Avatar (Candidate B - "Clara")**:
+1. **3D Photo-Realistic Avatar (Candidate B - "Watt")**:
    - WebGL 3D avatar rendered via Three.js with studio 3-point lighting and electric blue rim illumination.
    - Real-time procedural lip-sync: Web Audio API FFT frequency analysis maps speech cadence to ARKit/Oculus visemes (`viseme_aa`, `viseme_O`, `viseme_E`, `viseme_I`, `viseme_SS`).
    - Procedural life simulation: natural eye blinking cycles and sinusoidal breathing motion.
@@ -24,13 +24,13 @@ The AI moderator, **Clara** (Candidate B persona: smart, youthful tech lead in C
    - UI features a highlighted, luminous GECX Playbook status badge with an active pulsing cyan LED.
 
 4. **Con Edison Panel Agenda & Use Cases**:
-   - **`00 INTRO`**: Keynote Welcome & Opening Remarks (Clara)
+   - **`00 INTRO`**: Keynote Welcome & Opening Remarks (Watt)
    - **`01 BILLING`**: Customer Operations & Generative Billing Agent (Customer Operations Team)
    - **`02 IDLING`**: Fleet Vehicle Idling Reduction AI (Fleet Modernization Team)
    - **`03 MANHOLE`**: Subsurface Manhole Safety & Acoustic Sensing (Subsurface Engineering Team)
    - **`04 WEATHER`**: Severe Weather Modeling & Grid Resilience (Electric Operations & Meteorology Team)
    - **`05 CLEAN HEAT`**: Customer Energy Solutions & Clean Heat AI (Clean Energy Solutions Team)
-   - **`06 Q&A`**: Interactive Audience & Panel Q&A (Clara powered by GECX Playbook)
+   - **`06 Q&A`**: Interactive Audience & Panel Q&A (Watt powered by GECX Playbook)
 
 5. **Presenter Stage HUD & Hotkeys**:
    - **`Spacebar`**: Toggle Play / Pause speech.
@@ -47,7 +47,7 @@ The AI moderator, **Clara** (Candidate B persona: smart, youthful tech lead in C
 ```
                ┌────────────────────────────────────────────────────────┐
                │          FRONTEND: 3D HOLOGRAPHIC AVATAR STAGE         │
-               │  - Candidate B ("Clara") WebGL / Three.js Engine       │
+               │  - Candidate B ("Watt") WebGL / Three.js Engine        │
                │  - Audio FFT Analyser -> ARKit Morph Viseme Lip-Sync   │
                │  - Stage HUD, Highlighted GECX Indicator & Lower-Thirds│
                └───────────────────────────┬────────────────────────────┘
@@ -65,7 +65,7 @@ The AI moderator, **Clara** (Candidate B persona: smart, youthful tech lead in C
                ┌────────────────────────────────────────────────────────┐
                │                      GECX BACKEND                      │
                │            (Dialogflow CX / Vertex AI Agents)          │
-               │  - Clara - Tech Day Moderator Playbook                 │
+               │  - Watt - Tech Day Moderator Playbook                  │
                │  - Session Management & Intent Resolution              │
                │  - Grounded Vertex AI Search Data Stores               │
                │  - Enterprise OpenAPI & Webhook Tools                  │
@@ -85,7 +85,7 @@ In GECX (Google Enterprise Customer Experience / Dialogflow CX), conversational 
 
 ```mermaid
 flowchart TD
-    Playbook["GECX Playbook<br>('Clara Moderator')"]
+    Playbook["GECX Playbook<br>('Watt Moderator')"]
     
     DataStore["Data Store Tool<br>(Vertex AI Search)"]
     WebGrounding["Web Grounding Tool<br>(Enterprise Web Search)"]
@@ -119,7 +119,7 @@ flowchart TD
 1. **Vertex AI Search Data Store (Private Enterprise Repository)**:
    - Connects to private Google Cloud Storage (GCS) buckets containing Con Edison technical documentation, slide decks, talk tracks, and program guides.
    - Extracts semantic embeddings and provides grounded citations with verifiable references.
-   - Eliminates hallucination by constraining Clara's generative answers to official utility material.
+   - Eliminates hallucination by constraining Watt's generative answers to official utility material.
 
 2. **Web Grounding Tool (Curated Domain Search)**:
    - Connects to authorized enterprise domains (e.g. `coned.com/en`) to pull real-time external facts, energy market updates, or regulatory filings with web source links.

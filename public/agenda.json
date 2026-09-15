@@ -2,7 +2,7 @@
   "event": "Con Edison Tech Day",
   "panel_title": "AI in Action at Con Edison",
   "moderator": {
-    "name": "Clara",
+    "name": "Watt",
     "role": "Autonomous AI Panel Moderator",
     "persona": "Youthful, cheerful, strictly professional",
     "voice": "en-US-Journey-F"
@@ -14,7 +14,7 @@
       "title": "Welcome & Opening Remarks",
       "audio": "/assets/audio/topic_0.mp3",
       "speaker": {
-        "name": "Clara",
+        "name": "Watt",
         "title": "Con Edison AI Moderator",
         "organization": "Enterprise AI & Technology Solutions"
       },
@@ -27,12 +27,12 @@
       "title": "Customer Operations & Generative Billing Agent",
       "audio": "/assets/audio/topic_1.mp3",
       "speaker": {
-        "name": "Patrick Hooper",
-        "title": "Director of Customer Operations",
-        "organization": "Con Edison Customer Energy Solutions"
+        "name": "Customer Operations Team",
+        "title": "Customer Energy & Billing Operations",
+        "organization": "Con Edison Customer Operations"
       },
-      "script": "Let us begin with Customer Operations. I would like to welcome Patrick Hooper and his team. They are deploying an intelligent, conversational generative AI billing agent that analyzes complex billing histories, explains seasonal rate variances in clear plain English, and proactively suggests tailored payment agreements, dramatically reducing wait times for New York families.",
-      "prompt": "Highlight the billing agent and Patrick Hooper's customer operations impact."
+      "script": "Let us begin with Customer Operations. Our Customer Operations and Enterprise Technology teams are deploying an intelligent, conversational generative AI billing agent that analyzes complex billing histories, explains seasonal rate variances in clear plain English, and proactively suggests tailored payment agreements, dramatically reducing wait times for New York families.",
+      "prompt": "Highlight the generative billing agent and customer operations impact."
     },
     {
       "id": "idling",
@@ -66,12 +66,12 @@
       "title": "Severe Weather Modeling & Grid Resilience",
       "audio": "/assets/audio/topic_4.mp3",
       "speaker": {
-        "name": "Tom Langlois",
-        "title": "Senior Meteorologist & Data Analytics Lead",
-        "organization": "Con Edison Meteorology & Emergency Management"
+        "name": "Electric Operations & Meteorology Team",
+        "title": "Grid Meteorology & Analytics Leads",
+        "organization": "Con Edison Electric Operations"
       },
-      "script": "Next, let us turn to weather modeling and grid resilience. Please join me in welcoming Tom Langlois. Tom and the ETS analytics team have integrated hyper-local microclimate predictive models that simulate wind shear, coastal storm surge, and wet snow load at neighborhood-level granularity, allowing our dispatch centers to preposition repair crews before storms make landfall.",
-      "prompt": "Introduce Tom Langlois and discuss high-resolution predictive storm modeling."
+      "script": "Next, let us turn to weather modeling and grid resilience. Con Edison's Electric Operations and analytics teams have integrated hyper-local microclimate predictive models that simulate wind shear, coastal storm surge, and wet snow load at neighborhood-level granularity, allowing our dispatch centers to preposition repair crews before storms make landfall.",
+      "prompt": "Highlight high-resolution predictive storm modeling and grid resilience."
     },
     {
       "id": "energy_solutions",
@@ -92,7 +92,7 @@
       "title": "Audience & Panel Q&A",
       "audio": "/assets/audio/topic_6.mp3",
       "speaker": {
-        "name": "Clara",
+        "name": "Watt",
         "title": "Con Edison AI Moderator",
         "organization": "Open Stage Interaction"
       },

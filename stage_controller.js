@@ -1,5 +1,5 @@
 /**
- * Con Edison Tech Day - Stage Controller (Clara AI Moderator)
+ * Con Edison Tech Day - Stage Controller (Watt AI Moderator)
  */
 
 class StageController {
@@ -287,7 +287,7 @@ class StageController {
 
   async askGemini(promptText) {
     try {
-      this.setSubtitle('Clara is consulting GECX Playbook...', 'thinking');
+      this.setSubtitle('Watt is consulting GECX Playbook...', 'thinking');
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

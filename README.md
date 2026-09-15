@@ -19,7 +19,7 @@ The AI moderator, **Clara** (Candidate B persona: smart, youthful tech lead in C
    - In-memory MD5 caching on the Express backend provides instantaneous (<25ms) speech playback.
 
 3. **Exclusive GECX Playbook Intelligence**:
-   - All conversations and stage Q&A route directly to **Google Enterprise Customer Experience (GECX)** / Dialogflow CX Playbooks (`projects/pradeep-demo-1/locations/us-central1/agents/668bd4db-b76d-4f1b-be6b-8e290bb741bd`).
+   - All conversations and stage Q&A route directly to **Google Enterprise Customer Experience (GECX)** / Dialogflow CX Playbooks (`projects/[project]/locations/us-central1/agents/668bd4db-b76d-4f1b-be6b-8e290bb741bd`).
    - Grounded in playbook goals, instructions, session management, and extensible tools.
    - UI features a highlighted, luminous GECX Playbook status badge with an active pulsing cyan LED.
 
@@ -164,9 +164,9 @@ flowchart TD
 npm install
 
 # Optional environment overrides
-export GCP_PROJECT_ID="pradeep-demo-1"
+export GCP_PROJECT_ID="{project_name}"
 export GECX_LOCATION="us-central1"
-export GECX_AGENT_ID="668bd4db-b76d-4f1b-be6b-8e290bb741bd"
+export GECX_AGENT_ID="{GECX_AGENT_ID}"
 
 npm start
 # Server starts on http://localhost:8080 using server.js with GECX integration
@@ -210,7 +210,7 @@ gcloud run deploy coned-tech-day \
   --source . \
   --region us-central1 \
   --allow-unauthenticated \
-  --project pradeep-demo-1 \
+  --project {GCP_PROJECT_NAME} \
   --memory 1Gi \
   --cpu 1
 ```

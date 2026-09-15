@@ -238,7 +238,7 @@ class StageController {
         body: JSON.stringify({
           text: text,
           voice: 'en-US-Journey-F',
-          rate: 1.02
+          rate: 0.88
         })
       });
 
@@ -262,7 +262,7 @@ class StageController {
     const voices = window.speechSynthesis.getVoices();
     const femaleVoice = voices.find(v => (v.name.includes('Natural') || v.name.includes('Samantha') || v.name.includes('Google') || v.name.includes('Zira')) && v.lang.startsWith('en')) || voices[0];
     if (femaleVoice) utterance.voice = femaleVoice;
-    utterance.rate = 1.02;
+    utterance.rate = 0.88;
 
     utterance.onstart = () => {
       this.isPlaying = true;

@@ -31,7 +31,7 @@ async function generateAll() {
       },
       audioConfig: {
         audioEncoding: 'MP3',
-        speakingRate: 1.02,
+        speakingRate: 0.88,
         pitch: 0.0
       }
     };

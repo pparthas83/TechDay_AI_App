@@ -32,7 +32,7 @@ try {
       if (fs.existsSync(audioFilePath)) {
         const buf = fs.readFileSync(audioFilePath);
         const cleanText = topic.script.replace(/[\*\_`#]/g, '').trim();
-        const cacheKey = crypto.createHash('md5').update(`en-US-Journey-F_1.02_${cleanText}`).digest('hex');
+        const cacheKey = crypto.createHash('md5').update(`en-US-Journey-F_0.88_${cleanText}`).digest('hex');
         audioCache.set(cacheKey, buf);
       }
     });
@@ -82,7 +82,7 @@ app.get('/api/agenda', (req, res) => {
 
 // Google Cloud Text-to-Speech synthesis endpoint
 app.post('/api/tts', async (req, res) => {
-  const { text, voice = 'en-US-Journey-F', rate = 1.02 } = req.body;
+  const { text, voice = 'en-US-Journey-F', rate = 0.88 } = req.body;
   if (!text || typeof text !== 'string' || !text.trim()) {
     return res.status(400).json({ error: 'Text string is required' });
   }
@@ -110,7 +110,7 @@ app.post('/api/tts', async (req, res) => {
       },
       audioConfig: {
         audioEncoding: 'MP3',
-        speakingRate: rate,
+        speakingRate: parseFloat(rate) || 0.88,
         pitch: 0.0
       }
     };

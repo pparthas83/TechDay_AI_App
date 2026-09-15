@@ -188,7 +188,7 @@ app.post('/api/chat', async (req, res) => {
       const client = await googleAuth.getClient();
       const token = await client.getAccessToken();
       headers['Authorization'] = `Bearer ${token.token}`;
-      const vertexModel = GEMINI_MODEL.includes('gemini') ? GEMINI_MODEL : 'gemini-2.5-flash';
+      const vertexModel = (GEMINI_MODEL.includes('gemini-2.5') || GEMINI_MODEL.includes('gemini-1.5')) ? GEMINI_MODEL : 'gemini-2.5-flash';
       url = `https://${GECX_LOCATION}-aiplatform.googleapis.com/v1/projects/${GCP_PROJECT_ID}/locations/${GECX_LOCATION}/publishers/google/models/${vertexModel}:generateContent`;
     }
 

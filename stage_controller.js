@@ -286,14 +286,18 @@ class StageController {
 
   setSubtitle(text, stateClass = 'idle') {
     if (!this.subtitleBox) return;
-    this.subtitleBox.className = `subtitle-box ${stateClass}`;
+    this.subtitleBox.className = `narrative-text ${stateClass}`;
     this.subtitleBox.textContent = text;
   }
 
   updatePlayState() {
     if (!this.playBtn) return;
-    this.playBtn.innerHTML = this.isPlaying ? '❚❚' : '▶';
+    this.playBtn.innerHTML = this.isPlaying 
+      ? '<span class="play-icon">❚❚</span> Pause' 
+      : '<span class="play-icon">▶</span> Play';
     this.playBtn.title = this.isPlaying ? 'Pause Presentation' : 'Play Presentation';
+    const wave = document.getElementById('speaking-wave');
+    if (wave) wave.classList.toggle('active', this.isPlaying);
   }
 
   setupKeyBindings() {

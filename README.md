@@ -15,21 +15,22 @@ The AI moderator, **Clara** (Candidate B persona: smart, youthful tech lead in C
 
 2. **Google Cloud Text-to-Speech (Journey-F Voice)**:
    - Powered by Google Cloud's `en-US-Journey-F` ultra-realistic conversational female voice model.
-   - Articulate, cheerful, youthful, and strictly professional (zero slang).
-   - In-memory MD5 caching on the Express backend provides instantaneous (<100ms) speech playback.
+   - Articulate, cheerful, youthful, and strictly professional (zero slang) with a calibrated stage pacing rate (0.88x).
+   - In-memory MD5 caching on the Express backend provides instantaneous (<25ms) speech playback.
 
-3. **Dual Conversational Intelligence Backends**:
-   - **Mode A (Gemini Direct)**: Built for rapid prototyping and low-latency stage banter via Gemini 3.6 Flash.
-   - **Mode B (GECX / Dialogflow CX Enterprise)**: Connects Clara directly to Google Enterprise Customer Experience (GECX) Playbooks, Vertex AI Search grounding, and session state machines.
+3. **Exclusive GECX Playbook Intelligence**:
+   - All conversations and stage Q&A route directly to **Google Enterprise Customer Experience (GECX)** / Dialogflow CX Playbooks (`projects/pradeep-demo-1/locations/us-central1/agents/668bd4db-b76d-4f1b-be6b-8e290bb741bd`).
+   - Grounded in playbook goals, instructions, session management, and extensible tools.
+   - UI features a highlighted, luminous GECX Playbook status badge with an active pulsing cyan LED.
 
-4. **Con Edison Panel Agenda & Dynamic Lower-Thirds**:
+4. **Con Edison Panel Agenda & Use Cases**:
    - **`00 INTRO`**: Keynote Welcome & Opening Remarks (Clara)
-   - **`01 BILLING`**: Customer Operations & Generative Billing Agent 
+   - **`01 BILLING`**: Customer Operations & Generative Billing Agent (Customer Operations Team)
    - **`02 IDLING`**: Fleet Vehicle Idling Reduction AI (Fleet Modernization Team)
    - **`03 MANHOLE`**: Subsurface Manhole Safety & Acoustic Sensing (Subsurface Engineering Team)
-   - **`04 WEATHER`**: Severe Weather Modeling & Grid Resilience 
+   - **`04 WEATHER`**: Severe Weather Modeling & Grid Resilience (Electric Operations & Meteorology Team)
    - **`05 CLEAN HEAT`**: Customer Energy Solutions & Clean Heat AI (Clean Energy Solutions Team)
-   - **`06 Q&A`**: Interactive Audience & Panel Q&A (Clara powered by Gemini or GECX)
+   - **`06 Q&A`**: Interactive Audience & Panel Q&A (Clara powered by GECX Playbook)
 
 5. **Presenter Stage HUD & Hotkeys**:
    - **`Spacebar`**: Toggle Play / Pause speech.
@@ -41,62 +42,46 @@ The AI moderator, **Clara** (Candidate B persona: smart, youthful tech lead in C
 
 ---
 
-## 🏛️ Architecture: Gemini Direct vs. GECX Enterprise
+## 🏛️ Architecture: GECX Enterprise Integration
 
 ```
                ┌────────────────────────────────────────────────────────┐
                │          FRONTEND: 3D HOLOGRAPHIC AVATAR STAGE         │
                │  - Candidate B ("Clara") WebGL / Three.js Engine       │
                │  - Audio FFT Analyser -> ARKit Morph Viseme Lip-Sync   │
-               │  - Stage HUD, Topic Tracker, Dynamic Lower-Thirds       │
+               │  - Stage HUD, Highlighted GECX Indicator & Lower-Thirds│
                └───────────────────────────┬────────────────────────────┘
                                            │ Spoken / Text Input (Q&A)
                                            ▼
                ┌────────────────────────────────────────────────────────┐
                │               TIER 2: EXPRESS BACKEND (Cloud Run)      │
-               │  - /api/agenda : 5 Con Edison Use Cases & Speaker Bios │
+               │  - /api/agenda : 5 Con Edison Use Cases & Descriptions │
                │  - /api/tts    : Google Cloud TTS (en-US-Journey-F)    │
-               │  - /api/chat   : Conversational Routing                │
-               └───────────────┬────────────────────────┬───────────────┘
-                               │                        │
-         [Mode A: Gemini Direct]│                        │   [Mode B: GECX Enterprise]
-                               ▼                        ▼
-               ┌────────────────────────┐      ┌─────────────────────────────────┐
-               │   Direct Gemini API    │      │         GECX BACKEND            │
-               │   (gemini-3.6-flash)   │      │  (Dialogflow CX / Vertex Agents)│
-               │  - Fast Q&A prototyping│      │  - Multi-turn Playbooks         │
-               │  - server.js           │      │  - Grounded Vertex AI Search    │
-               └────────────────────────┘      │  - Enterprise Security & Tools  │
-                                               │  - server_gecx.js & gecx_service│
-                                               └─────────────────────────────────┘
+               │  - /api/chat   : GECX Dialogflow CX Sessions Router    │
+               └───────────────────────────┬────────────────────────────┘
+                                           │
+                                           │ [GECX Enterprise Routing]
+                                           ▼
+               ┌────────────────────────────────────────────────────────┐
+               │                      GECX BACKEND                      │
+               │            (Dialogflow CX / Vertex AI Agents)          │
+               │  - Clara - Tech Day Moderator Playbook                 │
+               │  - Session Management & Intent Resolution              │
+               │  - Grounded Vertex AI Search Data Stores               │
+               │  - Enterprise OpenAPI & Webhook Tools                  │
+               └────────────────────────────────────────────────────────┘
 ```
 
 ### Why GECX for Con Edison Enterprise?
 * **Enterprise Grounding**: GECX connects natively to Vertex AI Search data stores containing Con Edison internal documentation, operating procedures, and technical specifications.
-* **Stage Automation via Tools**: GECX Playbooks can emit custom payloads (e.g. `{ action: 'SHOW_LOWER_THIRD', speaker: '[TBD]' }`) enabling conversational triggers to steer slides and stage lighting directly.
-* **Direct Tie to Featured Use Case #1**: [TBD's] Generative Billing Agent is itself built on GECX, establishing a unified architectural showcase.
+* **Stage Automation via Tools**: GECX Playbooks can emit custom payloads enabling conversational triggers to steer slides and stage lighting directly.
+* **Direct Tie to Featured Use Case #1**: The Customer Operations Generative Billing Agent is itself built on GECX, establishing a unified architectural showcase.
 
 ---
 
-## How Knowledge Repositories Work in GECX
+## 🔍 How Knowledge Repositories Work in GECX
 
 In GECX (Google Enterprise Customer Experience / Dialogflow CX), conversational agents ground their responses through **Playbook Tools**. Rather than querying public search indiscriminately, GECX Playbooks orchestrate specialized tool connectors based on the user's intent:
-
-```
-                              ┌──────────────────────────────────────────────┐
-                              │     GECX Playbook ("Clara Moderator")        │
-                              └──────────────────────┬───────────────────────┘
-                                                     │ Tool Call
-                      ┌──────────────────────────────┼──────────────────────────────┐
-                      ▼                              ▼                              ▼
-          [Data Store Tool]                  [Web Grounding Tool]          [Webhook / API Tool]
-         (Vertex AI Search)                 (Enterprise Web Search)          (Con Ed REST APIs)
-                  │                                  │                              │
-         ┌────────┴────────┐                         │                              │
-         ▼                 ▼                         ▼                              ▼
-    GCS Bucket        BigQuery / FAQ           Public Google Search        Internal System / CRM
- (PDFs, PPTXs, Specs) (Structured Tables)     (Citations & Real-time)      (Live Grid / Outages)
-```
 
 ```mermaid
 flowchart TD
@@ -104,12 +89,12 @@ flowchart TD
     
     DataStore["Data Store Tool<br>(Vertex AI Search)"]
     WebGrounding["Web Grounding Tool<br>(Enterprise Web Search)"]
-    WebhookTool["Webhook / API Tool<br>(Con Ed REST APIs)"]
+    WebhookTool["Webhook / API Tool<br>(Con Edison REST APIs)"]
     
-    GCS["GCS Bucket<br>(PDFs, PPTXs, Specs)"]
+    GCS["GCS Bucket<br>(PDFs, Reports, Specs)"]
     BQ["BigQuery / FAQ<br>(Structured Tables)"]
-    GoogleSearch["Public Google Search<br>(Citations & Real-time)"]
-    CRM["Internal Systems / CRM<br>(Live Grid / Outages)"]
+    ConEdWeb["Official Con Edison Web<br>(coned.com/en)"]
+    GridTelemetry["Operational Systems<br>(Live Grid / Outages / Fleet)"]
 
     Playbook -->|"Tool Call"| DataStore
     Playbook -->|"Tool Call"| WebGrounding
@@ -117,8 +102,8 @@ flowchart TD
 
     DataStore --> GCS
     DataStore --> BQ
-    WebGrounding --> GoogleSearch
-    WebhookTool --> CRM
+    WebGrounding --> ConEdWeb
+    WebhookTool --> GridTelemetry
 
     classDef primary fill:#1a73e8,stroke:#1557b0,color:#ffffff,stroke-width:2px;
     classDef tool fill:#174ea6,stroke:#1a73e8,color:#ffffff;
@@ -126,22 +111,21 @@ flowchart TD
 
     class Playbook primary;
     class DataStore,WebGrounding,WebhookTool tool;
-    class GCS,BQ,GoogleSearch,CRM repo;
+    class GCS,BQ,ConEdWeb,GridTelemetry repo;
 ```
 
 ### Knowledge Grounding Capabilities:
 
 1. **Vertex AI Search Data Store (Private Enterprise Repository)**:
-   - Connects to private Google Cloud Storage (GCS) buckets containing Con Edison technical documentation, slide decks, talk tracks, and speaker bios.
-   - Extracts semantic embeddings and provides grounded citations with verifiable page numbers.
+   - Connects to private Google Cloud Storage (GCS) buckets containing Con Edison technical documentation, slide decks, talk tracks, and program guides.
+   - Extracts semantic embeddings and provides grounded citations with verifiable references.
    - Eliminates hallucination by constraining Clara's generative answers to official utility material.
 
-2. **Web Grounding Tool (Curated & Public Search)**:
-   - Connects to Google Search Grounding to pull real-time external facts, energy market updates, or regulatory rulings with web source links.
-   - Can also be constrained to authorized enterprise domains (e.g. `coned.com`, `nyiso.com`).
+2. **Web Grounding Tool (Curated Domain Search)**:
+   - Connects to authorized enterprise domains (e.g. `coned.com/en`) to pull real-time external facts, energy market updates, or regulatory filings with web source links.
 
 3. **Webhook / API Tools (Dynamic System Integration)**:
-   - Directly executes REST or gRPC calls to internal Con Edison APIs (e.g. OMS/outage management, billing calculation engines, or fleet telemetry) to retrieve live runtime state.
+   - Directly executes REST calls to operational telemetry endpoints (e.g. OMS/outage status, grid load MW, acoustic sensor health, or fleet telematics) to retrieve live runtime state.
 
 ---
 
@@ -152,15 +136,14 @@ flowchart TD
 ├── stage_controller.js      # Presentation state machine, Google Cloud TTS audio & hotkeys
 ├── index.html               # Main holographic stage broadcast interface
 ├── styles.css               # Con Edison glassmorphism HUD, lower-thirds & stage animations
-├── server.js                # Mode A: Express backend with Gemini Direct integration
-├── server_gecx.js           # Mode B: Express backend with native GECX integration
+├── server.js                # Express backend with native GECX Dialogflow CX integration
 ├── gecx_service.js          # GECX SDK client, session path builder & payload parser
 ├── test/
 │   └── test_gecx.js         # Comprehensive GECX test suite (8 tests)
 ├── package.json             # Node.js dependencies (@google-cloud/dialogflow-cx, etc.)
 ├── Dockerfile               # Production container definition for Cloud Run
 ├── public/
-│   ├── agenda.json          # Master talk tracks, use case metadata, speaker bios
+│   ├── agenda.json          # Master talk tracks, use case metadata, topic descriptions
 │   └── assets/avatars/
 │       ├── brunette.glb     # Selected Candidate B avatar (4.6 MB)
 │       └── avaturn.glb      # Alternate candidate avatar
@@ -176,26 +159,21 @@ flowchart TD
 - Node.js 18+
 - Google Cloud authentication (`gcloud auth application-default login`)
 
-### 1. Run with Direct Gemini (Default)
+### 1. Run with GECX Backend
 ```bash
 npm install
+
+# Optional environment overrides
+export GCP_PROJECT_ID="pradeep-demo-1"
+export GECX_LOCATION="us-central1"
+export GECX_AGENT_ID="668bd4db-b76d-4f1b-be6b-8e290bb741bd"
+
 npm start
-# Server starts on http://localhost:8080 using server.js
+# Server starts on http://localhost:8080 using server.js with GECX integration
 ```
 
-### 2. Run with Native GECX Backend
-```bash
-# Optional environment overrides 
-export GCP_PROJECT_ID=""
-export GECX_LOCATION=""
-export GECX_AGENT_ID=""
-
-npm run start:gecx
-# Server starts on http://localhost:8080 using server_gecx.js
-```
-
-### 3. Verify Connected GECX Agent Info
-When running in GECX mode, you can inspect the connected agent metadata via:
+### 2. Verify Connected GECX Agent Info
+When running, you can inspect the connected agent metadata via:
 ```bash
 curl http://localhost:8080/api/gecx/agent
 ```
@@ -210,7 +188,7 @@ The repository includes a dedicated test suite validating GECX service initializ
 npm test
 ```
 
-### Test Suite Coverage (9 Tests):
+### Test Suite Coverage:
 1. `GECXService initializes with default project and location`
 2. `GECXService properly formats regional API endpoints (global, us-central1, us-east1)`
 3. `formatSessionPath generates canonical CX resource string`
@@ -218,32 +196,21 @@ npm test
 5. `detectIntent rejects invalid or empty utterances`
 6. `parseResponse extracts and sanitizes spoken text messages`
 7. `parseResponse extracts custom stage actions and metadata payloads`
-8. `Live Con Edison Moderator Agent `
-9. `Live Panel Topic Query: {TBD}`
+8. `Live Con Edison Moderator Agent connectivity and intent resolution`
+9. `Live Panel Topic Query resolution via GECX Playbook`
 
 ---
 
 ## ☁️ Cloud Run Deployment
 
-To deploy either backend to Google Cloud Run:
+To deploy the service to Google Cloud Run:
 
 ```bash
-# Deploy Mode A (Gemini Direct)
 gcloud run deploy coned-tech-day \
   --source . \
   --region us-central1 \
   --allow-unauthenticated \
-  --project {GCP_Project_Id} \
-  --memory 1Gi \
-  --cpu 1
-
-# Or deploy Mode B (GECX Enterprise)
-gcloud run deploy coned-tech-day-gecx \
-  --source . \
-  --region us-central1 \
-  --allow-unauthenticated \
-  --project {GCP_Project_Id} \
-  --set-env-vars DEFAULT_SERVER=server_gecx.js,GECX_LOCATION=us-central1,GECX_AGENT_ID={GECX_AGENT_Id} \
+  --project pradeep-demo-1 \
   --memory 1Gi \
   --cpu 1
 ```

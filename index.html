@@ -75,11 +75,21 @@
           </div>
         </div>
 
-        <!-- Ask Clara a question about Conedison Section -->
+        <!-- Ask Clara a question about Con Edison Section -->
         <div class="chat-card">
           <div class="chat-header">
-            <span class="chat-label">INTERACTIVE INQUIRY</span>
-            <span class="chat-sub">Ask Clara anything about Con Edison AI initiatives</span>
+            <div class="chat-header-title">
+              <span class="chat-label">INTERACTIVE INQUIRY</span>
+              <span class="chat-sub">Ask Clara anything about Con Edison AI initiatives</span>
+            </div>
+            <div class="backend-selector" id="backend-selector" role="group" aria-label="AI Intelligence Backend">
+              <button type="button" class="backend-pill active" data-backend="gecx" id="btn-backend-gecx" title="Route queries to Con Edison GECX Playbook & Workflow">
+                <span class="pill-dot"></span>GECX Playbook
+              </button>
+              <button type="button" class="backend-pill" data-backend="gemini" id="btn-backend-gemini" title="Route queries to Google Gemini 3.6 Flash">
+                <span class="pill-dot"></span>Gemini 3.6
+              </button>
+            </div>
           </div>
 
           <form id="chat-form" class="chat-form" action="javascript:void(0);" autocomplete="off">
@@ -87,9 +97,9 @@
               <input
                 id="chat-input"
                 type="text"
-                placeholder="Ask Clara a question about Conedison..."
+                placeholder="Ask Clara a question about Con Edison..."
                 autocomplete="off"
-                aria-label="Ask Clara a question about Conedison"
+                aria-label="Ask Clara a question about Con Edison..."
               />
               <button id="mic-btn" type="button" class="mic-btn" title="Voice Input [M]">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -128,8 +138,8 @@
   </div>
 
   <!-- Stage Engine & Logic -->
-  <script src="avatar_stage.js?v=202610_redesign"></script>
-  <script src="stage_controller.js?v=202610_redesign"></script>
+  <script src="avatar_stage.js?v=202610_gecx_dual"></script>
+  <script src="stage_controller.js?v=202610_gecx_dual"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       // 1. Initialize Three.js Avatar Stage inside left panel
@@ -143,6 +153,22 @@
       document.getElementById('prev-btn').addEventListener('click', () => controller.prevTopic());
       document.getElementById('next-btn').addEventListener('click', () => controller.nextTopic());
       document.getElementById('mic-btn').addEventListener('click', () => controller.toggleMicrophone());
+
+      // Backend selector toggle handling
+      const btnGecx = document.getElementById('btn-backend-gecx');
+      const btnGemini = document.getElementById('btn-backend-gemini');
+      if (btnGecx && btnGemini) {
+        btnGecx.addEventListener('click', () => {
+          btnGecx.classList.add('active');
+          btnGemini.classList.remove('active');
+          controller.setBackend('gecx');
+        });
+        btnGemini.addEventListener('click', () => {
+          btnGemini.classList.add('active');
+          btnGecx.classList.remove('active');
+          controller.setBackend('gemini');
+        });
+      }
 
       // Chat input form submission
       const chatForm = document.getElementById('chat-form');

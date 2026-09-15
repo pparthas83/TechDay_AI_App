@@ -12,6 +12,7 @@ class StageController {
     this.isPlaying = false;
     this.isListening = false;
     this.speechRecognition = null;
+    this.selectedBackend = 'gecx';
 
     // UI Elements
     this.subtitleBox = document.getElementById('subtitle-box');
@@ -279,22 +280,33 @@ class StageController {
     window.speechSynthesis.speak(utterance);
   }
 
+  setBackend(backend) {
+    this.selectedBackend = backend;
+    console.log('[Controller] Switched intelligence backend to:', this.selectedBackend);
+  }
+
   async askGemini(promptText) {
     try {
-      this.setSubtitle('Clara is thinking...', 'thinking');
+      const backendLabel = this.selectedBackend === 'gecx' ? 'GECX Playbook' : 'Gemini 3.6';
+      this.setSubtitle(`Clara is consulting ${backendLabel}...`, 'thinking');
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: promptText })
+        body: JSON.stringify({
+          prompt: promptText,
+          backend: this.selectedBackend || 'gecx'
+        })
       });
 
       const data = await res.json();
       if (data.reply) {
         this.setSubtitle(data.reply, 'speaking');
         await this.speakText(data.reply);
+      } else if (data.error) {
+        throw new Error(data.error);
       }
     } catch (err) {
-      console.error('[Gemini] Chat error:', err);
+      console.error('[AI Chat] Query error:', err);
       this.setSubtitle('I apologize, I could not complete that query right now.', 'error');
     }
   }

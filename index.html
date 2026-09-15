@@ -82,13 +82,10 @@
               <span class="chat-label">INTERACTIVE INQUIRY</span>
               <span class="chat-sub">Ask Clara anything about Con Edison AI initiatives</span>
             </div>
-            <div class="backend-selector" id="backend-selector" role="group" aria-label="AI Intelligence Backend">
-              <button type="button" class="backend-pill active" data-backend="gecx" id="btn-backend-gecx" title="Route queries to Con Edison GECX Playbook & Workflow">
+            <div class="backend-selector" id="backend-selector" role="status" aria-label="AI Intelligence Engine">
+              <div class="backend-pill active" id="btn-backend-gecx" title="Direct Integration: Con Edison GECX Playbook & Workflow">
                 <span class="pill-dot"></span>GECX Playbook
-              </button>
-              <button type="button" class="backend-pill" data-backend="gemini" id="btn-backend-gemini" title="Route queries to Google Gemini 3.6 Flash">
-                <span class="pill-dot"></span>Gemini 3.6
-              </button>
+              </div>
             </div>
           </div>
 
@@ -138,8 +135,8 @@
   </div>
 
   <!-- Stage Engine & Logic -->
-  <script src="avatar_stage.js?v=202610_gecx_dual"></script>
-  <script src="stage_controller.js?v=202610_gecx_dual"></script>
+  <script src="avatar_stage.js?v=202610_gecx_exclusive"></script>
+  <script src="stage_controller.js?v=202610_gecx_exclusive"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       // 1. Initialize Three.js Avatar Stage inside left panel
@@ -154,21 +151,8 @@
       document.getElementById('next-btn').addEventListener('click', () => controller.nextTopic());
       document.getElementById('mic-btn').addEventListener('click', () => controller.toggleMicrophone());
 
-      // Backend selector toggle handling
-      const btnGecx = document.getElementById('btn-backend-gecx');
-      const btnGemini = document.getElementById('btn-backend-gemini');
-      if (btnGecx && btnGemini) {
-        btnGecx.addEventListener('click', () => {
-          btnGecx.classList.add('active');
-          btnGemini.classList.remove('active');
-          controller.setBackend('gecx');
-        });
-        btnGemini.addEventListener('click', () => {
-          btnGemini.classList.add('active');
-          btnGecx.classList.remove('active');
-          controller.setBackend('gemini');
-        });
-      }
+      // Enforce GECX Playbook backend
+      controller.setBackend('gecx');
 
       // Chat input form submission
       const chatForm = document.getElementById('chat-form');

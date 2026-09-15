@@ -281,20 +281,19 @@ class StageController {
   }
 
   setBackend(backend) {
-    this.selectedBackend = backend;
-    console.log('[Controller] Switched intelligence backend to:', this.selectedBackend);
+    this.selectedBackend = 'gecx';
+    console.log('[Controller] Intelligence backend set to:', this.selectedBackend);
   }
 
   async askGemini(promptText) {
     try {
-      const backendLabel = this.selectedBackend === 'gecx' ? 'GECX Playbook' : 'Gemini 3.6';
-      this.setSubtitle(`Clara is consulting ${backendLabel}...`, 'thinking');
+      this.setSubtitle('Clara is consulting GECX Playbook...', 'thinking');
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           prompt: promptText,
-          backend: this.selectedBackend || 'gecx'
+          backend: 'gecx'
         })
       });
 
@@ -306,7 +305,7 @@ class StageController {
         throw new Error(data.error);
       }
     } catch (err) {
-      console.error('[AI Chat] Query error:', err);
+      console.error('[GECX Chat] Query error:', err);
       this.setSubtitle('I apologize, I could not complete that query right now.', 'error');
     }
   }

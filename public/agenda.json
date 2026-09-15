@@ -12,6 +12,7 @@
       "id": "intro",
       "number": 0,
       "title": "Welcome & Opening Remarks",
+      "audio": "/assets/audio/topic_0.mp3",
       "speaker": {
         "name": "Clara",
         "title": "Con Edison AI Moderator",
@@ -24,6 +25,7 @@
       "id": "billing",
       "number": 1,
       "title": "Customer Operations & Generative Billing Agent",
+      "audio": "/assets/audio/topic_1.mp3",
       "speaker": {
         "name": "Patrick Hooper",
         "title": "Director of Customer Operations",
@@ -36,6 +38,7 @@
       "id": "idling",
       "number": 2,
       "title": "Fleet Vehicle Idling Reduction AI",
+      "audio": "/assets/audio/topic_2.mp3",
       "speaker": {
         "name": "Fleet Modernization Team",
         "title": "Operations & Logistics Leads",
@@ -48,6 +51,7 @@
       "id": "manhole",
       "number": 3,
       "title": "Subsurface Manhole Safety & Predictive Acoustics",
+      "audio": "/assets/audio/topic_3.mp3",
       "speaker": {
         "name": "Subsurface Engineering Team",
         "title": "Electric Operations & Grid Safety",
@@ -60,6 +64,7 @@
       "id": "weather",
       "number": 4,
       "title": "Severe Weather Modeling & Grid Resilience",
+      "audio": "/assets/audio/topic_4.mp3",
       "speaker": {
         "name": "Tom Langlois",
         "title": "Senior Meteorologist & Data Analytics Lead",
@@ -72,6 +77,7 @@
       "id": "energy_solutions",
       "number": 5,
       "title": "Customer Energy Solutions & Clean Heat AI",
+      "audio": "/assets/audio/topic_5.mp3",
       "speaker": {
         "name": "Clean Energy Solutions Team",
         "title": "Decarbonization & Clean Heat Specialists",
@@ -84,6 +90,7 @@
       "id": "qa",
       "number": 6,
       "title": "Audience & Panel Q&A",
+      "audio": "/assets/audio/topic_6.mp3",
       "speaker": {
         "name": "Clara",
         "title": "Con Edison AI Moderator",

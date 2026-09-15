@@ -8,6 +8,7 @@ class StageController {
     this.agenda = null;
     this.currentIndex = 0;
     this.audioElement = new Audio();
+    this.preloadedAudio = new Map();
     this.isPlaying = false;
     this.isListening = false;
     this.speechRecognition = null;
@@ -118,6 +119,7 @@ class StageController {
       this.agenda = await res.json();
       console.log('[Agenda] Loaded:', this.agenda.use_cases.length, 'topics');
       this.renderAgendaNav();
+      this.preloadAgendaAudio();
 
       // Check URL hash (e.g. #billing, #weather, #manhole)
       let initialIdx = 0;
@@ -130,6 +132,19 @@ class StageController {
     } catch (e) {
       console.error('[Agenda] Failed to load agenda:', e);
     }
+  }
+
+  preloadAgendaAudio() {
+    if (!this.agenda || !this.agenda.use_cases) return;
+    this.agenda.use_cases.forEach((topic) => {
+      if (topic.audio) {
+        const audio = new Audio();
+        audio.preload = 'auto';
+        audio.src = topic.audio;
+        this.preloadedAudio.set(topic.number, audio);
+      }
+    });
+    console.log('[Audio] Preloaded', this.preloadedAudio.size, 'agenda audio tracks for instant playback.');
   }
 
   renderAgendaNav() {
@@ -181,9 +196,32 @@ class StageController {
     // Update Teleprompter Subtitle
     this.setSubtitle(topic.script, 'script');
 
-    // Synthesize & play speech
+    // Instant playback from pre-generated audio or live TTS
     if (autoPlay) {
-      await this.speakText(topic.script);
+      if (topic.audio) {
+        await this.playAudioUrl(topic.audio, topic.script);
+      } else {
+        await this.speakText(topic.script);
+      }
+    }
+  }
+
+  async playAudioUrl(audioUrl, text) {
+    if (this.isPlaying) {
+      this.audioElement.pause();
+    }
+
+    try {
+      this.setSubtitle(text, 'speaking');
+      const fullUrl = audioUrl.startsWith('http') ? audioUrl : window.location.origin + audioUrl;
+      if (this.audioElement.src !== fullUrl) {
+        this.audioElement.src = fullUrl;
+      }
+      this.audioElement.currentTime = 0;
+      await this.audioElement.play();
+    } catch (err) {
+      console.warn('[Audio] playAudioUrl direct play failed, falling back to TTS:', err.message);
+      this.speakText(text);
     }
   }
 
@@ -268,7 +306,14 @@ class StageController {
       if (window.speechSynthesis) window.speechSynthesis.cancel();
     } else {
       const topic = this.agenda.use_cases[this.currentIndex];
-      if (topic) this.speakText(topic.script);
+      // If paused mid-track on the same topic, resume instantly
+      if (this.audioElement.src && !this.audioElement.ended && this.audioElement.currentTime > 0) {
+        this.audioElement.play().catch(e => console.warn(e));
+      } else if (topic && topic.audio) {
+        this.playAudioUrl(topic.audio, topic.script);
+      } else if (topic) {
+        this.speakText(topic.script);
+      }
     }
   }
 

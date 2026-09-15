@@ -22,6 +22,26 @@ try {
 // In-memory audio cache for synthesized phrases
 const audioCache = new Map();
 
+// Pre-warm audioCache with static agenda topic files
+try {
+  const agendaPath = path.join(__dirname, 'public', 'agenda.json');
+  if (fs.existsSync(agendaPath)) {
+    const agendaData = JSON.parse(fs.readFileSync(agendaPath, 'utf8'));
+    agendaData.use_cases.forEach((topic) => {
+      const audioFilePath = path.join(__dirname, 'public', 'assets', 'audio', `topic_${topic.number}.mp3`);
+      if (fs.existsSync(audioFilePath)) {
+        const buf = fs.readFileSync(audioFilePath);
+        const cleanText = topic.script.replace(/[\*\_`#]/g, '').trim();
+        const cacheKey = crypto.createHash('md5').update(`en-US-Journey-F_1.02_${cleanText}`).digest('hex');
+        audioCache.set(cacheKey, buf);
+      }
+    });
+    console.log(`[Cache] Pre-warmed audioCache with ${audioCache.size} topic audio tracks.`);
+  }
+} catch (e) {
+  console.warn('[Cache] Could not pre-warm audioCache:', e.message);
+}
+
 app.use(express.json());
 
 // Set Cache-Control headers to prevent stale UI caching
@@ -38,6 +58,8 @@ app.use(express.static(path.join(__dirname), {
   index: defaultIndex,
   maxAge: 0
 }));
+app.use('/assets', express.static(path.join(__dirname, 'public', 'assets')));
+app.use('/public', express.static(path.join(__dirname, 'public')));
 
 app.get('/babylon', (req, res) => {
   res.sendFile(path.join(__dirname, 'babylon_hologram.html'));

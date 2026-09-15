@@ -13,12 +13,20 @@ class AvatarStageEngine {
     this.visemes = {
       viseme_aa: 0,
       viseme_O: 0,
+      viseme_U: 0,
       viseme_E: 0,
       viseme_I: 0,
       viseme_PP: 0,
-      viseme_SS: 0,
+      viseme_FF: 0,
       viseme_TH: 0,
+      viseme_SS: 0,
+      viseme_CH: 0,
+      mouthFunnel: 0,
+      mouthPucker: 0,
+      mouthStretchLeft: 0,
+      mouthStretchRight: 0,
       mouthSmile: 0.22, // Warm, cheerful resting smile
+      browInnerUp: 0,
       eyeBlinkLeft: 0,
       eyeBlinkRight: 0
     };
@@ -155,7 +163,7 @@ class AvatarStageEngine {
       if (!this.analyser) {
         this.analyser = this.audioContext.createAnalyser();
         this.analyser.fftSize = 256;
-        this.analyser.smoothingTimeConstant = 0.45;
+        this.analyser.smoothingTimeConstant = 0.12; // Instant attack response without lag
         this.dataArray = new Uint8Array(this.analyser.frequencyBinCount);
       }
 
@@ -189,52 +197,103 @@ class AvatarStageEngine {
   processAudioLipSync() {
     if (!this.analyser || !this.isSpeaking) {
       // Smoothly return to resting mouth shape
-      this.targetVisemes.viseme_aa = 0;
-      this.targetVisemes.viseme_O = 0;
-      this.targetVisemes.viseme_E = 0;
-      this.targetVisemes.viseme_I = 0;
-      this.targetVisemes.viseme_PP = 0;
-      this.targetVisemes.viseme_SS = 0;
-      this.targetVisemes.mouthSmile = 0.25;
+      for (const key in this.targetVisemes) {
+        if (key === 'mouthSmile') {
+          this.targetVisemes[key] = 0.22;
+        } else if (key !== 'eyeBlinkLeft' && key !== 'eyeBlinkRight') {
+          this.targetVisemes[key] = 0;
+        }
+      }
       return;
     }
 
     this.analyser.getByteFrequencyData(this.dataArray);
 
-    // Calculate energy across frequency bands
-    // Vowels (Low-mid: 200-800Hz bins ~2 to 8)
+    // Fine-grained acoustic frequency bands
+    // 1. Low energy / F1 (jaw drop & open vowel resonance: ~150-750Hz, bins 2-7)
     let lowEnergy = 0;
-    for (let i = 2; i <= 8; i++) lowEnergy += this.dataArray[i];
-    lowEnergy = (lowEnergy / 7) / 255;
+    for (let i = 2; i <= 7; i++) lowEnergy += this.dataArray[i];
+    lowEnergy = (lowEnergy / 6) / 255;
 
-    // Mid energy (800-2500Hz bins ~9 to 24)
+    // 2. Mid energy / F2 (front spread vs back rounded vowels: ~800-2400Hz, bins 8-22)
     let midEnergy = 0;
-    for (let i = 9; i <= 24; i++) midEnergy += this.dataArray[i];
-    midEnergy = (midEnergy / 16) / 255;
+    for (let i = 8; i <= 22; i++) midEnergy += this.dataArray[i];
+    midEnergy = (midEnergy / 15) / 255;
 
-    // High energy (sibilants/consonants bins ~25 to 50)
+    // 3. High energy / F3 & consonants (~2500-5500Hz, bins 23-50)
     let highEnergy = 0;
-    for (let i = 25; i <= 50; i++) highEnergy += this.dataArray[i];
-    highEnergy = (highEnergy / 26) / 255;
+    for (let i = 23; i <= 50; i++) highEnergy += this.dataArray[i];
+    highEnergy = (highEnergy / 28) / 255;
 
-    const totalVolume = (lowEnergy * 0.5 + midEnergy * 0.35 + highEnergy * 0.15);
+    // Total perceived speech volume
+    const speechVolume = lowEnergy * 0.45 + midEnergy * 0.35 + highEnergy * 0.20;
 
-    if (totalVolume > 0.08) {
-      // Vowel articulation
-      this.targetVisemes.viseme_aa = Math.min(1.0, lowEnergy * 1.6);
-      this.targetVisemes.viseme_O = Math.min(0.9, (lowEnergy * 0.7 + midEnergy * 0.3) * 1.3);
-      this.targetVisemes.viseme_E = Math.min(0.8, midEnergy * 1.4);
-      this.targetVisemes.viseme_I = Math.min(0.7, (midEnergy * 0.5 + highEnergy * 0.5) * 1.2);
-      this.targetVisemes.viseme_SS = Math.min(0.8, highEnergy * 1.5);
-      this.targetVisemes.mouthSmile = 0.25 + lowEnergy * 0.2;
-    } else {
-      this.targetVisemes.viseme_aa = 0;
-      this.targetVisemes.viseme_O = 0;
-      this.targetVisemes.viseme_E = 0;
-      this.targetVisemes.viseme_I = 0;
-      this.targetVisemes.viseme_SS = 0;
-      this.targetVisemes.mouthSmile = 0.25;
+    if (speechVolume < 0.05) {
+      // Inter-syllable silence or pause - relax face
+      for (const key in this.targetVisemes) {
+        if (key === 'mouthSmile') {
+          this.targetVisemes[key] = 0.22;
+        } else if (key !== 'eyeBlinkLeft' && key !== 'eyeBlinkRight') {
+          this.targetVisemes[key] = 0;
+        }
+      }
+      return;
     }
+
+    // Determine acoustic formant ratios
+    const f2Ratio = midEnergy / (lowEnergy + 0.01);
+    const f3Ratio = highEnergy / (midEnergy + 0.01);
+
+    let openJaw = 0;
+    let roundMouth = 0;
+    let tightRound = 0;
+    let spreadMouth = 0;
+    let sibilant = 0;
+    let fricative = 0;
+
+    if (f3Ratio > 1.25 && highEnergy > 0.16) {
+      // High frequency consonants / sibilants ('S', 'Z', 'CH', 'T') -> teeth close, lips spread
+      sibilant = Math.min(0.85, highEnergy * 1.5);
+      fricative = Math.min(0.6, highEnergy * 1.2);
+      openJaw = Math.min(0.18, lowEnergy * 0.4);
+      spreadMouth = Math.min(0.4, highEnergy * 0.8);
+    } else if (f2Ratio > 1.15) {
+      // Front spread vowels ('EE', 'IH', 'EH', 'AY') -> wide horizontal lip stretch
+      spreadMouth = Math.min(0.85, midEnergy * 1.6);
+      openJaw = Math.min(0.4, lowEnergy * 0.7);
+    } else if (f2Ratio < 0.75 && lowEnergy > 0.14) {
+      // Back rounded vowels ('OH', 'OO', 'W', 'AW') -> lips funnel forward into an 'O'
+      roundMouth = Math.min(0.85, lowEnergy * 1.5);
+      tightRound = Math.min(0.65, lowEnergy * 1.2);
+      openJaw = Math.min(0.35, lowEnergy * 0.6);
+    } else {
+      // Open / central vowels ('AA', 'AH', 'UH') -> vertical openness
+      openJaw = Math.min(0.85, lowEnergy * 1.4);
+      roundMouth = Math.min(0.3, lowEnergy * 0.5);
+    }
+
+    // Assign to morph targets
+    this.targetVisemes.viseme_aa = openJaw;
+    this.targetVisemes.viseme_O = roundMouth;
+    this.targetVisemes.viseme_U = tightRound;
+    this.targetVisemes.viseme_E = spreadMouth * 0.8;
+    this.targetVisemes.viseme_I = spreadMouth;
+    this.targetVisemes.viseme_SS = sibilant;
+    this.targetVisemes.viseme_CH = fricative * 0.7;
+    this.targetVisemes.viseme_TH = fricative * 0.4;
+    this.targetVisemes.viseme_FF = fricative * 0.5;
+
+    // Organic 3D lip shaping blendshapes
+    this.targetVisemes.mouthFunnel = roundMouth * 0.75;
+    this.targetVisemes.mouthPucker = tightRound * 0.65;
+    this.targetVisemes.mouthStretchLeft = spreadMouth * 0.75;
+    this.targetVisemes.mouthStretchRight = spreadMouth * 0.75;
+
+    // Pleasant conversational smile dynamic
+    this.targetVisemes.mouthSmile = 0.22 + spreadMouth * 0.25;
+
+    // Expressive eyebrow gesture on vocal emphasis peaks
+    this.targetVisemes.browInnerUp = speechVolume > 0.38 ? Math.min(0.4, (speechVolume - 0.38) * 1.2) : 0;
   }
 
   updateBlinking(delta) {
@@ -279,10 +338,11 @@ class AvatarStageEngine {
 
     const microTilt = Math.sin(time * 0.8) * 0.02;
     const microYaw = Math.cos(time * 0.6) * 0.02;
+    const speechNod = this.isSpeaking ? Math.sin(time * 3.2) * 0.014 : 0;
 
     if (this.headBone) {
       this.headBone.rotation.y = this.mouse.x * 0.18 + microYaw;
-      this.headBone.rotation.x = -this.mouse.y * 0.12 + breath * 0.5;
+      this.headBone.rotation.x = -this.mouse.y * 0.12 + breath * 0.5 + speechNod;
       this.headBone.rotation.z = -this.mouse.x * 0.06 + microTilt;
     }
   }
@@ -309,10 +369,13 @@ class AvatarStageEngine {
     // 1. Process audio lip-sync
     this.processAudioLipSync();
 
-    // 2. Smoothly interpolate all visemes
-    const lerpSpeed = 0.35;
+    // 2. Smoothly interpolate all visemes with fast attack & natural release
     for (const key in this.targetVisemes) {
-      this.visemes[key] += (this.targetVisemes[key] - this.visemes[key]) * lerpSpeed;
+      const target = this.targetVisemes[key];
+      const current = this.visemes[key] || 0;
+      // Fast attack (0.65) opens mouth instantaneously with speech consonants/vowels; release (0.28) is smooth
+      const lerpSpeed = target > current ? 0.65 : 0.28;
+      this.visemes[key] += (target - current) * lerpSpeed;
       if (key !== 'eyeBlinkLeft' && key !== 'eyeBlinkRight') {
         this.updateMorphTarget(key, this.visemes[key]);
       }

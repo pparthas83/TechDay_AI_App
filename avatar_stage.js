@@ -8,27 +8,29 @@ class AvatarStageEngine {
     this.container = document.getElementById(containerId);
     this.modelPath = '/public/assets/avatars/brunette.glb';
     
-    // Morph Target references
+    // Morph Target references (Apple ARKit blendshape standard)
     this.morphMeshes = [];
     this.visemes = {
-      viseme_aa: 0,
-      viseme_O: 0,
-      viseme_U: 0,
-      viseme_E: 0,
-      viseme_I: 0,
-      viseme_PP: 0,
-      viseme_FF: 0,
-      viseme_TH: 0,
-      viseme_SS: 0,
-      viseme_CH: 0,
+      jawOpen: 0,
+      mouthOpen: 0,
+      mouthClose: 0.05,
       mouthFunnel: 0,
       mouthPucker: 0,
       mouthStretchLeft: 0,
       mouthStretchRight: 0,
-      mouthSmile: 0.22, // Warm, cheerful resting smile
+      mouthSmileLeft: 0.22,
+      mouthSmileRight: 0.22,
+      mouthPressLeft: 0,
+      mouthPressRight: 0,
+      cheekSquintLeft: 0.08,
+      cheekSquintRight: 0.08,
       browInnerUp: 0,
       eyeBlinkLeft: 0,
-      eyeBlinkRight: 0
+      eyeBlinkRight: 0,
+      eyeLookInLeft: 0,
+      eyeLookOutRight: 0,
+      eyeLookOutLeft: 0,
+      eyeLookInRight: 0
     };
     this.targetVisemes = { ...this.visemes };
 
@@ -37,20 +39,23 @@ class AvatarStageEngine {
     this.headBone = null;
     this.spineBone = null;
 
-    // Audio Analysis
+    // Audio Analysis & Kinematic Smoothing
     this.audioContext = null;
     this.analyser = null;
     this.audioSource = null;
     this.dataArray = null;
     this.isSpeaking = false;
+    this.smoothedVolume = 0;
 
-    // Animation & timing
+    // Animation, Gaze & Blinking timing
     this.clock = new THREE.Clock();
     this.blinkTimer = 0;
     this.nextBlinkInterval = 3.5;
     this.isBlinking = false;
     this.blinkDuration = 0.16;
     this.blinkElapsed = 0;
+    this.saccadeTimer = 0;
+    this.nextSaccadeInterval = 2.8;
 
     // Mouse tracking
     this.mouse = { x: 0, y: 0, targetX: 0, targetY: 0 };
@@ -84,22 +89,22 @@ class AvatarStageEngine {
     this.container.appendChild(this.renderer.domElement);
 
     // Studio Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.85);
     this.scene.add(ambientLight);
 
-    // Front Key Light
-    this.keyLight = new THREE.DirectionalLight(0xffffff, 1.5);
-    this.keyLight.position.set(0.6, 2.0, 2.0);
+    // Front Warm Key Light (Soft, flattering facial definition)
+    this.keyLight = new THREE.DirectionalLight(0xfff6ec, 1.4);
+    this.keyLight.position.set(0.5, 1.8, 1.8);
     this.scene.add(this.keyLight);
 
-    // Cool Con Edison Fill Light
-    this.fillLight = new THREE.DirectionalLight(0x00d2ff, 1.1);
-    this.fillLight.position.set(-1.8, 1.2, 1.0);
+    // Cool Con Edison Fill Light (Cyber/Utility cyan)
+    this.fillLight = new THREE.DirectionalLight(0x00d2ff, 1.0);
+    this.fillLight.position.set(-1.6, 1.1, 1.0);
     this.scene.add(this.fillLight);
 
-    // Stage Backlight / Rim Light (Cyan/Electric Blue)
-    this.rimLight = new THREE.DirectionalLight(0x00ffff, 1.6);
-    this.rimLight.position.set(0, 2.5, -2.0);
+    // Stage Backlight / Rim Light (Vibrant cyan silhouette for depth separation)
+    this.rimLight = new THREE.DirectionalLight(0x00e5ff, 1.8);
+    this.rimLight.position.set(0, 2.2, -1.8);
     this.scene.add(this.rimLight);
   }
 
@@ -133,8 +138,12 @@ class AvatarStageEngine {
           }
         });
 
-        // Apply initial pleasant smile
-        this.updateMorphTarget('mouthSmile', 0.25);
+        // Initialize resting face & cheerful baseline smile
+        this.setVisemesToRest();
+        this.updateMorphTarget('mouthSmileLeft', 0.22);
+        this.updateMorphTarget('mouthSmileRight', 0.22);
+        this.updateMorphTarget('mouthSmile', 0.22);
+        this.updateMorphTarget('mouthClose', 0.05);
         this.scene.add(this.avatar);
 
         if (this.onLoaded) this.onLoaded();
@@ -179,121 +188,104 @@ class AvatarStageEngine {
   }
 
   updateMorphTarget(name, value) {
-    this.morphMeshes.forEach(({ dict, influences }) => {
-      // Direct match
+    for (let i = 0; i < this.morphMeshes.length; i++) {
+      const { dict, influences } = this.morphMeshes[i];
       if (dict[name] !== undefined) {
         influences[dict[name]] = value;
       }
-      // ARKit left/right variants
-      if (dict[`${name}Left`] !== undefined) {
-        influences[dict[`${name}Left`]] = value;
-      }
-      if (dict[`${name}Right`] !== undefined) {
-        influences[dict[`${name}Right`]] = value;
-      }
-    });
+    }
+  }
+
+  setVisemesToRest() {
+    this.targetVisemes.jawOpen = 0;
+    this.targetVisemes.mouthOpen = 0;
+    this.targetVisemes.mouthClose = 0.05; // Gentle resting lip seal
+    this.targetVisemes.mouthFunnel = 0;
+    this.targetVisemes.mouthPucker = 0;
+    this.targetVisemes.mouthStretchLeft = 0;
+    this.targetVisemes.mouthStretchRight = 0;
+    this.targetVisemes.mouthSmileLeft = 0.22;
+    this.targetVisemes.mouthSmileRight = 0.22;
+    this.targetVisemes.mouthSmile = 0.22;
+    this.targetVisemes.mouthPressLeft = 0;
+    this.targetVisemes.mouthPressRight = 0;
+    this.targetVisemes.cheekSquintLeft = 0.08;
+    this.targetVisemes.cheekSquintRight = 0.08;
+    this.targetVisemes.browInnerUp = 0;
   }
 
   processAudioLipSync() {
     if (!this.analyser || !this.isSpeaking) {
-      // Smoothly return to resting mouth shape
-      for (const key in this.targetVisemes) {
-        if (key === 'mouthSmile') {
-          this.targetVisemes[key] = 0.22;
-        } else if (key !== 'eyeBlinkLeft' && key !== 'eyeBlinkRight') {
-          this.targetVisemes[key] = 0;
-        }
-      }
+      this.smoothedVolume = 0;
+      this.setVisemesToRest();
       return;
     }
 
     this.analyser.getByteFrequencyData(this.dataArray);
 
-    // Fine-grained acoustic frequency bands
-    // 1. Low energy / F1 (jaw drop & open vowel resonance: ~150-750Hz, bins 2-7)
-    let lowEnergy = 0;
-    for (let i = 2; i <= 7; i++) lowEnergy += this.dataArray[i];
-    lowEnergy = (lowEnergy / 6) / 255;
+    // 1. RMS Perceived Audio Volume across speech frequencies (bins 1 to 48 ~ 150Hz to 8500Hz)
+    let sumSquares = 0;
+    for (let i = 1; i <= 48; i++) {
+      const v = this.dataArray[i] / 255;
+      sumSquares += v * v;
+    }
+    const rawVolume = Math.sqrt(sumSquares / 48);
 
-    // 2. Mid energy / F2 (front spread vs back rounded vowels: ~800-2400Hz, bins 8-22)
-    let midEnergy = 0;
-    for (let i = 8; i <= 22; i++) midEnergy += this.dataArray[i];
-    midEnergy = (midEnergy / 15) / 255;
+    // 2. Asymmetric Envelope Follower: Fast attack (0.60) for instant speech attack, smooth decay (0.22)
+    const attackRate = rawVolume > this.smoothedVolume ? 0.60 : 0.22;
+    this.smoothedVolume += (rawVolume - this.smoothedVolume) * attackRate;
 
-    // 3. High energy / F3 & consonants (~2500-5500Hz, bins 23-50)
-    let highEnergy = 0;
-    for (let i = 23; i <= 50; i++) highEnergy += this.dataArray[i];
-    highEnergy = (highEnergy / 28) / 255;
-
-    // Total perceived speech volume
-    const speechVolume = lowEnergy * 0.45 + midEnergy * 0.35 + highEnergy * 0.20;
-
-    if (speechVolume < 0.05) {
-      // Inter-syllable silence or pause - relax face
-      for (const key in this.targetVisemes) {
-        if (key === 'mouthSmile') {
-          this.targetVisemes[key] = 0.22;
-        } else if (key !== 'eyeBlinkLeft' && key !== 'eyeBlinkRight') {
-          this.targetVisemes[key] = 0;
-        }
-      }
+    // 3. Inter-syllable pause or silence detection
+    if (this.smoothedVolume < 0.038) {
+      this.setVisemesToRest();
       return;
     }
 
-    // Determine acoustic formant ratios
-    const f2Ratio = midEnergy / (lowEnergy + 0.01);
-    const f3Ratio = highEnergy / (midEnergy + 0.01);
+    // Normalized speech intensity (0.0 to 1.0)
+    const normIntensity = Math.min(1.0, (this.smoothedVolume - 0.038) / 0.40);
 
-    let openJaw = 0;
-    let roundMouth = 0;
-    let tightRound = 0;
-    let spreadMouth = 0;
-    let sibilant = 0;
-    let fricative = 0;
+    // Frequency bands: Low (vowel resonance) vs High (sibilants/consonants)
+    let lowEnergy = 0;
+    for (let i = 1; i <= 6; i++) lowEnergy += this.dataArray[i];
+    lowEnergy = (lowEnergy / 6) / 255;
 
-    if (f3Ratio > 1.25 && highEnergy > 0.16) {
-      // High frequency consonants / sibilants ('S', 'Z', 'CH', 'T') -> teeth close, lips spread
-      sibilant = Math.min(0.85, highEnergy * 1.5);
-      fricative = Math.min(0.6, highEnergy * 1.2);
-      openJaw = Math.min(0.18, lowEnergy * 0.4);
-      spreadMouth = Math.min(0.4, highEnergy * 0.8);
-    } else if (f2Ratio > 1.15) {
-      // Front spread vowels ('EE', 'IH', 'EH', 'AY') -> wide horizontal lip stretch
-      spreadMouth = Math.min(0.85, midEnergy * 1.6);
-      openJaw = Math.min(0.4, lowEnergy * 0.7);
-    } else if (f2Ratio < 0.75 && lowEnergy > 0.14) {
-      // Back rounded vowels ('OH', 'OO', 'W', 'AW') -> lips funnel forward into an 'O'
-      roundMouth = Math.min(0.85, lowEnergy * 1.5);
-      tightRound = Math.min(0.65, lowEnergy * 1.2);
-      openJaw = Math.min(0.35, lowEnergy * 0.6);
+    let highEnergy = 0;
+    for (let i = 18; i <= 45; i++) highEnergy += this.dataArray[i];
+    highEnergy = (highEnergy / 28) / 255;
+
+    // First Principle: Speech is primarily horizontal widening + controlled jaw drop (capped at 0.34 max)
+    const targetJaw = Math.min(0.34, normIntensity * 0.46);
+    const targetStretch = Math.min(0.26, normIntensity * 0.38);
+    const targetSmile = 0.22 + Math.min(0.12, normIntensity * 0.20);
+
+    this.targetVisemes.mouthClose = 0;
+    this.targetVisemes.mouthPucker = 0; // Strictly 0.0 (prevents unnatural beak/cylinder)
+
+    // Sibilants and dental consonants ('S', 'T', 'CH'): lips stretch, jaw closes slightly, slight press
+    if (highEnergy > 0.16 && highEnergy > lowEnergy * 0.65) {
+      this.targetVisemes.jawOpen = targetJaw * 0.6;
+      this.targetVisemes.mouthPressLeft = Math.min(0.18, highEnergy * 0.4);
+      this.targetVisemes.mouthPressRight = Math.min(0.18, highEnergy * 0.4);
+      this.targetVisemes.mouthFunnel = 0;
     } else {
-      // Open / central vowels ('AA', 'AH', 'UH') -> vertical openness
-      openJaw = Math.min(0.85, lowEnergy * 1.4);
-      roundMouth = Math.min(0.3, lowEnergy * 0.5);
+      this.targetVisemes.jawOpen = targetJaw;
+      this.targetVisemes.mouthPressLeft = 0;
+      this.targetVisemes.mouthPressRight = 0;
+      // Gentle rounding for true deep vowels, capped at 0.16 max
+      this.targetVisemes.mouthFunnel = lowEnergy > 0.32 ? Math.min(0.16, (lowEnergy - 0.32) * 0.35) : 0;
     }
 
-    // Assign to morph targets
-    this.targetVisemes.viseme_aa = openJaw;
-    this.targetVisemes.viseme_O = roundMouth;
-    this.targetVisemes.viseme_U = tightRound;
-    this.targetVisemes.viseme_E = spreadMouth * 0.8;
-    this.targetVisemes.viseme_I = spreadMouth;
-    this.targetVisemes.viseme_SS = sibilant;
-    this.targetVisemes.viseme_CH = fricative * 0.7;
-    this.targetVisemes.viseme_TH = fricative * 0.4;
-    this.targetVisemes.viseme_FF = fricative * 0.5;
+    // Horizontal widening and smiling speaker engagement
+    this.targetVisemes.mouthStretchLeft = targetStretch;
+    this.targetVisemes.mouthStretchRight = targetStretch;
+    this.targetVisemes.mouthSmileLeft = targetSmile;
+    this.targetVisemes.mouthSmileRight = targetSmile;
+    this.targetVisemes.mouthSmile = targetSmile;
+    this.targetVisemes.cheekSquintLeft = 0.08 + targetSmile * 0.25;
+    this.targetVisemes.cheekSquintRight = 0.08 + targetSmile * 0.25;
 
-    // Organic 3D lip shaping blendshapes
-    this.targetVisemes.mouthFunnel = roundMouth * 0.75;
-    this.targetVisemes.mouthPucker = tightRound * 0.65;
-    this.targetVisemes.mouthStretchLeft = spreadMouth * 0.75;
-    this.targetVisemes.mouthStretchRight = spreadMouth * 0.75;
-
-    // Pleasant conversational smile dynamic
-    this.targetVisemes.mouthSmile = 0.22 + spreadMouth * 0.25;
-
-    // Expressive eyebrow gesture on vocal emphasis peaks
-    this.targetVisemes.browInnerUp = speechVolume > 0.38 ? Math.min(0.4, (speechVolume - 0.38) * 1.2) : 0;
+    // Expressive eyebrow gesture on loud emphasis peaks
+    this.targetVisemes.browInnerUp = normIntensity > 0.55 ? Math.min(0.26, (normIntensity - 0.55) * 0.6) : 0;
   }
 
   updateBlinking(delta) {
@@ -325,25 +317,51 @@ class AvatarStageEngine {
     }
   }
 
-  updateIdleMotion(time) {
-    // Breathing sway on spine & neck
-    const breath = Math.sin(time * 1.8) * 0.015;
+  updateIdleMotion(time, delta) {
+    // 1. Natural breathing rhythm on spine & neck
+    const breath = Math.sin(time * 1.6) * 0.012;
     if (this.spineBone) {
       this.spineBone.rotation.x = breath;
     }
 
-    // Subtle natural head movement & mouse tracking
+    // 2. Mouse tracking with damping
     this.mouse.x += (this.mouse.targetX - this.mouse.x) * 0.05;
     this.mouse.y += (this.mouse.targetY - this.mouse.y) * 0.05;
 
-    const microTilt = Math.sin(time * 0.8) * 0.02;
-    const microYaw = Math.cos(time * 0.6) * 0.02;
-    const speechNod = this.isSpeaking ? Math.sin(time * 3.2) * 0.014 : 0;
+    const microTilt = Math.sin(time * 0.7) * 0.016;
+    const microYaw = Math.cos(time * 0.5) * 0.016;
+    // Rhythmic speaking nod (conversational cadence)
+    const speechNod = this.isSpeaking ? Math.sin(time * 3.4) * 0.012 : 0;
 
     if (this.headBone) {
-      this.headBone.rotation.y = this.mouse.x * 0.18 + microYaw;
-      this.headBone.rotation.x = -this.mouse.y * 0.12 + breath * 0.5 + speechNod;
-      this.headBone.rotation.z = -this.mouse.x * 0.06 + microTilt;
+      this.headBone.rotation.y = this.mouse.x * 0.16 + microYaw;
+      this.headBone.rotation.x = -this.mouse.y * 0.10 + breath * 0.5 + speechNod;
+      this.headBone.rotation.z = -this.mouse.x * 0.05 + microTilt;
+    }
+
+    // 3. Micro-gaze saccades (prevents dead-eyed stare)
+    this.saccadeTimer += delta;
+    if (this.saccadeTimer >= this.nextSaccadeInterval) {
+      this.saccadeTimer = 0;
+      this.nextSaccadeInterval = 2.5 + Math.random() * 2.5;
+      const saccadeMag = (Math.random() - 0.5) * 0.07;
+      if (saccadeMag > 0) {
+        this.targetVisemes.eyeLookOutRight = saccadeMag;
+        this.targetVisemes.eyeLookInLeft = saccadeMag;
+        this.targetVisemes.eyeLookOutLeft = 0;
+        this.targetVisemes.eyeLookInRight = 0;
+      } else {
+        this.targetVisemes.eyeLookOutLeft = -saccadeMag;
+        this.targetVisemes.eyeLookInRight = -saccadeMag;
+        this.targetVisemes.eyeLookOutRight = 0;
+        this.targetVisemes.eyeLookInLeft = 0;
+      }
+      setTimeout(() => {
+        this.targetVisemes.eyeLookOutRight = 0;
+        this.targetVisemes.eyeLookInLeft = 0;
+        this.targetVisemes.eyeLookOutLeft = 0;
+        this.targetVisemes.eyeLookInRight = 0;
+      }, 400 + Math.random() * 300);
     }
   }
 
@@ -366,15 +384,15 @@ class AvatarStageEngine {
     const delta = this.clock.getDelta();
     const elapsedTime = this.clock.getElapsedTime();
 
-    // 1. Process audio lip-sync
+    // 1. Process audio lip-sync with strict anatomical constraints
     this.processAudioLipSync();
 
-    // 2. Smoothly interpolate all visemes with fast attack & natural release
+    // 2. Smoothly interpolate all visemes with asymmetric attack/release
     for (const key in this.targetVisemes) {
       const target = this.targetVisemes[key];
       const current = this.visemes[key] || 0;
-      // Fast attack (0.65) opens mouth instantaneously with speech consonants/vowels; release (0.28) is smooth
-      const lerpSpeed = target > current ? 0.65 : 0.28;
+      // Fast attack (0.55) snaps open on speech consonants/vowels; gentle release (0.22)
+      const lerpSpeed = target > current ? 0.55 : 0.22;
       this.visemes[key] += (target - current) * lerpSpeed;
       if (key !== 'eyeBlinkLeft' && key !== 'eyeBlinkRight') {
         this.updateMorphTarget(key, this.visemes[key]);
@@ -384,8 +402,8 @@ class AvatarStageEngine {
     // 3. Process natural blinking
     this.updateBlinking(delta);
 
-    // 4. Process subtle idle breathing and head motion
-    this.updateIdleMotion(elapsedTime);
+    // 4. Process subtle idle breathing, speaking nod, and gaze saccades
+    this.updateIdleMotion(elapsedTime, delta);
 
     this.renderer.render(this.scene, this.camera);
   }

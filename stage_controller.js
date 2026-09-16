@@ -13,6 +13,7 @@ class StageController {
     this.isListening = false;
     this.speechRecognition = null;
     this.selectedBackend = 'gecx';
+    this.currentSpokenText = '';
 
     // UI Elements
     this.subtitleBox = document.getElementById('subtitle-box');
@@ -41,6 +42,9 @@ class StageController {
       this.isPlaying = true;
       if (this.avatar) {
         this.avatar.connectAudio(this.audioElement);
+        if (this.currentSpokenText) {
+          this.avatar.setSpokenText(this.currentSpokenText, this.audioElement);
+        }
         this.avatar.isSpeaking = true;
       }
       this.updatePlayState();
@@ -50,6 +54,7 @@ class StageController {
       this.isPlaying = false;
       if (this.avatar) {
         this.avatar.isSpeaking = false;
+        this.avatar.clearSpokenText();
       }
       this.updatePlayState();
     });
@@ -213,7 +218,11 @@ class StageController {
     }
 
     try {
+      this.currentSpokenText = text;
       this.setSubtitle(text, 'speaking');
+      if (this.avatar) {
+        this.avatar.setSpokenText(text, this.audioElement);
+      }
       const fullUrl = audioUrl.startsWith('http') ? audioUrl : window.location.origin + audioUrl;
       if (this.audioElement.src !== fullUrl) {
         this.audioElement.src = fullUrl;
@@ -232,7 +241,11 @@ class StageController {
     }
 
     try {
+      this.currentSpokenText = text;
       this.setSubtitle(text, 'speaking');
+      if (this.avatar) {
+        this.avatar.setSpokenText(text, this.audioElement);
+      }
       const res = await fetch('/api/tts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -258,6 +271,7 @@ class StageController {
   fallbackWebSpeech(text) {
     if (!window.speechSynthesis) return;
     window.speechSynthesis.cancel();
+    this.currentSpokenText = text;
 
     const utterance = new SpeechSynthesisUtterance(text);
     const voices = window.speechSynthesis.getVoices();
@@ -267,13 +281,19 @@ class StageController {
 
     utterance.onstart = () => {
       this.isPlaying = true;
-      if (this.avatar) this.avatar.isSpeaking = true;
+      if (this.avatar) {
+        this.avatar.setSpokenText(text, null);
+        this.avatar.isSpeaking = true;
+      }
       this.updatePlayState();
     };
 
     utterance.onend = () => {
       this.isPlaying = false;
-      if (this.avatar) this.avatar.isSpeaking = false;
+      if (this.avatar) {
+        this.avatar.isSpeaking = false;
+        this.avatar.clearSpokenText();
+      }
       this.updatePlayState();
     };
 

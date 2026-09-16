@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Con Edison Tech Day, October 2026</title>
-  <link rel="stylesheet" href="styles.css?v=202610_redesign">
+  <link rel="stylesheet" href="styles.css?v=202610_pill_nav">
   <!-- Three.js + GLTFLoader -->
   <script src="lib/three.min.js"></script>
   <script>
@@ -114,21 +114,13 @@
       </section>
     </main>
 
-    <!-- Bottom Navigation Section -->
+    <!-- Bottom Navigation Section: Interactive Agenda Pills -->
     <footer class="bottom-nav-bar">
-      <div class="navigation-controls">
-        <button id="prev-btn" class="nav-btn btn-prev" title="Previous Topic [Left Arrow]">
-          <span class="nav-icon">◀</span> Previous
-        </button>
-        <button id="play-btn" class="nav-btn btn-play" title="Play / Pause [Spacebar]">
-          <span class="play-icon">▶</span> Play
-        </button>
-        <button id="next-btn" class="nav-btn btn-next" title="Next Topic [Right Arrow]">
-          Next <span class="nav-icon">▶</span>
-        </button>
-      </div>
+      <nav id="agenda-nav" class="agenda-nav-bar" aria-label="Keynote Agenda Navigation">
+        <!-- Dynamic Interactive Pills rendered by StageController -->
+      </nav>
       <div class="nav-hotkeys-hint">
-        [Space] Play/Pause • [◀ / ▶] Prev/Next • [M] Mic
+        [Click Pill] Jump &amp; Toggle Play/Pause • [Space] Play/Pause • [◀ / ▶] Switch • [M] Mic • [0-6] Direct
       </div>
     </footer>
 
@@ -136,7 +128,7 @@
 
   <!-- Stage Engine & Logic -->
   <script src="avatar_stage.js?v=202610_gecx_exclusive"></script>
-  <script src="stage_controller.js?v=202610_gecx_exclusive"></script>
+  <script src="stage_controller.js?v=202610_pill_nav"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       // 1. Initialize Three.js Avatar Stage inside left panel
@@ -145,10 +137,7 @@
       // 2. Initialize Master Stage Controller
       const controller = new StageController(avatar);
 
-      // Wire up navigation click handlers
-      document.getElementById('play-btn').addEventListener('click', () => controller.togglePlayPause());
-      document.getElementById('prev-btn').addEventListener('click', () => controller.prevTopic());
-      document.getElementById('next-btn').addEventListener('click', () => controller.nextTopic());
+      // Wire up microphone button
       document.getElementById('mic-btn').addEventListener('click', () => controller.toggleMicrophone());
 
       // Enforce GECX Playbook backend

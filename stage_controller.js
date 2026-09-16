@@ -24,9 +24,6 @@ class StageController {
     this.topicBadge = document.getElementById('topic-badge');
     this.topicTitle = document.getElementById('topic-title');
     this.micBtn = document.getElementById('mic-btn');
-    this.playBtn = document.getElementById('play-btn');
-    this.prevBtn = document.getElementById('prev-btn');
-    this.nextBtn = document.getElementById('next-btn');
     this.agendaNav = document.getElementById('agenda-nav');
 
     this.initAudioRouting();
@@ -160,12 +157,26 @@ class StageController {
     const labels = ['INTRO', 'BILLING', 'IDLING', 'MANHOLE', 'WEATHER', 'CLEAN HEAT', 'Q&A'];
     this.agenda.use_cases.forEach((topic, idx) => {
       const pill = document.createElement('button');
+      pill.type = 'button';
       pill.className = `agenda-pill ${idx === this.currentIndex ? 'active' : ''}`;
+      pill.setAttribute('data-idx', idx);
       const numStr = idx === 0 ? '00' : idx === 6 ? '06' : `0${idx}`;
-      pill.innerHTML = `<span class="pill-num">${numStr}</span> <span class="pill-label">${labels[idx] || topic.id.toUpperCase()}</span>`;
-      pill.addEventListener('click', () => this.goToTopic(idx, true));
+      pill.innerHTML = `
+        <span class="pill-status-dot"></span>
+        <span class="pill-num">${numStr}</span>
+        <span class="pill-label">${labels[idx] || topic.id.toUpperCase()}</span>
+        <span class="pill-play-icon">▶</span>
+      `;
+      pill.addEventListener('click', () => {
+        if (idx === this.currentIndex) {
+          this.togglePlayPause();
+        } else {
+          this.goToTopic(idx, true);
+        }
+      });
       this.agendaNav.appendChild(pill);
     });
+    this.updatePlayState();
   }
 
   async goToTopic(index, autoPlay = true) {
@@ -173,10 +184,6 @@ class StageController {
     this.currentIndex = index;
 
     const topic = this.agenda.use_cases[index];
-
-    // Update nav pills
-    const pills = document.querySelectorAll('.agenda-pill');
-    pills.forEach((p, idx) => p.classList.toggle('active', idx === index));
 
     // Update topic header & badge
     if (this.topicBadge) {
@@ -201,6 +208,9 @@ class StageController {
 
     // Update Teleprompter Subtitle
     this.setSubtitle(topic.script, 'script');
+
+    // Immediate visual state sync
+    this.updatePlayState();
 
     // Instant playback from pre-generated audio or live TTS
     if (autoPlay) {
@@ -367,13 +377,31 @@ class StageController {
   }
 
   updatePlayState() {
-    if (!this.playBtn) return;
-    this.playBtn.innerHTML = this.isPlaying 
-      ? '<span class="play-icon">❚❚</span> Pause' 
-      : '<span class="play-icon">▶</span> Play';
-    this.playBtn.title = this.isPlaying ? 'Pause Presentation' : 'Play Presentation';
     const wave = document.getElementById('speaking-wave');
     if (wave) wave.classList.toggle('active', this.isPlaying);
+
+    const pills = document.querySelectorAll('.agenda-pill');
+    pills.forEach((p, idx) => {
+      const isActive = idx === this.currentIndex;
+      p.classList.toggle('active', isActive);
+      p.classList.toggle('is-playing', isActive && this.isPlaying);
+      p.classList.toggle('is-paused', isActive && !this.isPlaying);
+
+      const icon = p.querySelector('.pill-play-icon');
+      const labelText = p.querySelector('.pill-label')?.textContent || '';
+      if (icon) {
+        if (isActive && this.isPlaying) {
+          icon.textContent = '❚❚';
+          p.title = `Currently Playing: ${labelText}. Click to Pause.`;
+        } else if (isActive && !this.isPlaying) {
+          icon.textContent = '▶';
+          p.title = `Paused: ${labelText}. Click to Resume.`;
+        } else {
+          icon.textContent = '▶';
+          p.title = `Jump to ${labelText} & Play`;
+        }
+      }
+    });
   }
 
   setupKeyBindings() {

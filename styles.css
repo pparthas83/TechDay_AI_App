@@ -1,18 +1,26 @@
-/* Con Edison Tech Day - Redesigned UI Styles */
+/* Con Edison Tech Day - Official Corporate Hybrid Stage Styles */
 :root {
-  --primary: #00e5ff;
-  --primary-dark: #00b0ff;
-  --primary-glow: rgba(0, 229, 255, 0.45);
-  --primary-glow-strong: rgba(0, 229, 255, 0.75);
-  --bg-dark: #050811;
-  --bg-panel: rgba(10, 20, 38, 0.72);
-  --bg-panel-border: rgba(0, 229, 255, 0.22);
-  --bg-card: rgba(14, 28, 54, 0.65);
-  --text-main: #e0f7fa;
-  --text-muted: #80deea;
-  --accent-green: #00e676;
-  --accent-amber: #ffb300;
-  --accent-magenta: #e040fb;
+  /* Official Con Edison Brand Tokens */
+  --primary: #069BD7;               /* Con Edison Signature Sky Blue */
+  --primary-dark: #005596;          /* Con Edison Corporate Medium Blue */
+  --coned-navy: #002D62;            /* Con Edison Deep Brand Navy */
+  --coned-green: #00843D;           /* Con Edison Clean Energy Green */
+  --coned-green-bright: #00e676;    /* Active status pulse */
+  --coned-amber: #FF8200;           /* Con Edison Safety Accent */
+
+  /* Emissive Keynote Stage Glows */
+  --primary-glow: rgba(6, 155, 215, 0.45);
+  --primary-glow-strong: rgba(6, 155, 215, 0.75);
+  
+  /* Stage Dark Theme Surfaces */
+  --bg-dark: #030814;
+  --bg-panel: rgba(2, 16, 38, 0.76);
+  --bg-panel-border: rgba(6, 155, 215, 0.28);
+  --bg-card: rgba(4, 22, 50, 0.68);
+  --text-main: #f0f7ff;
+  --text-muted: #8ec5ea;
+
+  /* Typography */
   --font-mono: "SF Mono", "Roboto Mono", "Fira Code", "Courier New", monospace;
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
@@ -43,11 +51,11 @@ body {
   pointer-events: none;
   z-index: 2;
   background: 
-    radial-gradient(circle at 50% 50%, rgba(0, 229, 255, 0.04) 0%, transparent 65%),
-    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 229, 255, 0.02) 50%),
-    radial-gradient(circle at center, transparent 40%, rgba(2, 6, 15, 0.85) 100%);
+    radial-gradient(circle at 50% 40%, rgba(6, 155, 215, 0.05) 0%, transparent 65%),
+    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(6, 155, 215, 0.02) 50%),
+    radial-gradient(circle at center, transparent 40%, rgba(1, 6, 16, 0.88) 100%);
   background-size: 100% 100%, 100% 4px, 100% 100%;
-  opacity: 0.9;
+  opacity: 0.95;
 }
 
 /* Main App Shell Layout (Top, Middle, Bottom) */
@@ -58,36 +66,102 @@ body {
   grid-template-rows: auto 1fr auto;
   height: 100vh;
   width: 100vw;
-  padding: 16px 28px 20px;
-  gap: 16px;
+  padding: 14px 28px 18px;
+  gap: 14px;
   box-sizing: border-box;
 }
 
 /* ==========================================================================
-   1. TOP CENTER SECTION: EVENT TITLE
+   1. TOP HEADER: OFFICIAL CON EDISON BRANDING & EVENT BANNER
    ========================================================================== */
 .app-header {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 4px 0 2px;
-  text-align: center;
+  padding: 2px 0;
+  width: 100%;
+}
+
+.header-brand-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 4px;
+}
+
+.header-brand-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.coned-logo-svg {
+  height: 26px;
+  width: auto;
+  filter: drop-shadow(0 0 10px rgba(6, 155, 215, 0.5));
+}
+
+.coned-logo-path {
+  fill: #069BD7;
+}
+
+.header-brand-divider {
+  width: 1px;
+  height: 28px;
+  background: rgba(6, 155, 215, 0.35);
+}
+
+.header-event-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .event-title {
-  font-size: 26px;
+  font-size: 19px;
   font-weight: 700;
-  letter-spacing: 2px;
+  letter-spacing: 1.4px;
   text-transform: uppercase;
   color: #ffffff;
-  text-shadow: 0 0 16px rgba(0, 229, 255, 0.5), 0 0 32px rgba(0, 229, 255, 0.2);
+  text-shadow: 0 0 14px rgba(6, 155, 215, 0.5);
+  line-height: 1.1;
+}
+
+.event-subtitle {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.6px;
+  color: #8ec5ea;
+  text-transform: uppercase;
+}
+
+.header-brand-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.corporate-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  color: #8ec5ea;
+  background: rgba(0, 45, 98, 0.45);
+  border: 1px solid rgba(6, 155, 215, 0.32);
+  border-radius: 14px;
+  padding: 5px 12px;
+  text-transform: uppercase;
 }
 
 .header-glow-bar {
-  width: 110px;
-  height: 3px;
-  background: linear-gradient(90deg, transparent, var(--primary), transparent);
+  width: 100%;
+  max-width: 600px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, rgba(6, 155, 215, 0.8) 50%, transparent 100%);
   border-radius: 2px;
   margin-top: 6px;
   box-shadow: 0 0 10px var(--primary);
@@ -162,11 +236,11 @@ body {
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 1.2px;
-  background: rgba(0, 229, 255, 0.15);
-  border: 1px solid rgba(0, 229, 255, 0.4);
+  background: rgba(6, 155, 215, 0.16);
+  border: 1px solid rgba(6, 155, 215, 0.45);
   padding: 6px 14px;
   border-radius: 20px;
-  color: #00e5ff;
+  color: var(--primary);
   backdrop-filter: blur(10px);
 }
 
@@ -401,31 +475,31 @@ body {
 /* User / Audience Bubble (Right Aligned) */
 .dialogue-bubble.audience {
   align-self: flex-end;
-  background: rgba(0, 229, 255, 0.12);
-  border: 1px solid rgba(0, 229, 255, 0.45);
+  background: rgba(6, 155, 215, 0.14);
+  border: 1px solid rgba(6, 155, 215, 0.45);
   color: #ffffff;
   border-bottom-right-radius: 4px;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
 }
 
 .dialogue-bubble.audience .bubble-meta {
-  color: #00e5ff;
+  color: #38bdf8;
   font-weight: 700;
 }
 
 /* Watt Moderator Bubble (Left Aligned) */
 .dialogue-bubble.watt {
   align-self: flex-start;
-  background: rgba(10, 22, 44, 0.85);
-  border: 1px solid rgba(0, 229, 255, 0.3);
-  border-left: 3px solid #00e5ff;
-  color: #e0f7fa;
+  background: rgba(2, 20, 48, 0.88);
+  border: 1px solid rgba(6, 155, 215, 0.32);
+  border-left: 3px solid #069BD7;
+  color: #f0f7ff;
   border-top-left-radius: 4px;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
 }
 
 .dialogue-bubble.watt .bubble-meta {
-  color: #80deea;
+  color: #8ec5ea;
   font-weight: 700;
 }
 
@@ -502,19 +576,19 @@ body {
 .backend-selector {
   display: flex;
   align-items: center;
-  background: rgba(0, 229, 255, 0.08);
-  border: 1px solid rgba(0, 229, 255, 0.4);
+  background: rgba(0, 45, 98, 0.45);
+  border: 1px solid rgba(6, 155, 215, 0.35);
   border-radius: 20px;
   padding: 3px 5px;
-  box-shadow: 0 0 14px rgba(0, 229, 255, 0.18);
+  box-shadow: 0 0 14px rgba(6, 155, 215, 0.2);
 }
 
 .backend-pill {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  background: rgba(0, 229, 255, 0.22);
-  border: 1px solid rgba(0, 229, 255, 0.7);
+  background: rgba(0, 132, 61, 0.25);
+  border: 1px solid rgba(0, 230, 118, 0.55);
   border-radius: 14px;
   padding: 4px 12px;
   font-family: var(--font-mono);
@@ -522,7 +596,7 @@ body {
   font-weight: 600;
   letter-spacing: 0.5px;
   color: #ffffff;
-  box-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
+  box-shadow: 0 0 10px rgba(0, 132, 61, 0.35);
   user-select: none;
 }
 
@@ -530,8 +604,8 @@ body {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #00e5ff;
-  box-shadow: 0 0 8px #00e5ff;
+  background: var(--coned-green-bright);
+  box-shadow: 0 0 8px var(--coned-green-bright);
   animation: pulse-dot 2.5s infinite ease-in-out;
 }
 
@@ -608,8 +682,8 @@ body {
 }
 
 .send-btn {
-  background: linear-gradient(135deg, #00e5ff 0%, #00b0ff 100%);
-  color: #041426;
+  background: linear-gradient(135deg, #069BD7 0%, #005596 100%);
+  color: #ffffff;
   border: none;
   border-radius: 8px;
   width: 40px;
@@ -621,11 +695,12 @@ body {
   justify-content: center;
   cursor: pointer;
   transition: transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 0 10px rgba(6, 155, 215, 0.4);
 }
 
 .send-btn:hover {
   transform: scale(1.05);
-  box-shadow: 0 0 14px rgba(0, 229, 255, 0.6);
+  box-shadow: 0 0 16px rgba(6, 155, 215, 0.7);
 }
 
 .send-btn:active {
@@ -659,10 +734,10 @@ body {
   align-items: center;
   gap: 8px;
   padding: 10px 18px;
-  background: rgba(14, 28, 54, 0.78);
-  border: 1px solid rgba(0, 229, 255, 0.28);
+  background: rgba(2, 22, 50, 0.78);
+  border: 1px solid rgba(6, 155, 215, 0.35);
   border-radius: 30px;
-  color: #b2ebf2;
+  color: #cde6f7;
   font-family: var(--font-sans);
   font-size: 13px;
   font-weight: 600;
@@ -676,11 +751,11 @@ body {
 }
 
 .agenda-pill:hover {
-  background: rgba(0, 229, 255, 0.16);
-  border-color: rgba(0, 229, 255, 0.7);
+  background: rgba(6, 155, 215, 0.2);
+  border-color: rgba(6, 155, 215, 0.75);
   color: #ffffff;
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 229, 255, 0.3);
+  box-shadow: 0 6px 20px rgba(6, 155, 215, 0.35);
 }
 
 .agenda-pill:active {
@@ -691,7 +766,7 @@ body {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: rgba(0, 229, 255, 0.4);
+  background: rgba(6, 155, 215, 0.45);
   transition: all 0.2s;
 }
 
@@ -699,8 +774,8 @@ body {
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 700;
-  color: #00e5ff;
-  opacity: 0.85;
+  color: #38bdf8;
+  opacity: 0.9;
 }
 
 .agenda-pill .pill-label {
@@ -715,50 +790,75 @@ body {
   transition: transform 0.2s, opacity 0.2s;
 }
 
-/* Active & Playing State */
+/* Active & Playing State - Con Edison Sky Blue Signature */
 .agenda-pill.active.is-playing {
-  background: linear-gradient(135deg, rgba(0, 229, 255, 0.32) 0%, rgba(0, 176, 255, 0.22) 100%);
-  border: 1.5px solid #00e5ff;
+  background: linear-gradient(135deg, rgba(6, 155, 215, 0.38) 0%, rgba(0, 45, 98, 0.45) 100%);
+  border: 1.5px solid #069BD7;
   color: #ffffff;
-  box-shadow: 0 0 22px rgba(0, 229, 255, 0.55), inset 0 0 12px rgba(0, 229, 255, 0.22);
+  box-shadow: 0 0 22px rgba(6, 155, 215, 0.6), inset 0 0 12px rgba(6, 155, 215, 0.25);
   transform: translateY(-1px);
 }
 
 .agenda-pill.active.is-playing .pill-status-dot {
-  background: #00e5ff;
-  box-shadow: 0 0 8px #00e5ff;
+  background: #38bdf8;
+  box-shadow: 0 0 8px #069BD7;
   animation: pulse-dot 1.8s infinite;
 }
 
 .agenda-pill.active.is-playing .pill-play-icon {
   opacity: 1;
-  color: #00e5ff;
+  color: #38bdf8;
   animation: pulse-icon 1.2s infinite alternate;
 }
 
-/* Active & Paused State */
+/* Con Edison Clean Energy Focus (05 Clean Heat) */
+.agenda-pill.pill-clean-heat .pill-num {
+  color: #00e676;
+}
+
+.agenda-pill.pill-clean-heat:hover {
+  border-color: rgba(0, 230, 118, 0.7);
+  box-shadow: 0 6px 20px rgba(0, 230, 118, 0.25);
+}
+
+.agenda-pill.pill-clean-heat.active.is-playing {
+  background: linear-gradient(135deg, rgba(0, 132, 61, 0.45) 0%, rgba(0, 45, 98, 0.4) 100%);
+  border: 1.5px solid #00e676;
+  box-shadow: 0 0 22px rgba(0, 230, 118, 0.55), inset 0 0 12px rgba(0, 132, 61, 0.3);
+}
+
+.agenda-pill.pill-clean-heat.active.is-playing .pill-status-dot {
+  background: #00e676;
+  box-shadow: 0 0 8px #00e676;
+}
+
+.agenda-pill.pill-clean-heat.active.is-playing .pill-play-icon {
+  color: #00e676;
+}
+
+/* Active & Paused State - Con Edison Safety Amber */
 .agenda-pill.active.is-paused {
-  background: rgba(255, 179, 0, 0.16);
-  border: 1.5px solid #ffb300;
-  color: #fff9c4;
-  box-shadow: 0 0 16px rgba(255, 179, 0, 0.45);
+  background: rgba(255, 130, 0, 0.16);
+  border: 1.5px solid #FF8200;
+  color: #fff3e0;
+  box-shadow: 0 0 16px rgba(255, 130, 0, 0.45);
 }
 
 .agenda-pill.active.is-paused .pill-status-dot {
-  background: #ffb300;
-  box-shadow: 0 0 8px #ffb300;
+  background: #FF8200;
+  box-shadow: 0 0 8px #FF8200;
 }
 
 .agenda-pill.active.is-paused .pill-play-icon {
   opacity: 1;
-  color: #ffb300;
+  color: #FF8200;
 }
 
 .nav-hotkeys-hint {
   font-size: 11px;
   font-family: var(--font-mono);
   letter-spacing: 0.8px;
-  color: rgba(128, 222, 234, 0.6);
+  color: rgba(142, 197, 234, 0.6);
   text-align: center;
 }
 
@@ -789,5 +889,5 @@ body {
 
 @keyframes pulse-icon {
   0% { transform: scale(1); opacity: 0.75; }
-  100% { transform: scale(1.3); opacity: 1; text-shadow: 0 0 8px #00e5ff; }
+  100% { transform: scale(1.3); opacity: 1; text-shadow: 0 0 8px #069BD7; }
 }

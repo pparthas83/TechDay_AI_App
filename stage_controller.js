@@ -168,7 +168,8 @@ class StageController {
     this.agenda.use_cases.forEach((topic, idx) => {
       const pill = document.createElement('button');
       pill.type = 'button';
-      pill.className = `agenda-pill ${idx === this.currentIndex ? 'active' : ''}`;
+      const isCleanHeat = idx === 5;
+      pill.className = `agenda-pill ${idx === this.currentIndex ? 'active' : ''} ${isCleanHeat ? 'pill-clean-heat' : ''}`;
       pill.setAttribute('data-idx', idx);
       const numStr = idx === 0 ? '00' : idx === 6 ? '06' : `0${idx}`;
       pill.innerHTML = `

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Con Edison Tech Day, October 2026</title>
-  <link rel="stylesheet" href="styles.css?v=202610_dialogue_b">
+  <link rel="stylesheet" href="styles.css?v=202610_simple_chat">
   <!-- Three.js + GLTFLoader -->
   <script src="lib/three.min.js"></script>
   <script>
@@ -53,66 +53,62 @@
         </div>
       </section>
 
-      <!-- Right Middle Panel: Live Dialogue Stream & Interactive Inquiry -->
+      <!-- Right Middle Panel: Unified Live Chat Interface -->
       <section class="right-panel">
         
-        <!-- Live Dialogue Stream Card -->
-        <div class="dialogue-card" id="dialogue-card">
-          <div class="dialogue-header">
-            <div class="dialogue-title-group">
-              <span class="dialogue-badge">LIVE INTERACTION STREAM</span>
-              <h2 id="topic-title" class="current-topic-heading">Welcome & Opening Remarks</h2>
+        <div class="chat-interface-card" id="chat-interface-card">
+          <!-- Chat Header: Fixed Branding, Audio Wave & Intelligence Engine -->
+          <div class="chat-interface-header">
+            <div class="chat-header-title">
+              <span class="chat-label">WATT // LIVE CHAT</span>
+              <span class="chat-sub">Ask via mic [M] or text</span>
             </div>
-            <div id="speaking-wave" class="speaking-wave" title="Audio Activity">
-              <span></span><span></span><span></span><span></span><span></span>
+            <div class="chat-header-actions">
+              <div id="speaking-wave" class="speaking-wave" title="Audio Activity">
+                <span></span><span></span><span></span><span></span><span></span>
+              </div>
+              <div class="backend-selector" id="backend-selector" role="status" aria-label="AI Intelligence Engine">
+                <div class="backend-pill active" id="btn-backend-gecx" title="Direct Integration: Con Edison GECX Playbook & Workflow">
+                  <span class="pill-dot"></span>GECX Playbook
+                </div>
+              </div>
             </div>
           </div>
 
+          <!-- Chat Stream: Scrollable Message Feed -->
           <div class="dialogue-stream-wrapper" id="dialogue-stream-wrapper">
             <div class="dialogue-stream" id="dialogue-stream">
               <div class="dialogue-empty-state" id="dialogue-empty-state">
                 <div class="empty-icon">💬</div>
-                <div class="empty-title">Keynote Interaction Feed</div>
-                <div class="empty-desc">Ask Watt anything about Con Edison AI initiatives using the input below or press <strong>[M]</strong> to speak.</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Ask Watt a question about Con Edison Section -->
-        <div class="chat-card">
-          <div class="chat-header">
-            <div class="chat-header-title">
-              <span class="chat-label">INTERACTIVE INQUIRY</span>
-              <span class="chat-sub">Ask Watt anything about Con Edison AI initiatives</span>
-            </div>
-            <div class="backend-selector" id="backend-selector" role="status" aria-label="AI Intelligence Engine">
-              <div class="backend-pill active" id="btn-backend-gecx" title="Direct Integration: Con Edison GECX Playbook & Workflow">
-                <span class="pill-dot"></span>GECX Playbook
+                <div class="empty-title">Ask Watt Anything</div>
+                <div class="empty-desc">Speak into the microphone [M] or type below to ask Watt about Con Edison's AI initiatives.</div>
               </div>
             </div>
           </div>
 
-          <form id="chat-form" class="chat-form" action="javascript:void(0);" autocomplete="off">
-            <div class="input-wrapper">
-              <input
-                id="chat-input"
-                type="text"
-                placeholder="Ask Watt a question about Con Edison..."
-                autocomplete="off"
-                aria-label="Ask Watt a question about Con Edison..."
-              />
-              <button id="mic-btn" type="button" class="mic-btn" title="Voice Input [M]">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
-                  <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
-                </svg>
-              </button>
-              <button id="send-btn" type="submit" class="send-btn" title="Send Question">
-                <span>➔</span>
-              </button>
-            </div>
-          </form>
+          <!-- Chat Input Footer: Pinned at Bottom of Chat Panel -->
+          <div class="chat-input-area">
+            <form id="chat-form" class="chat-form" action="javascript:void(0);" autocomplete="off">
+              <div class="input-wrapper">
+                <input
+                  id="chat-input"
+                  type="text"
+                  placeholder="Ask Watt a question about Con Edison..."
+                  autocomplete="off"
+                  aria-label="Ask Watt a question about Con Edison..."
+                />
+                <button id="mic-btn" type="button" class="mic-btn" title="Voice Input [M]">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                    <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                  </svg>
+                </button>
+                <button id="send-btn" type="submit" class="send-btn" title="Send Question">
+                  <span>➔</span>
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
 
       </section>
@@ -132,7 +128,7 @@
 
   <!-- Stage Engine & Logic -->
   <script src="avatar_stage.js?v=202610_gecx_exclusive"></script>
-  <script src="stage_controller.js?v=202610_dialogue_b"></script>
+  <script src="stage_controller.js?v=202610_simple_chat"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       // 1. Initialize Three.js Avatar Stage inside left panel

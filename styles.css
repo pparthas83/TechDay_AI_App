@@ -244,8 +244,8 @@ body {
   min-height: 0;
 }
 
-/* Dialogue Card: Interactive Live Q&A Stream */
-.dialogue-card {
+/* Unified Chat Interface Card */
+.chat-interface-card {
   flex: 1;
   min-height: 0;
   display: flex;
@@ -259,34 +259,20 @@ body {
   overflow: hidden;
 }
 
-.dialogue-header {
+.chat-interface-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 10px;
+  padding-bottom: 12px;
   border-bottom: 1px solid rgba(0, 229, 255, 0.16);
   margin-bottom: 10px;
+  gap: 12px;
 }
 
-.dialogue-title-group {
+.chat-header-actions {
   display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.dialogue-badge {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 1.8px;
-  color: #80deea;
-  text-transform: uppercase;
-}
-
-.current-topic-heading {
-  font-size: 16px;
-  font-weight: 700;
-  color: #ffffff;
-  letter-spacing: 0.4px;
+  align-items: center;
+  gap: 12px;
 }
 
 /* Speaking Wave Animation */
@@ -485,23 +471,11 @@ body {
   100% { transform: translateY(-4px); }
 }
 
-/* Chat Card: Ask Watt a question */
-.chat-card {
-  background: rgba(8, 16, 32, 0.88);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(0, 229, 255, 0.28);
-  border-radius: 18px;
-  padding: 14px 18px;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
-}
-
-.chat-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-  gap: 12px;
-  flex-wrap: wrap;
+/* Chat Input Area (Footer of Chat Panel) */
+.chat-input-area {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(0, 229, 255, 0.12);
 }
 
 .chat-header-title {

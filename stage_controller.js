@@ -24,7 +24,6 @@ class StageController {
     this.speakerTitle = document.getElementById('speaker-title');
     this.speakerOrg = document.getElementById('speaker-org');
     this.topicBadge = document.getElementById('topic-badge');
-    this.topicTitle = document.getElementById('topic-title');
     this.micBtn = document.getElementById('mic-btn');
     this.agendaNav = document.getElementById('agenda-nav');
 
@@ -201,10 +200,6 @@ class StageController {
       if (index === 0) this.topicBadge.textContent = 'KEYNOTE INTRO';
       else if (index === 6) this.topicBadge.textContent = 'OPEN DISCUSSION';
       else this.topicBadge.textContent = `USE CASE ${index} OF 5`;
-    }
-
-    if (this.topicTitle) {
-      this.topicTitle.textContent = topic.title;
     }
 
     // Update Lower Third

@@ -10,8 +10,8 @@ The AI moderator, **Watt** (Candidate B persona: smart, youthful tech lead in Co
 
 1. **3D Photo-Realistic Avatar (Candidate B - "Watt")**:
    - WebGL 3D avatar rendered via Three.js with studio 3-point lighting and electric blue rim illumination.
-   - Real-time procedural lip-sync: Web Audio API FFT frequency analysis maps speech cadence to ARKit/Oculus visemes (`viseme_aa`, `viseme_O`, `viseme_E`, `viseme_I`, `viseme_SS`).
-   - Procedural life simulation: natural eye blinking cycles and sinusoidal breathing motion.
+   - **Articulatory Phoneme-to-Viseme Lip-Sync**: G2P phonetic parsing maps spoken text into 12 Apple ARKit blendshape groups with real-time co-articulation interpolation and Web Audio RMS dynamic modulation (see [How the Phoneme-to-Viseme Lip Sync Engine Works](HOW_THE_PHONEME_TO_VISEME_LIP_SYNC_ENGINE_WORKS.md)).
+   - Procedural life simulation: natural eye blinking cycles, gaze saccades, smiling baseline, emphasis eyebrow gestures, and rhythmic breathing motion.
 
 2. **Google Cloud Text-to-Speech (Journey-F Voice)**:
    - Powered by Google Cloud's `en-US-Journey-F` ultra-realistic conversational female voice model.

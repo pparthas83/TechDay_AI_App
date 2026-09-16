@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Con Edison Tech Day, October 2026</title>
-  <link rel="stylesheet" href="styles.css?v=202610_pill_nav">
+  <link rel="stylesheet" href="styles.css?v=202610_dialogue_b">
   <!-- Three.js + GLTFLoader -->
   <script src="lib/three.min.js"></script>
   <script>
@@ -53,14 +53,14 @@
         </div>
       </section>
 
-      <!-- Right Middle Panel: Narrative & Ask Watt Question Box -->
+      <!-- Right Middle Panel: Live Dialogue Stream & Interactive Inquiry -->
       <section class="right-panel">
         
-        <!-- Spoken Narrative / Transcript Card -->
-        <div class="narrative-card">
-          <div class="narrative-header">
-            <div class="narrative-title-group">
-              <span class="narrative-badge">STAGE NARRATIVE</span>
+        <!-- Live Dialogue Stream Card -->
+        <div class="dialogue-card" id="dialogue-card">
+          <div class="dialogue-header">
+            <div class="dialogue-title-group">
+              <span class="dialogue-badge">LIVE INTERACTION STREAM</span>
               <h2 id="topic-title" class="current-topic-heading">Welcome & Opening Remarks</h2>
             </div>
             <div id="speaking-wave" class="speaking-wave" title="Audio Activity">
@@ -68,9 +68,13 @@
             </div>
           </div>
 
-          <div class="narrative-content-scroll">
-            <div id="subtitle-box" class="narrative-text idle">
-              Click Play below or use the navigation controls to begin the keynote presentation.
+          <div class="dialogue-stream-wrapper" id="dialogue-stream-wrapper">
+            <div class="dialogue-stream" id="dialogue-stream">
+              <div class="dialogue-empty-state" id="dialogue-empty-state">
+                <div class="empty-icon">💬</div>
+                <div class="empty-title">Keynote Interaction Feed</div>
+                <div class="empty-desc">Ask Watt anything about Con Edison AI initiatives using the input below or press <strong>[M]</strong> to speak.</div>
+              </div>
             </div>
           </div>
         </div>
@@ -128,7 +132,7 @@
 
   <!-- Stage Engine & Logic -->
   <script src="avatar_stage.js?v=202610_gecx_exclusive"></script>
-  <script src="stage_controller.js?v=202610_pill_nav"></script>
+  <script src="stage_controller.js?v=202610_dialogue_b"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       // 1. Initialize Three.js Avatar Stage inside left panel

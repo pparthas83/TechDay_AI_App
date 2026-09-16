@@ -16,6 +16,8 @@ class StageController {
     this.currentSpokenText = '';
 
     // UI Elements
+    this.dialogueStream = document.getElementById('dialogue-stream');
+    this.dialogueEmptyState = document.getElementById('dialogue-empty-state');
     this.subtitleBox = document.getElementById('subtitle-box');
     this.lowerThird = document.getElementById('lower-third');
     this.speakerName = document.getElementById('speaker-name');
@@ -47,6 +49,15 @@ class StageController {
       this.updatePlayState();
     });
 
+    this.audioElement.addEventListener('pause', () => {
+      this.isPlaying = false;
+      if (this.avatar) {
+        this.avatar.isSpeaking = false;
+        this.avatar.clearSpokenText();
+      }
+      this.updatePlayState();
+    });
+
     this.audioElement.addEventListener('ended', () => {
       this.isPlaying = false;
       if (this.avatar) {
@@ -56,11 +67,9 @@ class StageController {
       this.updatePlayState();
     });
 
-    this.audioElement.addEventListener('pause', () => {
+    this.audioElement.addEventListener('error', (e) => {
+      console.warn('[Audio] Failed or blocked playback:', e);
       this.isPlaying = false;
-      if (this.avatar) {
-        this.avatar.isSpeaking = false;
-      }
       this.updatePlayState();
     });
   }
@@ -68,7 +77,8 @@ class StageController {
   initSpeechRecognition() {
     const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRec) {
-      console.warn('Speech Recognition not available in this browser');
+      console.warn('[SpeechRec] Web Speech API not supported in this browser.');
+      if (this.micBtn) this.micBtn.style.display = 'none';
       return;
     }
 
@@ -80,13 +90,11 @@ class StageController {
     this.speechRecognition.onstart = () => {
       this.isListening = true;
       if (this.micBtn) this.micBtn.classList.add('active');
-      this.setSubtitle('Listening for audience question...', 'listening');
     };
 
     this.speechRecognition.onresult = async (event) => {
       const transcript = event.results[0][0].transcript;
       console.log('[Mic] Transcribed:', transcript);
-      this.setSubtitle(`Audience: "${transcript}"`, 'question');
       await this.askGemini(transcript);
     };
 
@@ -99,6 +107,9 @@ class StageController {
       console.error('[Mic] Speech rec error:', e);
       this.isListening = false;
       if (this.micBtn) this.micBtn.classList.remove('active');
+      if (e.error !== 'no-speech') {
+        this.addDialogueMessage('watt', `Microphone note: ${e.error === 'not-allowed' ? 'Microphone permission blocked.' : 'Input was not captured.'} Please try again or type below.`);
+      }
     };
   }
 
@@ -315,28 +326,103 @@ class StageController {
     console.log('[Controller] Intelligence backend set to:', this.selectedBackend);
   }
 
+  addDialogueMessage(role, text, meta = {}) {
+    if (!this.dialogueStream) return;
+
+    if (this.dialogueEmptyState) {
+      this.dialogueEmptyState.style.display = 'none';
+    }
+
+    const bubble = document.createElement('div');
+    bubble.className = `dialogue-bubble ${role}`;
+
+    const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const metaTag = role === 'audience' ? 'AUDIENCE' : (meta.sender || 'WATT // AI MODERATOR');
+
+    bubble.innerHTML = `
+      <div class="bubble-meta">
+        <span>${metaTag}</span>
+        <span>${timeStr}</span>
+      </div>
+      <div class="bubble-text">${this.escapeHtml(text)}</div>
+    `;
+
+    this.dialogueStream.appendChild(bubble);
+    this.scrollToBottom();
+  }
+
+  showThinking() {
+    if (!this.dialogueStream) return;
+    if (this.dialogueEmptyState) {
+      this.dialogueEmptyState.style.display = 'none';
+    }
+    this.removeThinking();
+
+    const thinkingDiv = document.createElement('div');
+    thinkingDiv.id = 'dialogue-thinking-indicator';
+    thinkingDiv.className = 'dialogue-thinking';
+    thinkingDiv.innerHTML = `
+      <span>Watt is consulting GECX Playbook</span>
+      <span class="thinking-dots"><span></span><span></span><span></span></span>
+    `;
+    this.dialogueStream.appendChild(thinkingDiv);
+    this.scrollToBottom();
+  }
+
+  removeThinking() {
+    const existing = document.getElementById('dialogue-thinking-indicator');
+    if (existing) existing.remove();
+  }
+
+  scrollToBottom() {
+    if (this.dialogueStream) {
+      this.dialogueStream.scrollTop = this.dialogueStream.scrollHeight;
+    }
+  }
+
+  escapeHtml(unsafe) {
+    return String(unsafe)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
   async askGemini(promptText) {
+    if (!promptText || !promptText.trim()) return;
+    const cleanPrompt = promptText.trim();
+
     try {
-      this.setSubtitle('Watt is consulting GECX Playbook...', 'thinking');
+      // 1. Render audience question bubble
+      this.addDialogueMessage('audience', cleanPrompt);
+
+      // 2. Render thinking status indicator
+      this.showThinking();
+
+      // 3. Query GECX backend
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          prompt: promptText,
+          prompt: cleanPrompt,
           backend: 'gecx'
         })
       });
 
       const data = await res.json();
+      this.removeThinking();
+
       if (data.reply) {
-        this.setSubtitle(data.reply, 'speaking');
+        this.addDialogueMessage('watt', data.reply);
         await this.speakText(data.reply);
       } else if (data.error) {
         throw new Error(data.error);
       }
     } catch (err) {
       console.error('[GECX Chat] Query error:', err);
-      this.setSubtitle('I apologize, I could not complete that query right now.', 'error');
+      this.removeThinking();
+      this.addDialogueMessage('watt', 'I apologize, I could not complete that query right now.');
     }
   }
 

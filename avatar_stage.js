@@ -6,25 +6,25 @@
 // 12 Articulatory Viseme Target Groups (Apple ARKit Blendshapes)
 const VISEME_MAP = {
   P_B_M: {
-    jawOpen: 0.02,
-    mouthClose: 0.95,
-    mouthPressLeft: 0.35,
-    mouthPressRight: 0.35,
+    jawOpen: 0.04,
+    mouthClose: 0.38,
+    mouthPressLeft: 0.0,
+    mouthPressRight: 0.0,
     mouthFunnel: 0.0,
     mouthPucker: 0.0,
-    mouthStretchLeft: 0.0,
-    mouthStretchRight: 0.0,
-    mouthSmile: 0.15
+    mouthStretchLeft: 0.16,
+    mouthStretchRight: 0.16,
+    mouthSmile: 0.22
   },
   F_V: {
-    jawOpen: 0.09,
-    mouthClose: 0.45,
-    mouthPressLeft: 0.15,
-    mouthPressRight: 0.15,
+    jawOpen: 0.08,
+    mouthClose: 0.22,
+    mouthPressLeft: 0.0,
+    mouthPressRight: 0.0,
     mouthFunnel: 0.0,
     mouthPucker: 0.0,
-    mouthStretchLeft: 0.18,
-    mouthStretchRight: 0.18,
+    mouthStretchLeft: 0.20,
+    mouthStretchRight: 0.20,
     mouthSmile: 0.22
   },
   TH: {
@@ -128,13 +128,13 @@ const VISEME_MAP = {
   },
   PAUSE: {
     jawOpen: 0.0,
-    mouthClose: 0.05,
+    mouthClose: 0.02,
     mouthPressLeft: 0.0,
     mouthPressRight: 0.0,
     mouthFunnel: 0.0,
     mouthPucker: 0.0,
-    mouthStretchLeft: 0.0,
-    mouthStretchRight: 0.0,
+    mouthStretchLeft: 0.14,
+    mouthStretchRight: 0.14,
     mouthSmile: 0.22
   }
 };
@@ -190,6 +190,32 @@ function parseTextToVisemeTimeline(text) {
     }
 
     let rem = token;
+
+    // Guardrail: High-frequency monosyllables where 'e' is the voiced front vowel (/i:/)
+    if (/^(we|he|she|be|me)$/.test(rem)) {
+      if (rem.startsWith('sh')) {
+        visemes.push({ viseme: 'T_D_S_Z', weight: 1.1, text: 'sh' });
+      } else if (rem.startsWith('w')) {
+        visemes.push({ viseme: 'W_OO', weight: 1.1, text: 'w' });
+      } else if (rem.startsWith('b')) {
+        visemes.push({ viseme: 'P_B_M', weight: 0.8, text: 'b' });
+      } else if (rem.startsWith('m')) {
+        visemes.push({ viseme: 'P_B_M', weight: 0.8, text: 'm' });
+      }
+      visemes.push({ viseme: 'EE_IY', weight: 1.4, text: 'e' });
+      continue;
+    }
+
+    // Guardrail: Suppress silent trailing 'e' on multi-syllable words with a preceding vowel
+    // e.g. welcome, make, service, five, charge, showcase, enterprise, create, scale
+    // Strictly protects 'the', double 'ee' (see, tree), and words without a preceding vowel.
+    if (rem.length >= 3 && rem.endsWith('e') && !rem.endsWith('ee') && rem !== 'the') {
+      const stem = rem.slice(0, -1);
+      if (/[aeiouy]/.test(stem)) {
+        rem = stem;
+      }
+    }
+
     while (rem.length > 0) {
       let matched = false;
       for (const rule of rules) {
@@ -205,8 +231,6 @@ function parseTextToVisemeTimeline(text) {
         rem = rem.slice(1);
       }
     }
-    // Natural inter-word breath boundary
-    visemes.push({ viseme: 'PAUSE', weight: 0.35, text: ' ' });
   }
 
   const totalWeight = visemes.reduce((sum, v) => sum + v.weight, 0);
@@ -464,11 +488,11 @@ class AvatarStageEngine {
   setVisemesToRest() {
     this.targetVisemes.jawOpen = 0;
     this.targetVisemes.mouthOpen = 0;
-    this.targetVisemes.mouthClose = 0.05; // Gentle resting lip seal
+    this.targetVisemes.mouthClose = 0.02; // Gentle resting lip touch
     this.targetVisemes.mouthFunnel = 0;
     this.targetVisemes.mouthPucker = 0;
-    this.targetVisemes.mouthStretchLeft = 0;
-    this.targetVisemes.mouthStretchRight = 0;
+    this.targetVisemes.mouthStretchLeft = 0.14; // Maintain lateral width so lips never pinch
+    this.targetVisemes.mouthStretchRight = 0.14;
     this.targetVisemes.mouthSmileLeft = 0.22;
     this.targetVisemes.mouthSmileRight = 0.22;
     this.targetVisemes.mouthSmile = 0.22;
@@ -704,8 +728,8 @@ class AvatarStageEngine {
     for (const key in this.targetVisemes) {
       const target = this.targetVisemes[key];
       const current = this.visemes[key] || 0;
-      // Fast attack (0.65) snaps open on speech consonants/vowels; mouthClose attack (0.75) for crisp bilabials
-      const attackRate = key === 'mouthClose' ? 0.75 : 0.65;
+      // Fast attack (0.65) snaps open on speech consonants/vowels; release (0.35) relaxes naturally
+      const attackRate = 0.65;
       const lerpSpeed = target > current ? attackRate : 0.35;
       this.visemes[key] += (target - current) * lerpSpeed;
       if (key !== 'eyeBlinkLeft' && key !== 'eyeBlinkRight') {

@@ -65,8 +65,8 @@ The avatar's 3D mesh (`Wolf3D_Head` and `Wolf3D_Teeth`) uses the **Apple ARKit 5
 
 | Group | Phonemes / Sounds | Anatomical Mouth Configuration | ARKit Blendshape Targets |
 | :--- | :--- | :--- | :--- |
-| **`P_B_M`** | P, B, M | **Bilabial Closure**: Lips press tightly together; jaw almost closed; upper and lower lips seal completely. | `mouthClose: 0.95`<br>`jawOpen: 0.02`<br>`mouthPressLeft: 0.35`<br>`mouthPressRight: 0.35` |
-| **`F_V`** | F, V, PH | **Labiodental Tuck**: Lower lip pulls slightly inward and presses against upper incisors; mouth stretched slightly. | `mouthClose: 0.45`<br>`jawOpen: 0.09`<br>`mouthPressLeft: 0.15`<br>`mouthPressRight: 0.15`<br>`mouthStretchLeft: 0.18` |
+| **`P_B_M`** | P, B, M | **Natural Bilabial Closure**: Lips seal gently over teeth without forward pout; relaxed jaw (`0.04`); lateral stretch (`0.16`) prevents puckered smooch. | `mouthClose: 0.38`<br>`jawOpen: 0.04`<br>`mouthPress: 0.0`<br>`mouthStretchLeft: 0.16`<br>`mouthSmile: 0.22` |
+| **`F_V`** | F, V, PH | **Labiodental Tuck**: Lower lip rests lightly against upper incisors; balanced oral opening and horizontal spread. | `mouthClose: 0.22`<br>`jawOpen: 0.08`<br>`mouthPress: 0.0`<br>`mouthStretchLeft: 0.20`<br>`mouthSmile: 0.22` |
 | **`TH`** | TH | **Dental Fricative**: Tongue tip touches incisors; slight oral opening with moderate lateral stretch. | `jawOpen: 0.14`<br>`mouthStretchLeft: 0.22`<br>`mouthStretchRight: 0.22`<br>`mouthSmile: 0.22` |
 | **`T_D_S_Z`**| T, D, S, Z, C, J, CH, SH | **Alveolar / Sibilant Bite**: Teeth meet closely; lips stretch laterally exposing teeth edges for crisp dental consonants. | `jawOpen: 0.08`<br>`mouthStretchLeft: 0.40`<br>`mouthStretchRight: 0.40`<br>`mouthSmile: 0.30` |
 | **`K_G`** | K, G, NG, Q, X | **Velar Posture**: Tongue body lifts against soft palate; open oral cavity without excessive lip displacement. | `jawOpen: 0.22`<br>`mouthStretchLeft: 0.20`<br>`mouthStretchRight: 0.20`<br>`mouthSmile: 0.22` |
@@ -76,11 +76,13 @@ The avatar's 3D mesh (`Wolf3D_Head` and `Wolf3D_Teeth`) uses the **Apple ARKit 5
 | **`AA_AH`** | A, AH, AU, AW | **Low Open Vowel**: Deepest vertical jaw depression; relaxed lips exposing oral cavity. | `jawOpen: 0.34`<br>`mouthStretchLeft: 0.18`<br>`mouthStretchRight: 0.18`<br>`mouthSmile: 0.22` |
 | **`E_EH`** | E, EH | **Mid Front Vowel**: Balanced oral opening with lateral widening. | `jawOpen: 0.20`<br>`mouthStretchLeft: 0.34`<br>`mouthStretchRight: 0.34`<br>`mouthSmile: 0.30` |
 | **`EE_IY`** | EE, EA, AY, I, EYE | **High Front Spread Smile**: Wide horizontal grin retracting lip corners; upper and lower teeth exposed. | `jawOpen: 0.12`<br>`mouthStretchLeft: 0.48`<br>`mouthStretchRight: 0.48`<br>`mouthSmile: 0.42` |
-| **`PAUSE`** | Punctuation, Spaces | **Conversational Resting Smile**: Relaxed lips with a warm, engaged presenter smile. | `jawOpen: 0.0`<br>`mouthClose: 0.05`<br>`mouthSmile: 0.22` |
+| **`PAUSE`** | Punctuation | **Conversational Resting Smile**: Relaxed lips with a warm, engaged presenter smile and natural lateral width. | `jawOpen: 0.0`<br>`mouthClose: 0.02`<br>`mouthStretchLeft: 0.14`<br>`mouthSmile: 0.22` |
 
 > [!IMPORTANT]
-> **Strict Zero-Pucker Mandate (`mouthPucker: 0.0`)**:
-> On Ready Player Me / Wolf3D character meshes, `mouthPucker` pinches the vertices into an unnatural, cylindrical beak that detaches from the internal teeth mesh. The engine hard-clamps `mouthPucker = 0.0` across all 12 viseme groups. Circular vowel shapes (*W*, *OO*, *OH*) are articulated exclusively through `mouthFunnel`.
+> **Strict Zero-Pucker Mandate (`mouthPucker: 0.0`) & Zero-Press Rule**:
+> 1. On Ready Player Me / Wolf3D character meshes, `mouthPucker` pinches the vertices into an unnatural, cylindrical beak. The engine hard-clamps `mouthPucker = 0.0` across all 12 viseme groups.
+> 2. `mouthPress` is strictly zeroed (`0.0`) during speech. Setting `mouthPress > 0` thrusts the vermilion lip border forward into an unnatural kiss/smooch pout.
+> 3. Natural resting mouth width is preserved via `mouthStretchLeft/Right: 0.14-0.16` on closures, preventing the lips from narrowing inward. Circular vowels (*W, OO*) strictly maintain `0.0` stretch to preserve pure circular funnels.
 
 ---
 
@@ -205,13 +207,17 @@ Test output:
 
 Testing Phoneme-Viseme Engine from avatar_stage.js...
   ✓ PASS: parseTextToVisemeTimeline generates complete normalized sequence
-  ✓ PASS: Bilabial consonants (P, B, M) trigger anatomical lip closure
-  ✓ PASS: Rounded semivowels and vowels (W, OO) trigger circular lip funnels
+  ✓ PASS: Bilabial consonants (P, B, M) trigger natural lip closure without smooch pout
+  ✓ PASS: Rounded semivowels and vowels (W, OO) trigger circular lip funnels without lateral interference
   ✓ PASS: Front spread vowels (EE, AY, I) trigger horizontal grin and lateral stretch
   ✓ PASS: getInterpolatedViseme provides smooth co-articulation blending
   ✓ PASS: All visemes adhere strictly to mouthPucker = 0.0
+  ✓ PASS: Multi-syllabic silent trailing e suppressed (no double-flap on welcome)
+  ✓ PASS: Monosyllabic words (we, the) retain voiced vowels
+  ✓ PASS: Continuous speech phonation connects words without inter-word clamps
+All 9 Phoneme Viseme tests in avatar_stage.js passed successfully!
 
-Results: 15 of 15 tests passed.
+Results: 18 of 18 tests passed.
 ```
 
 ---

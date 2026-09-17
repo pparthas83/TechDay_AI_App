@@ -107,7 +107,7 @@ body {
   fill: #069BD7;
 }
 
-/* Brand Partnership & Powered by Google Cloud Lockup */
+/* Brand Partnership & Powered by Gemini Lockup */
 .brand-partnership-lockup {
   display: flex;
   flex-direction: column;
@@ -131,17 +131,25 @@ body {
   color: #8ec5ea;
 }
 
-.google-g-wrap {
+.google-cloud-badge {
   display: inline-flex;
   align-items: center;
-  line-height: 0;
+  gap: 5px;
 }
 
-.google-g-logo {
-  width: 17px;
-  height: 17px;
+.google-cloud-logo-svg {
+  width: 16px;
+  height: 13px;
   display: block;
-  filter: drop-shadow(0 0 6px rgba(66, 133, 244, 0.4));
+  filter: drop-shadow(0 0 5px rgba(66, 133, 244, 0.4));
+}
+
+.google-cloud-text {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  color: #ffffff;
 }
 
 .partnership-secondary-row {
@@ -160,25 +168,27 @@ body {
   letter-spacing: 0.3px;
 }
 
-.google-cloud-badge {
+.gemini-badge {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 4.5px;
 }
 
-.google-cloud-logo-svg {
-  width: 15px;
-  height: 13px;
+.gemini-sparkle-svg {
+  width: 14px;
+  height: 14px;
   display: block;
-  filter: drop-shadow(0 0 5px rgba(66, 133, 244, 0.35));
+  filter: drop-shadow(0 0 6px rgba(124, 105, 239, 0.6));
 }
 
-.google-cloud-text {
+.gemini-text {
   font-family: var(--font-sans);
-  font-size: 10px;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 700;
   letter-spacing: 0.5px;
-  color: #cce7fc;
+  background: linear-gradient(90deg, #60A5FA 0%, #A78BFA 50%, #F472B6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .header-brand-divider {

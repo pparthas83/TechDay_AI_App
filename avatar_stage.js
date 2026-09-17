@@ -348,6 +348,7 @@ class AvatarStageEngine {
 
     // Mouse tracking
     this.mouse = { x: 0, y: 0, targetX: 0, targetY: 0 };
+    this.isThinking = false;
 
     this.initScene();
     this.loadAvatar();
@@ -501,6 +502,22 @@ class AvatarStageEngine {
     this.targetVisemes.cheekSquintLeft = 0.08;
     this.targetVisemes.cheekSquintRight = 0.08;
     this.targetVisemes.browInnerUp = 0;
+  }
+
+  setThinking(isThinking) {
+    this.isThinking = Boolean(isThinking);
+    if (this.isThinking) {
+      // Subtle attentive listening posture: gentle brow inner lift and attentive smile
+      this.targetVisemes.browInnerUp = 0.12;
+      this.targetVisemes.mouthSmileLeft = 0.26;
+      this.targetVisemes.mouthSmileRight = 0.26;
+      this.targetVisemes.mouthClose = 0.04;
+    } else {
+      this.targetVisemes.browInnerUp = 0;
+      this.targetVisemes.mouthSmileLeft = 0.22;
+      this.targetVisemes.mouthSmileRight = 0.22;
+      this.targetVisemes.mouthClose = 0.02;
+    }
   }
 
   setSpokenText(text, audioElement = null) {
@@ -669,11 +686,14 @@ class AvatarStageEngine {
     const microYaw = Math.cos(time * 0.5) * 0.016;
     // Rhythmic speaking nod (conversational cadence)
     const speechNod = this.isSpeaking ? Math.sin(time * 3.4) * 0.012 : 0;
+    // Attentive listening posture during prompt processing (subtle cognitive head tilt)
+    const thinkingNod = this.isThinking ? Math.sin(time * 1.6) * 0.014 - 0.016 : 0;
+    const thinkingTilt = this.isThinking ? 0.022 : 0;
 
     if (this.headBone) {
       this.headBone.rotation.y = this.mouse.x * 0.16 + microYaw;
-      this.headBone.rotation.x = -this.mouse.y * 0.10 + breath * 0.5 + speechNod;
-      this.headBone.rotation.z = -this.mouse.x * 0.05 + microTilt;
+      this.headBone.rotation.x = -this.mouse.y * 0.10 + breath * 0.5 + speechNod + thinkingNod;
+      this.headBone.rotation.z = -this.mouse.x * 0.05 + microTilt + thinkingTilt;
     }
 
     // 3. Micro-gaze saccades (prevents dead-eyed stare)

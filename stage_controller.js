@@ -269,7 +269,7 @@ class StageController {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           text: text,
-          voice: 'en-US-Journey-F',
+          voice: 'en-US-Neural2-F',
           rate: 1.02
         })
       });
@@ -392,6 +392,9 @@ class StageController {
   }
 
   showThinking() {
+    if (this.avatar && typeof this.avatar.setThinking === 'function') {
+      this.avatar.setThinking(true);
+    }
     if (!this.dialogueStream) return;
     if (this.dialogueEmptyState) {
       this.dialogueEmptyState.style.display = 'none';
@@ -410,6 +413,9 @@ class StageController {
   }
 
   removeThinking() {
+    if (this.avatar && typeof this.avatar.setThinking === 'function') {
+      this.avatar.setThinking(false);
+    }
     const existing = document.getElementById('dialogue-thinking-indicator');
     if (existing) existing.remove();
   }

@@ -100,7 +100,7 @@ app.get('/api/agenda', (req, res) => {
 });
 
 // Core Text-to-Speech synthesis helper with caching
-async function synthesizeSpeechBuffer(text, voice = 'en-US-Journey-F', rate = 1.02) {
+async function synthesizeSpeechBuffer(text, voice = 'en-US-Neural2-F', rate = 1.02) {
   if (!text || typeof text !== 'string' || !text.trim()) return null;
   const cleanText = text.replace(/[\*\_`#]/g, '').trim();
   const cacheKey = crypto.createHash('md5').update(`${voice}_${rate}_${cleanText}`).digest('hex');
@@ -146,7 +146,7 @@ async function synthesizeSpeechBuffer(text, voice = 'en-US-Journey-F', rate = 1.
 
 // Google Cloud Text-to-Speech synthesis endpoint
 app.post('/api/tts', async (req, res) => {
-  const { text, voice = 'en-US-Journey-F', rate = 1.02 } = req.body;
+  const { text, voice = 'en-US-Neural2-F', rate = 1.02 } = req.body;
   if (!text || typeof text !== 'string' || !text.trim()) {
     return res.status(400).json({ error: 'Text string is required' });
   }

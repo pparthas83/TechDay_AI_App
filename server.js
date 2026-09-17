@@ -99,25 +99,18 @@ app.get('/api/agenda', (req, res) => {
   }
 });
 
-// Google Cloud Text-to-Speech synthesis endpoint
-app.post('/api/tts', async (req, res) => {
-  const { text, voice = 'en-US-Journey-F', rate = 1.02 } = req.body;
-  if (!text || typeof text !== 'string' || !text.trim()) {
-    return res.status(400).json({ error: 'Text string is required' });
-  }
-
+// Core Text-to-Speech synthesis helper with caching
+async function synthesizeSpeechBuffer(text, voice = 'en-US-Journey-F', rate = 1.02) {
+  if (!text || typeof text !== 'string' || !text.trim()) return null;
   const cleanText = text.replace(/[\*\_`#]/g, '').trim();
   const cacheKey = crypto.createHash('md5').update(`${voice}_${rate}_${cleanText}`).digest('hex');
 
   if (audioCache.has(cacheKey)) {
-    const cached = audioCache.get(cacheKey);
-    res.setHeader('Content-Type', 'audio/mp3');
-    res.setHeader('X-Cache-Status', 'HIT');
-    return res.send(cached);
+    return { buffer: audioCache.get(cacheKey), cacheStatus: 'HIT' };
   }
 
   if (!ttsClient) {
-    return res.status(503).json({ error: 'TTS client not available' });
+    return null;
   }
 
   try {
@@ -144,13 +137,28 @@ app.post('/api/tts', async (req, res) => {
     }
     audioCache.set(cacheKey, audioBuffer);
 
-    res.setHeader('Content-Type', 'audio/mp3');
-    res.setHeader('X-Cache-Status', 'MISS');
-    res.send(audioBuffer);
+    return { buffer: audioBuffer, cacheStatus: 'MISS' };
   } catch (err) {
     console.error('[TTS] Synthesis error:', err.message);
-    res.status(500).json({ error: 'Failed to synthesize speech', details: err.message });
+    return null;
   }
+}
+
+// Google Cloud Text-to-Speech synthesis endpoint
+app.post('/api/tts', async (req, res) => {
+  const { text, voice = 'en-US-Journey-F', rate = 1.02 } = req.body;
+  if (!text || typeof text !== 'string' || !text.trim()) {
+    return res.status(400).json({ error: 'Text string is required' });
+  }
+
+  const result = await synthesizeSpeechBuffer(text, voice, rate);
+  if (!result || !result.buffer) {
+    return res.status(500).json({ error: 'Failed to synthesize speech' });
+  }
+
+  res.setHeader('Content-Type', 'audio/mp3');
+  res.setHeader('X-Cache-Status', result.cacheStatus);
+  res.send(result.buffer);
 });
 
 const SYSTEM_INSTRUCTION =
@@ -176,6 +184,23 @@ app.post('/api/chat', async (req, res) => {
 
   const trimmedPrompt = prompt.trim();
   const targetBackend = (backend || 'gecx').toLowerCase();
+
+  const buildChatResponse = async (replyText, extra = {}) => {
+    let audioBase64 = null;
+    try {
+      const speechRes = await synthesizeSpeechBuffer(replyText);
+      if (speechRes && speechRes.buffer) {
+        audioBase64 = speechRes.buffer.toString('base64');
+      }
+    } catch (audioErr) {
+      console.warn('[Chat] Server-side audio synthesis warning:', audioErr.message);
+    }
+    return {
+      reply: replyText,
+      audioBase64,
+      ...extra
+    };
+  };
 
   // Helper to query Gemini Flash directly (supports API Key or Vertex AI ADC)
   const queryGemini = async (text) => {
@@ -234,11 +259,11 @@ app.post('/api/chat', async (req, res) => {
       console.warn('[Chat] GECX service unavailable, falling back to Gemini Flash');
       try {
         const geminiReply = await queryGemini(trimmedPrompt);
-        return res.json({
-          reply: geminiReply,
+        const payload = await buildChatResponse(geminiReply, {
           backend: 'Gemini 3.6 Flash (GECX Fallback)',
           engine: 'gemini'
         });
+        return res.json(payload);
       } catch (geminiErr) {
         return res.status(500).json({ error: 'Both GECX and Gemini failed', details: geminiErr.message });
       }
@@ -249,23 +274,23 @@ app.post('/api/chat', async (req, res) => {
       const gecxResult = await gecxService.detectIntent(trimmedPrompt, session);
       const cleanReply = gecxResult.reply.replace(/[\*\_`#]/g, '').trim();
       console.log(`[GECX Chat] User: "${trimmedPrompt}" -> Watt (GECX Playbook): "${cleanReply}" [match: ${gecxResult.match?.matchType}]`);
-      return res.json({
-        reply: cleanReply,
+      const payload = await buildChatResponse(cleanReply, {
         backend: 'GECX Playbook',
         engine: 'gecx',
         matchType: gecxResult.match?.matchType,
         confidence: gecxResult.match?.confidence
       });
+      return res.json(payload);
     } catch (gecxErr) {
       console.error('[GECX Chat] GECX error, falling back to Gemini Flash:', gecxErr.message);
       try {
         const geminiReply = await queryGemini(trimmedPrompt);
-        return res.json({
-          reply: geminiReply,
+        const payload = await buildChatResponse(geminiReply, {
           backend: 'Gemini 3.6 Flash (Fallback)',
           engine: 'gemini',
           warning: 'GECX Playbook encountered an error; served by Gemini'
         });
+        return res.json(payload);
       } catch (fallbackErr) {
         return res.status(500).json({
           error: 'Failed to process inquiry with GECX and fallback',
@@ -279,11 +304,11 @@ app.post('/api/chat', async (req, res) => {
   try {
     const geminiReply = await queryGemini(trimmedPrompt);
     console.log(`[Gemini Chat] User: "${trimmedPrompt}" -> Watt (Gemini 3.6): "${geminiReply}"`);
-    return res.json({
-      reply: geminiReply,
+    const payload = await buildChatResponse(geminiReply, {
       backend: 'Gemini 3.6 Flash',
       engine: 'gemini'
     });
+    return res.json(payload);
   } catch (err) {
     console.error('[Gemini Chat] Generation error:', err.message);
     return res.status(500).json({

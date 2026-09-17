@@ -253,7 +253,7 @@ class StageController {
     }
   }
 
-  async speakText(text) {
+  async speakText(text, onPlayCallback = null) {
     if (this.isPlaying) {
       this.audioElement.pause();
     }
@@ -279,9 +279,52 @@ class StageController {
       const blob = await res.blob();
       const audioUrl = URL.createObjectURL(blob);
       this.audioElement.src = audioUrl;
+
+      if (typeof onPlayCallback === 'function') {
+        onPlayCallback();
+      }
       await this.audioElement.play();
     } catch (err) {
       console.warn('[TTS] Falling back to Web Speech API:', err.message);
+      if (typeof onPlayCallback === 'function') {
+        onPlayCallback();
+      }
+      this.fallbackWebSpeech(text);
+    }
+  }
+
+  // Play pre-synthesized audio bundled from /api/chat with zero extra network roundtrips
+  async playBundledSpeech(text, audioBase64) {
+    if (this.isPlaying) {
+      this.audioElement.pause();
+    }
+
+    try {
+      this.currentSpokenText = text;
+      this.setSubtitle(text, 'speaking');
+      if (this.avatar) {
+        this.avatar.setSpokenText(text, this.audioElement);
+      }
+
+      // Convert Base64 to Blob URL for clean same-origin Web Audio processing
+      const binaryStr = atob(audioBase64);
+      const len = binaryStr.length;
+      const bytes = new Uint8Array(len);
+      for (let i = 0; i < len; i++) {
+        bytes[i] = binaryStr.charCodeAt(i);
+      }
+      const blob = new Blob([bytes], { type: 'audio/mp3' });
+      const audioUrl = URL.createObjectURL(blob);
+      this.audioElement.src = audioUrl;
+
+      // Reveal dialogue bubble in exact lockstep with audio playback initiation
+      this.removeThinking();
+      this.addDialogueMessage('watt', text);
+      await this.audioElement.play();
+    } catch (err) {
+      console.warn('[Audio] Bundled playback error, falling back:', err.message);
+      this.removeThinking();
+      this.addDialogueMessage('watt', text);
       this.fallbackWebSpeech(text);
     }
   }
@@ -397,7 +440,7 @@ class StageController {
       // 2. Render thinking status indicator
       this.showThinking();
 
-      // 3. Query GECX backend
+      // 3. Query GECX backend (returns reply + bundled audioBase64)
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -409,13 +452,22 @@ class StageController {
       });
 
       const data = await res.json();
-      this.removeThinking();
 
       if (data.reply) {
-        this.addDialogueMessage('watt', data.reply);
-        await this.speakText(data.reply);
+        if (data.audioBase64) {
+          // Play bundled audio immediately and reveal text in lockstep with speech start
+          await this.playBundledSpeech(data.reply, data.audioBase64);
+        } else {
+          // Fallback if no audio bundled
+          await this.speakText(data.reply, () => {
+            this.removeThinking();
+            this.addDialogueMessage('watt', data.reply);
+          });
+        }
       } else if (data.error) {
         throw new Error(data.error);
+      } else {
+        this.removeThinking();
       }
     } catch (err) {
       console.error('[GECX Chat] Query error:', err);

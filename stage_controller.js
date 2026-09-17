@@ -14,6 +14,7 @@ class StageController {
     this.speechRecognition = null;
     this.selectedBackend = 'gecx';
     this.currentSpokenText = '';
+    this.sessionId = 'stage-' + Date.now() + '-' + Math.random().toString(36).substring(2, 9);
 
     // UI Elements
     this.dialogueStream = document.getElementById('dialogue-stream');
@@ -269,7 +270,7 @@ class StageController {
         body: JSON.stringify({
           text: text,
           voice: 'en-US-Journey-F',
-          rate: 0.88
+          rate: 1.02
         })
       });
 
@@ -294,7 +295,7 @@ class StageController {
     const voices = window.speechSynthesis.getVoices();
     const femaleVoice = voices.find(v => (v.name.includes('Natural') || v.name.includes('Samantha') || v.name.includes('Google') || v.name.includes('Zira')) && v.lang.startsWith('en')) || voices[0];
     if (femaleVoice) utterance.voice = femaleVoice;
-    utterance.rate = 0.88;
+    utterance.rate = 1.02;
 
     utterance.onstart = () => {
       this.isPlaying = true;
@@ -402,7 +403,8 @@ class StageController {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           prompt: cleanPrompt,
-          backend: 'gecx'
+          backend: 'gecx',
+          sessionId: this.sessionId
         })
       });
 

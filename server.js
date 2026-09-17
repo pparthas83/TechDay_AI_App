@@ -101,7 +101,7 @@ app.get('/api/agenda', (req, res) => {
 
 // Google Cloud Text-to-Speech synthesis endpoint
 app.post('/api/tts', async (req, res) => {
-  const { text, voice = 'en-US-Journey-F', rate = 0.88 } = req.body;
+  const { text, voice = 'en-US-Journey-F', rate = 1.02 } = req.body;
   if (!text || typeof text !== 'string' || !text.trim()) {
     return res.status(400).json({ error: 'Text string is required' });
   }
@@ -129,7 +129,7 @@ app.post('/api/tts', async (req, res) => {
       },
       audioConfig: {
         audioEncoding: 'MP3',
-        speakingRate: parseFloat(rate) || 0.88,
+        speakingRate: parseFloat(rate) || 1.02,
         pitch: 0.0
       }
     };

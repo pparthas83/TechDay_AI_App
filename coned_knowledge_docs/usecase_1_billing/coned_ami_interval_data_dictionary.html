@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Con Edison Advanced Metering Infrastructure (AMI): Data Dictionary & Interval Telemetry</title>
+  <meta name="source" content="https://www.coned.com/en/usecase_1_billing/coned_ami_interval_data_dictionary.html">
+</head>
+<body>
+  <h1>Con Edison Advanced Metering Infrastructure (AMI): Data Dictionary & Interval Telemetry</h1>
+  <h2>Smart Meter (AMI) Telemetry Specification</h2>
+      <p>Con Edison's AMI deployment consists of solid-state electronic meters communicating across a multi-hop 900 MHz IPv6 wireless mesh network connecting to cellular collectors and Con Edison Head-End Systems.</p>
+      <h3>Interval Data Attributes:</h3>
+      <ul>
+        <li><strong>Interval Granularity:</strong> 15-minute intervals for electric consumption (kWh) and reactive power (kVARh); 60-minute intervals for gas consumption (ccf).</li>
+        <li><strong>Voltage Profiling:</strong> Continuous root-mean-square (RMS) voltage monitoring reporting over-voltage (>126V) and under-voltage (<114V) events to maintain ANSI C84.1 Range A service limits.</li>
+        <li><strong>Outage & Restoration Signals:</strong> Last-gasp transmission on power loss (dying gasp) sending immediate grid fault notification; power restoration verification pinging upon secondary re-energization.</li>
+        <li><strong>Customer Portal Integration:</strong> Granular data available to customers within 24 hours through the Con Edison My Account portal and Green Button Connect API.</li>
+      </ul>
+</body>
+</html>

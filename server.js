@@ -5,6 +5,7 @@ const crypto = require('crypto');
 const textToSpeech = require('@google-cloud/text-to-speech');
 const { GoogleAuth } = require('google-gax');
 const GECXService = require('./gecx_service');
+const liveDataService = require('./services/live_data_service');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -97,6 +98,27 @@ app.get('/api/agenda', (req, res) => {
   } else {
     res.status(404).json({ error: 'Agenda file not found' });
   }
+});
+
+// Live Real-Time Data & Tools Endpoints
+app.get('/api/live/weather', async (req, res) => {
+  const data = await liveDataService.fetchNWSWeatherAlerts();
+  res.json(data);
+});
+
+app.get('/api/live/grid', async (req, res) => {
+  const data = await liveDataService.fetchNYISOGridFuelMix();
+  res.json(data);
+});
+
+app.get('/api/live/outages', async (req, res) => {
+  const data = await liveDataService.fetchLiveOutages();
+  res.json(data);
+});
+
+app.post('/api/tools/clean-heat-calc', (req, res) => {
+  const result = liveDataService.calculateCleanHeatSizing(req.body);
+  res.json(result);
 });
 
 // Core Text-to-Speech synthesis helper with caching
@@ -253,15 +275,54 @@ app.post('/api/chat', async (req, res) => {
     return textPart.replace(/[\*\_`#]/g, '').trim();
   };
 
+  // Real-Time Telemetry Intent Detection & Pre-fetching (1.5s timeout budget)
+  let liveContext = null;
+  let realTimeIntent = null;
+  try {
+    realTimeIntent = liveDataService.detectRealTimeQuery(trimmedPrompt);
+    if (realTimeIntent === 'LIVE_WEATHER') {
+      const weather = await liveDataService.fetchNWSWeatherAlerts();
+      liveContext = `[Live NWS Weather Telemetry: ${weather.headline}. Details: ${weather.description}]`;
+    } else if (realTimeIntent === 'LIVE_GRID_MIX') {
+      const grid = await liveDataService.fetchNYISOGridFuelMix();
+      liveContext = `[Live NYISO Grid Fuel Mix: ${grid.summary}. Renewables: ${grid.renewablesTotalMW} MW, Clean Percentage: ${grid.cleanPercentage}%]`;
+    } else if (realTimeIntent === 'LIVE_OUTAGES') {
+      const outages = await liveDataService.fetchLiveOutages();
+      liveContext = `[Live Con Edison Outage Dashboard: ${outages.summary}. System Reliability: ${outages.reliabilityRate}]`;
+    } else if (realTimeIntent === 'CALCULATE_CLEAN_HEAT') {
+      const sqftMatch = trimmedPrompt.match(/(\d[\d,]*)\s*(?:sq|square|sqft)/i);
+      const sqft = sqftMatch ? parseInt(sqftMatch[1].replace(/,/g, ''), 10) : 3500;
+      const dac = /dac|disadvantaged|low[- ]income/i.test(trimmedPrompt);
+      const borough = /queens/i.test(trimmedPrompt) ? 'Queens' :
+                      /brooklyn/i.test(trimmedPrompt) ? 'Brooklyn' :
+                      /bronx/i.test(trimmedPrompt) ? 'The Bronx' :
+                      /staten/i.test(trimmedPrompt) ? 'Staten Island' :
+                      /westchester/i.test(trimmedPrompt) ? 'Westchester' : 'Manhattan';
+      const calc = liveDataService.calculateCleanHeatSizing({ sqft, borough, dacEligible: dac });
+      liveContext = `[Real-Time Clean Heat Calculation Engine: ${calc.summaryText}]`;
+    }
+    if (liveContext) {
+      console.log(`[Hybrid Live Grounding] Detected intent: ${realTimeIntent} -> Injected live context`);
+    }
+  } catch (liveErr) {
+    console.warn('[Hybrid Live Grounding] Error fetching real-time telemetry:', liveErr.message);
+  }
+
+  const effectivePrompt = liveContext
+    ? `${liveContext} The audience asks: "${trimmedPrompt}". Using this real-time factual data, formulate your concise 1 to 2 sentence answer as Watt:`
+    : trimmedPrompt;
+
   // 1. ROUTE TO GECX PLAYBOOK
   if (targetBackend === 'gecx') {
     if (!gecxService) {
       console.warn('[Chat] GECX service unavailable, falling back to Gemini Flash');
       try {
-        const geminiReply = await queryGemini(trimmedPrompt);
+        const geminiReply = await queryGemini(effectivePrompt);
         const payload = await buildChatResponse(geminiReply, {
           backend: 'Gemini 3.6 Flash (GECX Fallback)',
-          engine: 'gemini'
+          engine: 'gemini',
+          realTimeIntent: realTimeIntent || undefined,
+          isRealTimeGrounded: Boolean(liveContext)
         });
         return res.json(payload);
       } catch (geminiErr) {
@@ -271,24 +332,28 @@ app.post('/api/chat', async (req, res) => {
 
     try {
       const session = sessionId || `stage-session-${Date.now()}`;
-      const gecxResult = await gecxService.detectIntent(trimmedPrompt, session);
+      const gecxResult = await gecxService.detectIntent(effectivePrompt, session);
       const cleanReply = gecxResult.reply.replace(/[\*\_`#]/g, '').trim();
       console.log(`[GECX Chat] User: "${trimmedPrompt}" -> Watt (GECX Playbook): "${cleanReply}" [match: ${gecxResult.match?.matchType}]`);
       const payload = await buildChatResponse(cleanReply, {
         backend: 'GECX Playbook',
         engine: 'gecx',
         matchType: gecxResult.match?.matchType,
-        confidence: gecxResult.match?.confidence
+        confidence: gecxResult.match?.confidence,
+        realTimeIntent: realTimeIntent || undefined,
+        isRealTimeGrounded: Boolean(liveContext)
       });
       return res.json(payload);
     } catch (gecxErr) {
       console.error('[GECX Chat] GECX error, falling back to Gemini Flash:', gecxErr.message);
       try {
-        const geminiReply = await queryGemini(trimmedPrompt);
+        const geminiReply = await queryGemini(effectivePrompt);
         const payload = await buildChatResponse(geminiReply, {
           backend: 'Gemini 3.6 Flash (Fallback)',
           engine: 'gemini',
-          warning: 'GECX Playbook encountered an error; served by Gemini'
+          warning: 'GECX Playbook encountered an error; served by Gemini',
+          realTimeIntent: realTimeIntent || undefined,
+          isRealTimeGrounded: Boolean(liveContext)
         });
         return res.json(payload);
       } catch (fallbackErr) {
@@ -302,11 +367,13 @@ app.post('/api/chat', async (req, res) => {
 
   // 2. ROUTE TO GEMINI 3.6 FLASH
   try {
-    const geminiReply = await queryGemini(trimmedPrompt);
+    const geminiReply = await queryGemini(effectivePrompt);
     console.log(`[Gemini Chat] User: "${trimmedPrompt}" -> Watt (Gemini 3.6): "${geminiReply}"`);
     const payload = await buildChatResponse(geminiReply, {
       backend: 'Gemini 3.6 Flash',
-      engine: 'gemini'
+      engine: 'gemini',
+      realTimeIntent: realTimeIntent || undefined,
+      isRealTimeGrounded: Boolean(liveContext)
     });
     return res.json(payload);
   } catch (err) {

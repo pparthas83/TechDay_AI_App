@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Con Edison Fleet Vehicle Idling Reduction AI: Engineering Architecture</title>
+  <meta name="source" content="https://www.coned.com/en/usecase_2_idling/coned_fleet_telematics_ai_whitepaper.html">
+</head>
+<body>
+  <h1>Con Edison Fleet Vehicle Idling Reduction AI: Engineering Architecture</h1>
+  <h2>Fleet Telematics & Computer Vision AI Architecture</h2>
+      <p>Con Edison operates over 4,500 fleet vehicles, including heavy-duty aerial bucket trucks, underground maintenance vans, and emergency response units across the five boroughs and Westchester County.</p>
+      <h3>Telematics Data Ingestion:</h3>
+      <ul>
+        <li><strong>SAE J1939 CAN Bus Ingestion:</strong> Continuous 1 Hz telemetry streaming engine parameters: Engine Speed (RPM), Fuel Rate (L/hr), Engine Coolant Temperature, Parking Brake Status, and Vehicle Ground Speed.</li>
+        <li><strong>Power Take-Off (PTO) State Detection:</strong> Auxiliary sensors monitor hydraulic pump engagement for bucket boom elevation and underground cable pulling winches.</li>
+        <li><strong>Edge Machine Learning Classification:</strong> Onboard IoT gateways run a lightweight inference model to categorize engine run state:
+          <ul>
+            <li><strong>Transit:</strong> Speed > 0 mph.</li>
+            <li><strong>Legitimate Work Mode:</strong> Speed = 0 mph, Parking Brake Set, PTO Active (hydraulic equipment operating).</li>
+            <li><strong>Regulatory Idle:</strong> Speed = 0 mph, PTO Inactive, Engine Run Time > 3 minutes.</li>
+          </ul>
+        </li>
+      </ul>
+</body>
+</html>

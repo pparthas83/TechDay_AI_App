@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Con Edison Generative Billing Agent: Technical RAG Architecture Blueprint</title>
+  <meta name="source" content="https://www.coned.com/en/usecase_1_billing/coned_billing_rag_architecture_blueprint.html">
+</head>
+<body>
+  <h1>Con Edison Generative Billing Agent: Technical RAG Architecture Blueprint</h1>
+  <h2>1. Retrieval-Augmented Generation (RAG) Architecture for Customer Operations</h2>
+      <p>The Con Edison Generative Billing Agent utilizes a hybrid RAG framework deployed on Google Cloud Vertex AI to explain billing variations to residential and commercial customers. The architecture separates deterministic financial calculations from natural-language generation.</p>
+      <p><strong>Core Pipeline Components:</strong></p>
+      <ul>
+        <li><strong>Smart Meter Telemetry Ingestion:</strong> Ingests 15-minute interval electric data (kWh) and hourly gas interval data (ccf) from over 5.2 million deployed AMI smart meters.</li>
+        <li><strong>Deterministic Variance Engine:</strong> Python-based mathematical verification layer that computes the exact variance delta between current and prior billing cycles, decomposing variance into weather impact, rate component changes, and calendar day differences before LLM invocation.</li>
+        <li><strong>Semantic Knowledge Retrieval:</strong> Vector search over Con Edison tariff schedules (PSC No. 10), fuel adjustment clauses, and customer eligibility rules.</li>
+        <li><strong>LLM Generation & Safety Rails:</strong> Gemini model generates personalized, conversational explanations. A strict output validation layer ensures zero numerical hallucinations: every dollar amount, percentage, and date must exactly match the output of the Deterministic Variance Engine.</li>
+      </ul>
+      <h2>2. Degree-Day Variance Decomposition Formula</h2>
+      <p>The billing agent applies weather-normalized sensitivity factors based on standard utility degree-day metrics:</p>
+      <ul>
+        <li><strong>Cooling Degree Days (CDD):</strong> Max(0, Mean Daily Temp - 65°F). Used to quantify summer air conditioning load spikes.</li>
+        <li><strong>Heating Degree Days (HDD):</strong> Max(0, 65°F - Mean Daily Temp). Used to quantify winter space heating variances.</li>
+        <li><strong>Formula:</strong> Expected Weather Variance ($) = (Current CDD/HDD - Prior CDD/HDD) × Baseline Customer Thermal Elasticity Factor (kWh/degree-day) × Marginal Volumetric Tariff Rate ($/kWh).</li>
+      </ul>
+</body>
+</html>

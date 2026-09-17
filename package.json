@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "start:gecx": "node server_gecx.js",
-    "test": "node test/test_gecx.js && node test/test_visemes.js"
+    "test": "node test/test_gecx.js && node test/test_visemes.js && node test/test_hybrid.js"
   },
   "dependencies": {
     "@google-cloud/dialogflow-cx": "^6.1.0",

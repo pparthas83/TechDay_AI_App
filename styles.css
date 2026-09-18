@@ -282,16 +282,19 @@ body {
    ========================================================================== */
 .middle-section {
   display: grid;
-  grid-template-columns: 1fr 1.18fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.18fr);
   gap: 22px;
   min-height: 0;
   height: 100%;
+  width: 100%;
 }
 
 /* LEFT PANEL: 3D GLB AVATAR */
 .left-panel {
   position: relative;
   height: 100%;
+  width: 100%;
+  min-width: 0;
   border-radius: 20px;
   overflow: hidden;
   background: radial-gradient(circle at 50% 28%, rgba(0, 229, 255, 0.1) 0%, rgba(6, 12, 26, 0.95) 80%);
@@ -426,12 +429,16 @@ body {
   gap: 16px;
   height: 100%;
   min-height: 0;
+  min-width: 0;
+  width: 100%;
 }
 
 /* Unified Chat Interface Card */
 .chat-interface-card {
   flex: 1;
   min-height: 0;
+  min-width: 0;
+  width: 100%;
   display: flex;
   flex-direction: column;
   background: var(--bg-panel);
@@ -452,6 +459,9 @@ body {
   margin-bottom: 10px;
   gap: 10px;
   min-height: 36px;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
 }
 
 
@@ -723,7 +733,7 @@ body {
 }
 
 .header-flow-track {
-  flex: 1;
+  flex: 1 1 0%;
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -735,7 +745,6 @@ body {
   min-width: 0;
   padding: 0;
   overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .flow-node {
@@ -743,6 +752,7 @@ body {
   font-weight: 500;
   transition: color 0.35s ease, text-shadow 0.35s ease, opacity 0.35s ease;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .flow-arrow {
@@ -751,6 +761,7 @@ body {
   margin: 0 1px;
   transition: color 0.35s ease, text-shadow 0.35s ease;
   user-select: none;
+  flex-shrink: 0;
 }
 
 .flow-branch-fork {
@@ -763,6 +774,9 @@ body {
   border-radius: 6px;
   transition: all 0.35s ease;
   white-space: nowrap;
+  min-width: 0;
+  flex-shrink: 1;
+  overflow: hidden;
 }
 
 .branch-node {
@@ -770,6 +784,11 @@ body {
   font-weight: 500;
   transition: color 0.35s ease, text-shadow 0.35s ease, opacity 0.35s ease;
   white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: 220px;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 .branch-sep {
@@ -777,6 +796,7 @@ body {
   font-size: 9px;
   margin: 0 1px;
   user-select: none;
+  flex-shrink: 0;
 }
 
 /* Thinking / In-Flight: Watt & GECX pulse in Neon Orange, fork evaluates */

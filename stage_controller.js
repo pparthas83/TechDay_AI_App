@@ -31,6 +31,7 @@ class StageController {
 
     this.initAudioRouting();
     this.initSpeechRecognition();
+    this.initGuideModalAndStarterChips();
     this.loadAgenda();
     this.setupKeyBindings();
   }
@@ -324,11 +325,16 @@ class StageController {
       // Reveal dialogue bubble in exact lockstep with audio playback initiation
       this.removeThinking();
       this.addDialogueMessage('watt', text, meta);
-      await this.audioElement.play();
+
+      try {
+        await this.audioElement.play();
+      } catch (playErr) {
+        console.warn('[Audio] audioElement.play() blocked or failed:', playErr.message);
+        this.fallbackWebSpeech(text);
+      }
     } catch (err) {
-      console.warn('[Audio] Bundled playback error, falling back:', err.message);
+      console.warn('[Audio] Bundled audio decode error:', err.message);
       this.removeThinking();
-      this.addDialogueMessage('watt', text, meta);
       this.fallbackWebSpeech(text);
     }
   }
@@ -773,26 +779,68 @@ class StageController {
     });
   }
 
+  initGuideModalAndStarterChips() {
+    this.guideModal = document.getElementById('guide-modal');
+    this.guideToggleBtn = document.getElementById('guide-toggle-btn');
+    this.guideCloseBtn = document.getElementById('guide-modal-close');
+
+    if (this.guideToggleBtn) {
+      this.guideToggleBtn.addEventListener('click', () => this.toggleGuideModal(true));
+    }
+    if (this.guideCloseBtn) {
+      this.guideCloseBtn.addEventListener('click', () => this.toggleGuideModal(false));
+    }
+    if (this.guideModal) {
+      this.guideModal.addEventListener('click', (e) => {
+        if (e.target === this.guideModal) {
+          this.toggleGuideModal(false);
+        }
+      });
+    }
+
+    // 1-Click Starter Kit Chips
+    const chips = document.querySelectorAll('.starter-chip');
+    chips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        const promptText = chip.getAttribute('data-prompt');
+        if (promptText) {
+          this.askGemini(promptText);
+        }
+      });
+    });
+  }
+
+  toggleGuideModal(show) {
+    if (!this.guideModal) return;
+    this.guideModal.style.display = show ? 'flex' : 'none';
+  }
+
   setupKeyBindings() {
     window.addEventListener('keydown', (e) => {
-      // Space or ArrowRight: Next Topic
-      if (e.code === 'Space' && e.target.tagName !== 'INPUT') {
+      const isInputFocused = ['INPUT', 'TEXTAREA'].includes(e.target.tagName);
+
+      // Space: Play/Pause
+      if (e.code === 'Space' && !isInputFocused) {
         e.preventDefault();
         this.togglePlayPause();
-      } else if (e.code === 'ArrowRight' && e.target.tagName !== 'INPUT') {
+      } else if (e.code === 'ArrowRight' && !isInputFocused) {
         e.preventDefault();
         this.nextTopic();
-      } else if (e.code === 'ArrowLeft' && e.target.tagName !== 'INPUT') {
+      } else if (e.code === 'ArrowLeft' && !isInputFocused) {
         e.preventDefault();
         this.prevTopic();
-      } else if (e.key === 'm' || e.key === 'M') {
-        if (e.target.tagName !== 'INPUT') {
-          e.preventDefault();
-          this.toggleMicrophone();
-        }
-      } else if (e.key >= '0' && e.key <= '6' && e.target.tagName !== 'INPUT') {
+      } else if ((e.key === 'm' || e.key === 'M') && !isInputFocused) {
+        e.preventDefault();
+        this.toggleMicrophone();
+      } else if (e.key >= '0' && e.key <= '6' && !isInputFocused) {
         e.preventDefault();
         this.goToTopic(parseInt(e.key), true);
+      } else if ((e.key === '?' || (e.shiftKey && e.key === '/')) && !isInputFocused) {
+        e.preventDefault();
+        this.toggleGuideModal(true);
+      } else if (e.key === 'Escape' && this.guideModal && this.guideModal.style.display !== 'none') {
+        e.preventDefault();
+        this.toggleGuideModal(false);
       }
     });
   }

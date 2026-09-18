@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Con Edison Tech Day, October 7, 2026</title>
-  <link rel="stylesheet" href="styles.css?v=202610_gemini_lockup">
+  <link rel="stylesheet" href="styles.css?v=202610_guide_starter_kit">
   <!-- Three.js + GLTFLoader -->
   <script src="lib/three.min.js"></script>
   <script>
@@ -72,7 +72,10 @@
           </div>
         </div>
         <div class="header-brand-right">
-          <span class="corporate-badge">CONSOLIDATED EDISON COMPANY OF NEW YORK</span>
+          <button id="guide-toggle-btn" class="guide-toggle-btn" title="View Watt Capabilities & System Guide [?]" aria-label="System Guide">
+            <span class="guide-icon-circle">?</span>
+            <span>GUIDE</span>
+          </button>
         </div>
       </div>
     </header>
@@ -145,7 +148,30 @@
               <div class="dialogue-empty-state" id="dialogue-empty-state">
                 <div class="empty-icon">💬</div>
                 <div class="empty-title">Ask Watt Anything</div>
-                <div class="empty-desc">Speak into the microphone [M] or type below to ask Watt about Con Edison's AI initiatives.</div>
+                <div class="empty-desc">Speak into the microphone [M] or click a starter prompt below:</div>
+
+                <!-- 1-Click Starter Kit Prompt Cards -->
+                <div class="starter-kit-container" id="starter-kit-container">
+                  <div class="starter-kit-label">EXPLORE WATT'S LIVE CAPABILITIES</div>
+                  <div class="starter-kit-grid">
+                    <button type="button" class="starter-chip" data-prompt="What is the current zero-carbon fuel mix on the electric grid?">
+                      <span class="chip-icon">⚡</span>
+                      <span class="chip-text">Live NYISO Clean Fuel Mix</span>
+                    </button>
+                    <button type="button" class="starter-chip" data-prompt="What are the current NWS weather advisories for NYC?">
+                      <span class="chip-icon">🌦️</span>
+                      <span class="chip-text">NWS Weather Advisories</span>
+                    </button>
+                    <button type="button" class="starter-chip" data-prompt="Calculate heat pump rebate for 3,500 sq ft in Brooklyn">
+                      <span class="chip-icon">🏠</span>
+                      <span class="chip-text">Clean Heat Rebate Calculator</span>
+                    </button>
+                    <button type="button" class="starter-chip" data-prompt="How does telematics and idling reduction AI save fuel for the fleet?">
+                      <span class="chip-icon">🚛</span>
+                      <span class="chip-text">Fleet Idling Reduction AI</span>
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -190,9 +216,64 @@
 
   </div>
 
+  <!-- MODAL: System Capabilities & Boundaries Guide (Toggled by [?] GUIDE button or pressing '?') -->
+  <div id="guide-modal" class="guide-modal-backdrop" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="guide-modal-title">
+    <div class="guide-modal-card">
+      <div class="guide-modal-header">
+        <div class="guide-modal-title-group">
+          <span class="guide-icon-circle" style="width: 20px; height: 20px; font-size: 11px;">?</span>
+          <span id="guide-modal-title" class="guide-modal-title">Watt AI Moderator — Capabilities &amp; System Guide</span>
+          <span class="guide-modal-badge">GECX Powered</span>
+        </div>
+        <button id="guide-modal-close" class="guide-modal-close" title="Close Guide [Esc]" aria-label="Close Guide">✕</button>
+      </div>
+
+      <div class="guide-modal-body">
+        <!-- Section 1: Overview -->
+        <div class="guide-section">
+          <div class="guide-section-title can-do">
+            <span>✨</span>
+            <span>Who is Watt?</span>
+          </div>
+          <p style="margin: 0; color: #94a3b8;">
+            Watt is Con Edison's official Keynote AI Moderator for Tech Day (October 7, 2026), co-developed by Con Edison Enterprise Technology Solutions (ETS) and Google Cloud, powered by Gemini and Dialogflow CX Playbooks (GECX).
+          </p>
+        </div>
+
+        <!-- Section 2: What Watt CAN Do -->
+        <div class="guide-section">
+          <div class="guide-section-title can-do">
+            <span>⚡</span>
+            <span>What Watt Can Do (Live Tools &amp; Knowledge)</span>
+          </div>
+          <ul class="guide-list">
+            <li><strong>Live NYISO Electric Grid Telemetry:</strong> Queries current New York state megawatt load, clean fuel generation, and zero-carbon clean energy percentage (hydro, nuclear, wind, solar).</li>
+            <li><strong>National Weather Service (NWS / NOAA):</strong> Reports real-time NYC weather alerts, coastal flood/wind advisories, and atmospheric storm conditions.</li>
+            <li><strong>Con Edison Outage Telemetry:</strong> Retrieves public operations interruption data, borough outage counts, and 99.99% system reliability metrics.</li>
+            <li><strong>Clean Heat &amp; LL97 Rebate Calculator:</strong> Computes cold-climate heat pump sizing (tons), Con Edison rebates ($/ton), DAC bonuses, and Local Law 97 carbon penalty savings for any square footage.</li>
+            <li><strong>5 Keynote Panel Topics:</strong> Deep technical mastery across Customer Billing Agent, Fleet Telematics Idling Reduction, Subsurface Manhole Acoustic Safety, Weather Modeling Grid Resilience, and Clean Heat Optimization.</li>
+          </ul>
+        </div>
+
+        <!-- Section 3: What Watt CANNOT Do -->
+        <div class="guide-section">
+          <div class="guide-section-title cannot-do">
+            <span>🛡️</span>
+            <span>Enterprise Guardrails &amp; Boundaries (What Watt Cannot Do)</span>
+          </div>
+          <ul class="guide-list">
+            <li><strong>No Customer Private Data (PII):</strong> Watt does not access or display individual customer billing accounts, credit card numbers, or personal identifying information.</li>
+            <li><strong>No Grid Switching Operations:</strong> Watt delivers read-only telemetry for demonstration purposes and cannot execute physical breaker switching or dispatch field crews.</li>
+            <li><strong>No General Internet Browsing:</strong> Watt is strictly grounded in Con Edison utility engineering, NYISO operations, NOAA weather, and panel topics — refusing sports, entertainment, or unrelated web trivia.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Stage Engine & Logic -->
   <script src="avatar_stage.js?v=202610_attentive_pose"></script>
-  <script src="stage_controller.js?v=202610_neural2_fast"></script>
+  <script src="stage_controller.js?v=202610_guide_starter_kit"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       // 1. Initialize Three.js Avatar Stage inside left panel
@@ -219,6 +300,17 @@
           chatInput.value = '';
         }
       });
+
+      // Direct URL deep-link support (e.g. ?guide=1 or ?starter=1)
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('guide') === '1') {
+        controller.toggleGuideModal(true);
+      } else if (params.get('starter') === '1') {
+        setTimeout(() => {
+          const firstChip = document.querySelector('.starter-chip');
+          if (firstChip) firstChip.click();
+        }, 400);
+      }
     });
   </script>
 </body>

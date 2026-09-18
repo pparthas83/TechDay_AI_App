@@ -294,7 +294,7 @@ class StageController {
   }
 
   // Play pre-synthesized audio bundled from /api/chat with zero extra network roundtrips
-  async playBundledSpeech(text, audioBase64) {
+  async playBundledSpeech(text, audioBase64, meta = {}) {
     if (this.isPlaying) {
       this.audioElement.pause();
     }
@@ -319,12 +319,12 @@ class StageController {
 
       // Reveal dialogue bubble in exact lockstep with audio playback initiation
       this.removeThinking();
-      this.addDialogueMessage('watt', text);
+      this.addDialogueMessage('watt', text, meta);
       await this.audioElement.play();
     } catch (err) {
       console.warn('[Audio] Bundled playback error, falling back:', err.message);
       this.removeThinking();
-      this.addDialogueMessage('watt', text);
+      this.addDialogueMessage('watt', text, meta);
       this.fallbackWebSpeech(text);
     }
   }
@@ -378,10 +378,15 @@ class StageController {
 
     const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const metaTag = role === 'audience' ? 'AUDIENCE' : (meta.sender || 'WATT // AI MODERATOR');
+    let toolBadge = '';
+    if (meta.telemetry?.usedDataStore) {
+      toolBadge = `<span class="bubble-tool-badge">📚 Playbook Knowledge</span>`;
+    }
 
     bubble.innerHTML = `
       <div class="bubble-meta">
         <span>${metaTag}</span>
+        ${toolBadge}
         <span>${timeStr}</span>
       </div>
       <div class="bubble-text">${this.escapeHtml(text)}</div>
@@ -460,14 +465,18 @@ class StageController {
       const data = await res.json();
 
       if (data.reply) {
+        const meta = {
+          sender: data.backend ? `WATT // ${data.backend.toUpperCase()}` : 'WATT // GECX PLAYBOOK',
+          telemetry: data.telemetry
+        };
         if (data.audioBase64) {
           // Play bundled audio immediately and reveal text in lockstep with speech start
-          await this.playBundledSpeech(data.reply, data.audioBase64);
+          await this.playBundledSpeech(data.reply, data.audioBase64, meta);
         } else {
           // Fallback if no audio bundled
           await this.speakText(data.reply, () => {
             this.removeThinking();
-            this.addDialogueMessage('watt', data.reply);
+            this.addDialogueMessage('watt', data.reply, meta);
           });
         }
       } else if (data.error) {

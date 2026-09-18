@@ -142,7 +142,13 @@ class GECXService {
         confidence: queryResult.match?.confidence || 0,
         intent: queryResult.match?.intent?.displayName || null
       },
-      diagnosticInfo: queryResult.diagnosticInfo || {}
+      diagnosticInfo: queryResult.diagnosticInfo || {},
+      telemetry: {
+        sessionId: queryResult.diagnosticInfo?.fields?.['Session Id']?.stringValue || null,
+        responseId: queryResult.diagnosticInfo?.fields?.['Response Id']?.stringValue || null,
+        usedDataStore: Boolean(queryResult.diagnosticInfo?.fields?.['DataStore Execution Sequence']),
+        matchType: queryResult.match?.matchType || 'UNKNOWN'
+      }
     };
   }
 

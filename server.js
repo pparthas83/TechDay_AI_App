@@ -282,56 +282,15 @@ app.post('/api/chat', async (req, res) => {
     return textPart.replace(/[\*\_`#]/g, '').trim();
   };
 
-  // Real-Time Telemetry Intent Detection & Pre-fetching (1.5s timeout budget)
-  let liveContext = null;
-  let realTimeIntent = null;
-  try {
-    realTimeIntent = liveDataService.detectRealTimeQuery(trimmedPrompt);
-    if (realTimeIntent === 'LIVE_WEATHER') {
-      const weather = await liveDataService.fetchNWSWeatherAlerts();
-      liveContext = `[Real-Time Integration Status: Watt HAS direct live API access to the National Weather Service (NOAA) for NYC active weather alerts. Current live data: ${weather.headline}. Details: ${weather.description}]`;
-    } else if (realTimeIntent === 'LIVE_GRID_MIX') {
-      const grid = await liveDataService.fetchNYISOGridFuelMix();
-      liveContext = `[Real-Time Integration Status: Watt HAS direct live telemetry access to NYISO for New York electric grid generation. Current live data: ${grid.summary}. Renewables: ${grid.renewablesTotalMW} MW, Clean Percentage: ${grid.cleanPercentage}%]`;
-    } else if (realTimeIntent === 'LIVE_OUTAGES') {
-      const outages = await liveDataService.fetchLiveOutages();
-      liveContext = `[Real-Time Integration Status: Watt HAS direct live access to the Con Edison Outage Dashboard and operations telemetry. Current live data: ${outages.summary}. System Reliability: ${outages.reliabilityRate}]`;
-    } else if (realTimeIntent === 'CALCULATE_CLEAN_HEAT') {
-      const sqftMatch = trimmedPrompt.match(/(\d[\d,]*)\s*(?:sq|square|sqft)/i);
-      const sqft = sqftMatch ? parseInt(sqftMatch[1].replace(/,/g, ''), 10) : 3500;
-      const dac = /dac|disadvantaged|low[- ]income/i.test(trimmedPrompt);
-      const borough = /queens/i.test(trimmedPrompt) ? 'Queens' :
-                      /brooklyn/i.test(trimmedPrompt) ? 'Brooklyn' :
-                      /bronx/i.test(trimmedPrompt) ? 'The Bronx' :
-                      /staten/i.test(trimmedPrompt) ? 'Staten Island' :
-                      /westchester/i.test(trimmedPrompt) ? 'Westchester' : 'Manhattan';
-      const calc = liveDataService.calculateCleanHeatSizing({ sqft, borough, dacEligible: dac });
-      liveContext = `[Real-Time Integration Status: Watt HAS an integrated Clean Heat and Local Law 97 sizing calculator. Engine summary: ${calc.summaryText}]`;
-    } else if (realTimeIntent === 'LIVE_CAPABILITIES') {
-      liveContext = `[Real-Time Integration Status: Watt HAS direct live access to: 1) National Weather Service (NOAA) for NYC active alerts, 2) NYISO electric grid generation and fuel mix telemetry, 3) Con Edison Outage Dashboard and 99.99% system reliability feed, and 4) An interactive Clean Heat and Local Law 97 sizing and rebate calculator, alongside deep technical knowledge for all 5 keynote panel topics.]`;
-    }
-    if (liveContext) {
-      console.log(`[Hybrid Live Grounding] Detected intent: ${realTimeIntent} -> Injected live context`);
-    }
-  } catch (liveErr) {
-    console.warn('[Hybrid Live Grounding] Error fetching real-time telemetry:', liveErr.message);
-  }
-
-  const effectivePrompt = liveContext
-    ? `${liveContext} The audience asks: "${trimmedPrompt}". Confirm your access and capabilities, using this factual data to formulate your concise 1 to 2 sentence answer as Watt:`
-    : trimmedPrompt;
-
-  // 1. ROUTE TO GECX PLAYBOOK
+  // 1. ROUTE TO GECX PLAYBOOK (Pure Native Autonomous Tool Routing)
   if (targetBackend === 'gecx') {
     if (!gecxService) {
       console.warn('[Chat] GECX service unavailable, falling back to Gemini Flash');
       try {
-        const geminiReply = await queryGemini(effectivePrompt);
+        const geminiReply = await queryGemini(trimmedPrompt);
         const payload = await buildChatResponse(geminiReply, {
           backend: 'Gemini 3.6 Flash (GECX Fallback)',
-          engine: 'gemini',
-          realTimeIntent: realTimeIntent || undefined,
-          isRealTimeGrounded: Boolean(liveContext)
+          engine: 'gemini'
         });
         return res.json(payload);
       } catch (geminiErr) {
@@ -341,28 +300,25 @@ app.post('/api/chat', async (req, res) => {
 
     try {
       const session = sessionId || `stage-session-${Date.now()}`;
-      const gecxResult = await gecxService.detectIntent(effectivePrompt, session);
+      const gecxResult = await gecxService.detectIntent(trimmedPrompt, session);
       const cleanReply = gecxResult.reply.replace(/[\*\_`#]/g, '').trim();
-      console.log(`[GECX Chat] User: "${trimmedPrompt}" -> Watt (GECX Playbook): "${cleanReply}" [match: ${gecxResult.match?.matchType}]`);
+      console.log(`[GECX Chat] User: "${trimmedPrompt}" -> Watt (GECX Native Playbook): "${cleanReply}" [match: ${gecxResult.match?.matchType}]`);
       const payload = await buildChatResponse(cleanReply, {
-        backend: 'GECX Playbook',
+        backend: 'GECX Playbook (Native Tools)',
         engine: 'gecx',
         matchType: gecxResult.match?.matchType,
         confidence: gecxResult.match?.confidence,
-        realTimeIntent: realTimeIntent || undefined,
-        isRealTimeGrounded: Boolean(liveContext)
+        telemetry: gecxResult.telemetry || {}
       });
       return res.json(payload);
     } catch (gecxErr) {
       console.error('[GECX Chat] GECX error, falling back to Gemini Flash:', gecxErr.message);
       try {
-        const geminiReply = await queryGemini(effectivePrompt);
+        const geminiReply = await queryGemini(trimmedPrompt);
         const payload = await buildChatResponse(geminiReply, {
           backend: 'Gemini 3.6 Flash (Fallback)',
           engine: 'gemini',
-          warning: 'GECX Playbook encountered an error; served by Gemini',
-          realTimeIntent: realTimeIntent || undefined,
-          isRealTimeGrounded: Boolean(liveContext)
+          warning: 'GECX Playbook encountered an error; served by Gemini'
         });
         return res.json(payload);
       } catch (fallbackErr) {
@@ -376,13 +332,11 @@ app.post('/api/chat', async (req, res) => {
 
   // 2. ROUTE TO GEMINI 3.6 FLASH
   try {
-    const geminiReply = await queryGemini(effectivePrompt);
+    const geminiReply = await queryGemini(trimmedPrompt);
     console.log(`[Gemini Chat] User: "${trimmedPrompt}" -> Watt (Gemini 3.6): "${geminiReply}"`);
     const payload = await buildChatResponse(geminiReply, {
       backend: 'Gemini 3.6 Flash',
-      engine: 'gemini',
-      realTimeIntent: realTimeIntent || undefined,
-      isRealTimeGrounded: Boolean(liveContext)
+      engine: 'gemini'
     });
     return res.json(payload);
   } catch (err) {

@@ -587,6 +587,20 @@ body {
   font-weight: 700;
 }
 
+.bubble-tool-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(6, 155, 215, 0.18);
+  border: 1px solid rgba(6, 155, 215, 0.4);
+  color: #38bdf8;
+  padding: 1px 6px;
+  border-radius: 8px;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
 /* Thinking Indicator Bubble */
 .dialogue-thinking {
   align-self: flex-start;

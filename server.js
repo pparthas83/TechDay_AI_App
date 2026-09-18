@@ -423,10 +423,14 @@ app.post('/api/chat', async (req, res) => {
         routingInfo.badgeText = `⚡ ${getToolShortName(primary.toolName)}`;
         routingInfo.shortName = getToolShortName(primary.toolName);
         routingInfo.primaryTool = primary;
+        routingInfo.flowText = `Watt is talking to GECX Playbook ➔ Playbook reached out to ${getToolDisplayName(primary.toolName)}`;
       } else if (gecxResult.telemetry?.usedDataStore) {
         routingInfo.mode = 'DATASTORE_RAG';
-        routingInfo.badgeText = '📚 Playbook Knowledge Base';
+        routingInfo.badgeText = '📚 Con Edison Docs';
         routingInfo.corpus = 'Con Edison Keynote Deep Technical Corpus (19 Docs)';
+        routingInfo.flowText = 'Watt is talking to GECX Playbook ➔ Playbook checked Con Edison Official Documents';
+      } else {
+        routingInfo.flowText = 'Watt is talking to GECX Playbook ➔ Playbook answered via AI conversational reasoning';
       }
 
       console.log(`[GECX Chat] User: "${trimmedPrompt}" -> Watt (GECX Native Playbook): "${cleanReply}" [Routing: ${routingInfo.mode}, Tools: ${triggeredTools.length}]`);

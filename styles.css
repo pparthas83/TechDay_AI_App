@@ -619,55 +619,114 @@ body {
   color: #7dd3fc;
 }
 
-/* Tool Routing Notification Card inside Dialogue Bubble */
-.tool-routing-card {
-  margin-top: 8px;
-  background: rgba(4, 22, 50, 0.88);
-  border: 1px solid rgba(0, 229, 255, 0.35);
-  border-radius: 8px;
-  padding: 8px 12px;
-  font-family: var(--font-mono);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+/* Conversational Flow Banner for Business Audience */
+.conversational-flow-banner {
+  margin-top: 10px;
+  padding: 10px 14px;
+  background: rgba(6, 26, 56, 0.92);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  border-radius: 9px;
+  font-family: var(--font-sans);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
   animation: slide-up 0.2s ease forwards;
 }
 
-.tool-routing-card.tool-active {
-  border-left: 3px solid #00e5ff;
-  background: linear-gradient(135deg, rgba(0, 229, 255, 0.08) 0%, rgba(4, 22, 50, 0.92) 100%);
+.conversational-flow-banner.tool-flow {
+  border-left: 4px solid #00e5ff;
+  background: linear-gradient(90deg, rgba(0, 229, 255, 0.12) 0%, rgba(6, 26, 56, 0.95) 100%);
+  border-color: rgba(0, 229, 255, 0.4);
 }
 
-.tool-routing-card.rag-active {
-  border-left: 3px solid #a855f7;
-  background: linear-gradient(135deg, rgba(168, 85, 247, 0.08) 0%, rgba(4, 22, 50, 0.92) 100%);
-  border-color: rgba(168, 85, 247, 0.35);
+.conversational-flow-banner.rag-flow {
+  border-left: 4px solid #a855f7;
+  background: linear-gradient(90deg, rgba(168, 85, 247, 0.12) 0%, rgba(6, 26, 56, 0.95) 100%);
+  border-color: rgba(168, 85, 247, 0.4);
 }
 
-.tool-routing-card.direct-active {
-  border-left: 3px solid #38bdf8;
-  opacity: 0.9;
+.conversational-flow-banner.direct-flow {
+  border-left: 4px solid #38bdf8;
+  background: linear-gradient(90deg, rgba(56, 189, 248, 0.09) 0%, rgba(6, 26, 56, 0.95) 100%);
 }
 
-.tool-routing-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  padding-bottom: 5px;
-  margin-bottom: 6px;
-}
-
-.tool-routing-title {
+.flow-stepper {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 10px;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.flow-node {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #e2e8f0;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+.flow-node.flow-watt {
+  background: rgba(0, 229, 255, 0.15);
+  border-color: rgba(0, 229, 255, 0.55);
+  color: #ffffff;
+}
+
+.flow-node.flow-playbook {
+  background: rgba(14, 165, 233, 0.18);
+  border-color: rgba(56, 189, 248, 0.55);
+  color: #ffffff;
+}
+
+.flow-node.flow-target.target-tool {
+  background: rgba(0, 229, 255, 0.24);
+  border-color: #00e5ff;
+  color: #00ffff;
   font-weight: 700;
-  letter-spacing: 0.6px;
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.4);
 }
 
-.tool-active .tool-routing-title { color: #00e5ff; }
-.rag-active .tool-routing-title { color: #c084fc; }
-.direct-active .tool-routing-title { color: #7dd3fc; }
+.flow-node.flow-target.target-rag {
+  background: rgba(168, 85, 247, 0.24);
+  border-color: #c084fc;
+  color: #f3e8ff;
+  font-weight: 700;
+  box-shadow: 0 0 12px rgba(168, 85, 247, 0.4);
+}
+
+.flow-node.flow-target.target-direct {
+  background: rgba(56, 189, 248, 0.18);
+  border-color: #38bdf8;
+  color: #bae6fd;
+  font-weight: 700;
+}
+
+.flow-arrow {
+  color: #38bdf8;
+  font-size: 13px;
+  font-weight: 700;
+  opacity: 0.95;
+  user-select: none;
+}
+
+.flow-summary-text {
+  font-size: 11.5px;
+  color: #bae6fd;
+  line-height: 1.4;
+  letter-spacing: 0.15px;
+  margin-top: 2px;
+}
+
+.flow-summary-text strong {
+  color: #ffffff;
+  font-weight: 700;
+}
 
 .tool-pulse-beacon {
   width: 6px;
@@ -678,73 +737,9 @@ body {
   animation: pulse-beacon 1.2s infinite ease-in-out;
 }
 
-.rag-beacon {
-  background: #c084fc;
-  box-shadow: 0 0 8px #c084fc;
-}
-
 @keyframes pulse-beacon {
   0%, 100% { opacity: 0.4; transform: scale(0.9); }
   50% { opacity: 1; transform: scale(1.3); }
-}
-
-.tool-http-status {
-  font-size: 9px;
-  font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 4px;
-  background: rgba(0, 229, 255, 0.15);
-  color: #00e5ff;
-  border: 1px solid rgba(0, 229, 255, 0.35);
-}
-
-.rag-status {
-  background: rgba(168, 85, 247, 0.15);
-  color: #c084fc;
-  border-color: rgba(168, 85, 247, 0.35);
-}
-
-.tool-routing-body .tool-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 10.5px;
-  line-height: 1.4;
-  margin-bottom: 3px;
-}
-
-.tool-row .tool-label {
-  color: #80deea;
-  font-size: 9.5px;
-  font-weight: 700;
-  min-width: 65px;
-}
-
-.tool-row .tool-val {
-  color: #f0f7ff;
-}
-
-.tool-row .tool-val.highlight {
-  color: #ffffff;
-  font-weight: 600;
-}
-
-.tool-row .tool-val.code {
-  color: #38bdf8;
-  font-family: var(--font-mono);
-  background: rgba(0, 0, 0, 0.25);
-  padding: 1px 5px;
-  border-radius: 3px;
-}
-
-.tool-summary-box {
-  margin-top: 6px;
-  padding: 5px 8px;
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 4px;
-  color: #bfe3f7;
-  font-size: 10px;
-  line-height: 1.4;
 }
 
 /* Floating Toast Notification in Chat Header */
@@ -763,8 +758,8 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  font-family: var(--font-mono);
-  font-size: 11px;
+  font-family: var(--font-sans);
+  font-size: 11.5px;
   color: #ffffff;
   animation: slide-toast 0.3s ease-out forwards;
 }
@@ -781,16 +776,6 @@ body {
 @keyframes fade-toast {
   from { opacity: 1; transform: translateY(0); }
   to { opacity: 0; transform: translateY(-8px); }
-}
-
-.toast-badge {
-  background: rgba(0, 229, 255, 0.2);
-  color: #00e5ff;
-  border: 1px solid rgba(0, 229, 255, 0.5);
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-size: 9.5px;
-  font-weight: 700;
 }
 
 /* Thinking Indicator Bubble */

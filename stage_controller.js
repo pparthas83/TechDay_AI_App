@@ -379,70 +379,34 @@ class StageController {
     const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const metaTag = role === 'audience' ? 'AUDIENCE' : (meta.sender || 'WATT // AI MODERATOR');
     
-    // Construct Badges & Technical Routing Notification Card
+    // Construct Badges & Conversational Flow Banner for Business Audience
     let toolBadge = '';
-    let toolCard = '';
+    let flowBanner = '';
     const routing = meta.routing || meta.telemetry?.routing;
 
-    if (routing?.mode === 'TOOL_TRIGGERED' && routing.primaryTool) {
-      const tool = routing.primaryTool;
-      const badgeTitle = routing.badgeText || (tool.displayName ? tool.displayName.split(' ')[0] : '⚡ TOOL');
-      toolBadge = `<span class="bubble-tool-badge tool-active-badge">${this.escapeHtml(badgeTitle)} (${tool.status || 200})</span>`;
-      toolCard = `
-        <div class="tool-routing-card tool-active">
-          <div class="tool-routing-header">
-            <div class="tool-routing-title">
-              <span class="tool-pulse-beacon"></span>
-              <span>AUTONOMOUS GECX TOOL TRIGGERED</span>
-            </div>
-            <span class="tool-http-status">${this.escapeHtml(tool.method || 'GET')} ${tool.status || 200} OK</span>
+    if (role === 'watt') {
+      const flow = this.getConversationalFlow(routing, meta);
+      toolBadge = `<span class="bubble-tool-badge ${flow.type.replace('-flow', '-badge')}">${this.escapeHtml(flow.badge)}</span>`;
+      flowBanner = `
+        <div class="conversational-flow-banner ${flow.type}">
+          <div class="flow-stepper">
+            <span class="flow-node flow-watt">
+              <span class="flow-node-icon">⚡</span> Watt
+            </span>
+            <span class="flow-arrow">➔</span>
+            <span class="flow-node flow-playbook">
+              <span class="flow-node-icon">🧠</span> GECX Playbook
+            </span>
+            <span class="flow-arrow">➔</span>
+            <span class="flow-node flow-target ${flow.targetClass}">
+              <span class="flow-node-icon">${flow.icon}</span> ${this.escapeHtml(flow.targetLabel)}
+            </span>
           </div>
-          <div class="tool-routing-body">
-            <div class="tool-row">
-              <span class="tool-label">TOOL:</span>
-              <span class="tool-val highlight">${this.escapeHtml(tool.displayName || tool.toolName)}</span>
-            </div>
-            <div class="tool-row">
-              <span class="tool-label">ENDPOINT:</span>
-              <span class="tool-val code">${this.escapeHtml(tool.method || 'GET')} ${this.escapeHtml(tool.endpoint || '')}</span>
-            </div>
-            <div class="tool-row">
-              <span class="tool-label">CALLER:</span>
-              <span class="tool-val">${this.escapeHtml(tool.caller || 'Google-Dialogflow (Playbook)')}</span>
-            </div>
-            ${tool.summary ? `
-              <div class="tool-summary-box">
-                <strong>Payload:</strong> ${this.escapeHtml(tool.summary)}
-              </div>
-            ` : ''}
+          <div class="flow-summary-text">
+            ${flow.sentence}
           </div>
         </div>
       `;
-    } else if (routing?.mode === 'DATASTORE_RAG' || meta.telemetry?.usedDataStore) {
-      toolBadge = `<span class="bubble-tool-badge rag-active-badge">📚 Playbook Knowledge (RAG)</span>`;
-      toolCard = `
-        <div class="tool-routing-card rag-active">
-          <div class="tool-routing-header">
-            <div class="tool-routing-title">
-              <span class="tool-pulse-beacon rag-beacon"></span>
-              <span>VERTEX AI SEARCH GROUNDING</span>
-            </div>
-            <span class="tool-http-status rag-status">DATASTORE RAG</span>
-          </div>
-          <div class="tool-routing-body">
-            <div class="tool-row">
-              <span class="tool-label">CORPUS:</span>
-              <span class="tool-val highlight">Con Edison Keynote Deep Technical Corpus</span>
-            </div>
-            <div class="tool-row">
-              <span class="tool-label">GROUNDING:</span>
-              <span class="tool-val">19 Enterprise Engineering & Clean Energy Documents</span>
-            </div>
-          </div>
-        </div>
-      `;
-    } else if (role === 'watt') {
-      toolBadge = `<span class="bubble-tool-badge direct-badge">🧠 Playbook Direct</span>`;
     }
 
     bubble.innerHTML = `
@@ -452,11 +416,53 @@ class StageController {
         <span>${timeStr}</span>
       </div>
       <div class="bubble-text">${this.escapeHtml(text)}</div>
-      ${toolCard}
+      ${flowBanner}
     `;
 
     this.dialogueStream.appendChild(bubble);
     this.scrollToBottom();
+  }
+
+  getConversationalFlow(routing, meta) {
+    if (routing?.mode === 'TOOL_TRIGGERED' && routing.primaryTool) {
+      const tool = routing.primaryTool;
+      const toolLabel = this.getFriendlyToolName(tool.displayName || tool.toolName);
+      return {
+        type: 'tool-flow',
+        badge: '⚡ LIVE TOOL',
+        icon: '📊',
+        targetLabel: toolLabel,
+        targetClass: 'target-tool',
+        sentence: `<strong>Flow:</strong> Watt is talking to GECX Playbook ➔ Playbook reached out to <strong>${this.escapeHtml(toolLabel)}</strong>`
+      };
+    } else if (routing?.mode === 'DATASTORE_RAG' || meta?.telemetry?.usedDataStore) {
+      return {
+        type: 'rag-flow',
+        badge: '📚 CON EDISON DOCS',
+        icon: '📚',
+        targetLabel: 'Official Policy Documents',
+        targetClass: 'target-rag',
+        sentence: `<strong>Flow:</strong> Watt is talking to GECX Playbook ➔ Playbook checked <strong>Con Edison Official Documents</strong>`
+      };
+    } else {
+      return {
+        type: 'direct-flow',
+        badge: '🧠 GECX PLAYBOOK',
+        icon: '💬',
+        targetLabel: 'Conversational Reasoning',
+        targetClass: 'target-direct',
+        sentence: `<strong>Flow:</strong> Watt is talking to GECX Playbook ➔ Playbook answered via <strong>Conversational Reasoning</strong>`
+      };
+    }
+  }
+
+  getFriendlyToolName(rawName = '') {
+    const s = String(rawName).toLowerCase();
+    if (s.includes('nyiso') || s.includes('grid')) return 'Live NYISO Grid Telemetry';
+    if (s.includes('weather') || s.includes('nws')) return 'National Weather Service';
+    if (s.includes('heat') || s.includes('rebate') || s.includes('calc')) return 'Clean Heat Rebate Calculator';
+    if (s.includes('outage')) return 'Outage Management System';
+    return rawName || 'Enterprise Tool';
   }
 
   showToolToast(tool) {
@@ -469,14 +475,14 @@ class StageController {
     const existing = this.chatCard.querySelector('.chat-hud-toast');
     if (existing) existing.remove();
 
+    const toolName = this.getFriendlyToolName(tool.displayName || tool.toolName);
     const toast = document.createElement('div');
     toast.className = 'chat-hud-toast';
     toast.innerHTML = `
       <div style="display:flex; align-items:center; gap:8px;">
         <span class="tool-pulse-beacon"></span>
-        <span>⚡ <strong>Tool Triggered:</strong> ${this.escapeHtml(tool.displayName || tool.toolName)}</span>
+        <span>⚡ <strong>Conversational Flow:</strong> Watt is talking to GECX Playbook ➔ Reaching out to <strong>${this.escapeHtml(toolName)}</strong></span>
       </div>
-      <span class="toast-badge">${this.escapeHtml(tool.method || 'GET')} ${tool.status || 200}</span>
     `;
 
     this.chatCard.appendChild(toast);
@@ -501,7 +507,7 @@ class StageController {
     thinkingDiv.id = 'dialogue-thinking-indicator';
     thinkingDiv.className = 'dialogue-thinking';
     thinkingDiv.innerHTML = `
-      <span>Watt is evaluating intent & checking GECX OpenAPI tools</span>
+      <span>Watt is talking to GECX Playbook & checking tools...</span>
       <span class="thinking-dots"><span></span><span></span><span></span></span>
     `;
     this.dialogueStream.appendChild(thinkingDiv);

@@ -378,9 +378,71 @@ class StageController {
 
     const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const metaTag = role === 'audience' ? 'AUDIENCE' : (meta.sender || 'WATT // AI MODERATOR');
+    
+    // Construct Badges & Technical Routing Notification Card
     let toolBadge = '';
-    if (meta.telemetry?.usedDataStore) {
-      toolBadge = `<span class="bubble-tool-badge">📚 Playbook Knowledge</span>`;
+    let toolCard = '';
+    const routing = meta.routing || meta.telemetry?.routing;
+
+    if (routing?.mode === 'TOOL_TRIGGERED' && routing.primaryTool) {
+      const tool = routing.primaryTool;
+      const badgeTitle = routing.badgeText || (tool.displayName ? tool.displayName.split(' ')[0] : '⚡ TOOL');
+      toolBadge = `<span class="bubble-tool-badge tool-active-badge">${this.escapeHtml(badgeTitle)} (${tool.status || 200})</span>`;
+      toolCard = `
+        <div class="tool-routing-card tool-active">
+          <div class="tool-routing-header">
+            <div class="tool-routing-title">
+              <span class="tool-pulse-beacon"></span>
+              <span>AUTONOMOUS GECX TOOL TRIGGERED</span>
+            </div>
+            <span class="tool-http-status">${this.escapeHtml(tool.method || 'GET')} ${tool.status || 200} OK</span>
+          </div>
+          <div class="tool-routing-body">
+            <div class="tool-row">
+              <span class="tool-label">TOOL:</span>
+              <span class="tool-val highlight">${this.escapeHtml(tool.displayName || tool.toolName)}</span>
+            </div>
+            <div class="tool-row">
+              <span class="tool-label">ENDPOINT:</span>
+              <span class="tool-val code">${this.escapeHtml(tool.method || 'GET')} ${this.escapeHtml(tool.endpoint || '')}</span>
+            </div>
+            <div class="tool-row">
+              <span class="tool-label">CALLER:</span>
+              <span class="tool-val">${this.escapeHtml(tool.caller || 'Google-Dialogflow (Playbook)')}</span>
+            </div>
+            ${tool.summary ? `
+              <div class="tool-summary-box">
+                <strong>Payload:</strong> ${this.escapeHtml(tool.summary)}
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      `;
+    } else if (routing?.mode === 'DATASTORE_RAG' || meta.telemetry?.usedDataStore) {
+      toolBadge = `<span class="bubble-tool-badge rag-active-badge">📚 Playbook Knowledge (RAG)</span>`;
+      toolCard = `
+        <div class="tool-routing-card rag-active">
+          <div class="tool-routing-header">
+            <div class="tool-routing-title">
+              <span class="tool-pulse-beacon rag-beacon"></span>
+              <span>VERTEX AI SEARCH GROUNDING</span>
+            </div>
+            <span class="tool-http-status rag-status">DATASTORE RAG</span>
+          </div>
+          <div class="tool-routing-body">
+            <div class="tool-row">
+              <span class="tool-label">CORPUS:</span>
+              <span class="tool-val highlight">Con Edison Keynote Deep Technical Corpus</span>
+            </div>
+            <div class="tool-row">
+              <span class="tool-label">GROUNDING:</span>
+              <span class="tool-val">19 Enterprise Engineering & Clean Energy Documents</span>
+            </div>
+          </div>
+        </div>
+      `;
+    } else if (role === 'watt') {
+      toolBadge = `<span class="bubble-tool-badge direct-badge">🧠 Playbook Direct</span>`;
     }
 
     bubble.innerHTML = `
@@ -390,10 +452,39 @@ class StageController {
         <span>${timeStr}</span>
       </div>
       <div class="bubble-text">${this.escapeHtml(text)}</div>
+      ${toolCard}
     `;
 
     this.dialogueStream.appendChild(bubble);
     this.scrollToBottom();
+  }
+
+  showToolToast(tool) {
+    if (!this.chatCard) {
+      this.chatCard = document.getElementById('chat-interface-card');
+    }
+    if (!this.chatCard) return;
+
+    // Remove any existing toast
+    const existing = this.chatCard.querySelector('.chat-hud-toast');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.className = 'chat-hud-toast';
+    toast.innerHTML = `
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span class="tool-pulse-beacon"></span>
+        <span>⚡ <strong>Tool Triggered:</strong> ${this.escapeHtml(tool.displayName || tool.toolName)}</span>
+      </div>
+      <span class="toast-badge">${this.escapeHtml(tool.method || 'GET')} ${tool.status || 200}</span>
+    `;
+
+    this.chatCard.appendChild(toast);
+
+    setTimeout(() => {
+      toast.classList.add('fade-out');
+      setTimeout(() => toast.remove(), 400);
+    }, 4500);
   }
 
   showThinking() {
@@ -410,7 +501,7 @@ class StageController {
     thinkingDiv.id = 'dialogue-thinking-indicator';
     thinkingDiv.className = 'dialogue-thinking';
     thinkingDiv.innerHTML = `
-      <span>Watt is consulting GECX Playbook</span>
+      <span>Watt is evaluating intent & checking GECX OpenAPI tools</span>
       <span class="thinking-dots"><span></span><span></span><span></span></span>
     `;
     this.dialogueStream.appendChild(thinkingDiv);
@@ -467,8 +558,14 @@ class StageController {
       if (data.reply) {
         const meta = {
           sender: data.backend ? `WATT // ${data.backend.toUpperCase()}` : 'WATT // GECX PLAYBOOK',
-          telemetry: data.telemetry
+          telemetry: data.telemetry,
+          routing: data.routing || data.telemetry?.routing
         };
+
+        if (meta.routing?.mode === 'TOOL_TRIGGERED' && meta.routing.primaryTool) {
+          this.showToolToast(meta.routing.primaryTool);
+        }
+
         if (data.audioBase64) {
           // Play bundled audio immediately and reveal text in lockstep with speech start
           await this.playBundledSpeech(data.reply, data.audioBase64, meta);

@@ -245,36 +245,60 @@ function calculateCleanHeatSizing({
 function detectRealTimeQuery(prompt) {
   const p = (prompt || '').toLowerCase();
 
-  // Grid Fuel Mix / Clean Energy Generation Intent (Check before weather to avoid "wind" confusion)
+  // Explicit National Weather Service / NOAA Capability or Query
   if (
-    (p.includes('fuel mix') || p.includes('grid') || p.includes('generation') || p.includes('clean energy mix') || p.includes('nyiso') || p.includes('power mix') || p.includes('solar and wind') || p.includes('clean energy fuel')) &&
-    (p.includes('now') || p.includes('today') || p.includes('current') || p.includes('right now') || p.includes('how clean') || p.includes('mix'))
-  ) {
-    return 'LIVE_GRID_MIX';
-  }
-
-  // Weather / Storm Alert Intent
-  if (
-    (p.includes('weather') || p.includes('storm') || p.includes('wind gust') || p.includes('wind advisory') || p.includes('rain') || p.includes('snow') || p.includes('temperature') || p.includes('nws') || p.includes('advisory') || p.includes('hurricane') || p.includes('nor\'easter')) &&
-    (p.includes('now') || p.includes('today') || p.includes('active') || p.includes('current') || p.includes('right now') || p.includes('forecast') || p.includes('alert'))
+    p.includes('national weather service') ||
+    p.includes('nws') ||
+    p.includes('noaa') ||
+    p.includes('weather service') ||
+    ((p.includes('weather') || p.includes('storm') || p.includes('wind gust') || p.includes('wind advisory') || p.includes('temperature') || p.includes('advisory') || p.includes('hurricane') || p.includes('nor\'easter')) &&
+     (p.includes('now') || p.includes('today') || p.includes('active') || p.includes('current') || p.includes('right now') || p.includes('forecast') || p.includes('alert') || p.includes('access') || p.includes('have')))
   ) {
     return 'LIVE_WEATHER';
   }
 
+  // Explicit NYISO / Grid Fuel Mix Capability or Query
+  if (
+    p.includes('nyiso') ||
+    p.includes('grid telemetry') ||
+    p.includes('fuel mix telemetry') ||
+    p.includes('grid data') ||
+    ((p.includes('fuel mix') || p.includes('grid') || p.includes('generation') || p.includes('clean energy mix') || p.includes('power mix') || p.includes('solar and wind') || p.includes('clean energy fuel')) &&
+     (p.includes('now') || p.includes('today') || p.includes('current') || p.includes('right now') || p.includes('how clean') || p.includes('mix') || p.includes('access') || p.includes('have')))
+  ) {
+    return 'LIVE_GRID_MIX';
+  }
+
+  // Explicit Clean Heat Calculator Capability or Query
+  if (
+    p.includes('clean heat calculator') ||
+    p.includes('heat pump calculator') ||
+    p.includes('rebate calculator') ||
+    p.includes('sizing calculator') ||
+    p.includes('ll97 calculator') ||
+    ((p.includes('calculate') || p.includes('estimate') || p.includes('sizing') || p.includes('how much rebate') || p.includes('payback') || p.includes('rebate for') || p.includes('incentive for') || p.includes('calculator')) &&
+     (p.includes('heat pump') || p.includes('clean heat') || p.includes('sq ft') || p.includes('square foot') || p.includes('brownstone') || p.includes('building') || p.includes('home') || p.includes('local law 97') || p.includes('ll97') || p.includes('access') || p.includes('have')))
+  ) {
+    return 'CALCULATE_CLEAN_HEAT';
+  }
+
   // Outages / System Reliability Intent
   if (
-    (p.includes('outage') || p.includes('blackout') || p.includes('power out') || p.includes('restoration') || p.includes('interruption')) &&
-    (p.includes('now') || p.includes('today') || p.includes('current') || p.includes('active') || p.includes('status') || p.includes('reported') || p.includes('queens') || p.includes('brooklyn') || p.includes('manhattan') || p.includes('bronx') || p.includes('staten island') || p.includes('westchester'))
+    p.includes('outage map') ||
+    p.includes('outage data') ||
+    p.includes('outage dashboard') ||
+    ((p.includes('outage') || p.includes('blackout') || p.includes('power out') || p.includes('restoration') || p.includes('interruption')) &&
+     (p.includes('now') || p.includes('today') || p.includes('current') || p.includes('active') || p.includes('status') || p.includes('reported') || p.includes('access') || p.includes('have') || p.includes('queens') || p.includes('brooklyn') || p.includes('manhattan') || p.includes('bronx') || p.includes('staten island') || p.includes('westchester')))
   ) {
     return 'LIVE_OUTAGES';
   }
 
-  // Calculator / Sizing Intent
+  // General Live Capabilities / Tools Inquiries
   if (
-    (p.includes('calculate') || p.includes('estimate') || p.includes('sizing') || p.includes('how much rebate') || p.includes('payback') || p.includes('rebate for') || p.includes('incentive for')) &&
-    (p.includes('heat pump') || p.includes('clean heat') || p.includes('sq ft') || p.includes('square foot') || p.includes('brownstone') || p.includes('building') || p.includes('home') || p.includes('local law 97') || p.includes('ll97'))
+    (p.includes('what tools') || p.includes('what capabilities') || p.includes('what can you do') || p.includes('what live data') || p.includes('what apis') || p.includes('what services') || p.includes('are you connected to') || p.includes('do you have access')) &&
+    (p.includes('live') || p.includes('real time') || p.includes('real-time') || p.includes('external') || p.includes('tools') || p.includes('data') || p.includes('service') || p.includes('telemetry') || p.includes('calculator') || p.includes('apis') || p.includes('access'))
   ) {
-    return 'CALCULATE_CLEAN_HEAT';
+    return 'LIVE_CAPABILITIES';
   }
 
   return null;

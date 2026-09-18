@@ -194,6 +194,13 @@ const SYSTEM_INSTRUCTION =
   "3. Subsurface Manhole Safety & Predictive Acoustics " +
   "4. Severe Weather Modeling & Grid Resilience (Electric Operations & Meteorology Team) " +
   "5. Customer Energy Solutions & Clean Heat Optimization. " +
+  "LIVE TOOLS & TELEMETRY ACCESS: " +
+  "You HAVE direct live API access to: " +
+  "1) National Weather Service (NOAA) for NYC active weather alerts and storm warnings. " +
+  "2) NYISO real-time grid generation telemetry for fuel mix and clean power percentage. " +
+  "3) Con Edison live outage dashboard and 99.99% system reliability metric. " +
+  "4) Clean Heat and Local Law 97 heat pump sizing and rebate calculator. " +
+  "Whenever asked whether you have access to the National Weather Service, NYISO grid data, the clean heat calculator, or live telemetry, CONFIRM enthusiastically that you do and share the live data or capabilities! " +
   "Keep your spoken answers concise (1 to 2 sentences max) so they flow naturally during live stage conversation. " +
   "Do NOT output markdown asterisks, bullet points, headers, or emojis since your words are read aloud by a voice synthesizer.";
 
@@ -282,13 +289,13 @@ app.post('/api/chat', async (req, res) => {
     realTimeIntent = liveDataService.detectRealTimeQuery(trimmedPrompt);
     if (realTimeIntent === 'LIVE_WEATHER') {
       const weather = await liveDataService.fetchNWSWeatherAlerts();
-      liveContext = `[Live NWS Weather Telemetry: ${weather.headline}. Details: ${weather.description}]`;
+      liveContext = `[Real-Time Integration Status: Watt HAS direct live API access to the National Weather Service (NOAA) for NYC active weather alerts. Current live data: ${weather.headline}. Details: ${weather.description}]`;
     } else if (realTimeIntent === 'LIVE_GRID_MIX') {
       const grid = await liveDataService.fetchNYISOGridFuelMix();
-      liveContext = `[Live NYISO Grid Fuel Mix: ${grid.summary}. Renewables: ${grid.renewablesTotalMW} MW, Clean Percentage: ${grid.cleanPercentage}%]`;
+      liveContext = `[Real-Time Integration Status: Watt HAS direct live telemetry access to NYISO for New York electric grid generation. Current live data: ${grid.summary}. Renewables: ${grid.renewablesTotalMW} MW, Clean Percentage: ${grid.cleanPercentage}%]`;
     } else if (realTimeIntent === 'LIVE_OUTAGES') {
       const outages = await liveDataService.fetchLiveOutages();
-      liveContext = `[Live Con Edison Outage Dashboard: ${outages.summary}. System Reliability: ${outages.reliabilityRate}]`;
+      liveContext = `[Real-Time Integration Status: Watt HAS direct live access to the Con Edison Outage Dashboard and operations telemetry. Current live data: ${outages.summary}. System Reliability: ${outages.reliabilityRate}]`;
     } else if (realTimeIntent === 'CALCULATE_CLEAN_HEAT') {
       const sqftMatch = trimmedPrompt.match(/(\d[\d,]*)\s*(?:sq|square|sqft)/i);
       const sqft = sqftMatch ? parseInt(sqftMatch[1].replace(/,/g, ''), 10) : 3500;
@@ -299,7 +306,9 @@ app.post('/api/chat', async (req, res) => {
                       /staten/i.test(trimmedPrompt) ? 'Staten Island' :
                       /westchester/i.test(trimmedPrompt) ? 'Westchester' : 'Manhattan';
       const calc = liveDataService.calculateCleanHeatSizing({ sqft, borough, dacEligible: dac });
-      liveContext = `[Real-Time Clean Heat Calculation Engine: ${calc.summaryText}]`;
+      liveContext = `[Real-Time Integration Status: Watt HAS an integrated Clean Heat and Local Law 97 sizing calculator. Engine summary: ${calc.summaryText}]`;
+    } else if (realTimeIntent === 'LIVE_CAPABILITIES') {
+      liveContext = `[Real-Time Integration Status: Watt HAS direct live access to: 1) National Weather Service (NOAA) for NYC active alerts, 2) NYISO electric grid generation and fuel mix telemetry, 3) Con Edison Outage Dashboard and 99.99% system reliability feed, and 4) An interactive Clean Heat and Local Law 97 sizing and rebate calculator, alongside deep technical knowledge for all 5 keynote panel topics.]`;
     }
     if (liveContext) {
       console.log(`[Hybrid Live Grounding] Detected intent: ${realTimeIntent} -> Injected live context`);
@@ -309,7 +318,7 @@ app.post('/api/chat', async (req, res) => {
   }
 
   const effectivePrompt = liveContext
-    ? `${liveContext} The audience asks: "${trimmedPrompt}". Using this real-time factual data, formulate your concise 1 to 2 sentence answer as Watt:`
+    ? `${liveContext} The audience asks: "${trimmedPrompt}". Confirm your access and capabilities, using this factual data to formulate your concise 1 to 2 sentence answer as Watt:`
     : trimmedPrompt;
 
   // 1. ROUTE TO GECX PLAYBOOK

@@ -68,6 +68,13 @@ async function runTests() {
     assert.strictEqual(liveDataService.detectRealTimeQuery('What is the Clean Heat incentive for my 2,500 square foot home?'), 'CALCULATE_CLEAN_HEAT');
   });
 
+  test('Detects capability questions for live services and tools', () => {
+    assert.strictEqual(liveDataService.detectRealTimeQuery('Do you have access to national weather service?'), 'LIVE_WEATHER');
+    assert.strictEqual(liveDataService.detectRealTimeQuery('Do you have access to NYISO Grid telemetry?'), 'LIVE_GRID_MIX');
+    assert.strictEqual(liveDataService.detectRealTimeQuery('Do you have access to clean heat calculator?'), 'CALCULATE_CLEAN_HEAT');
+    assert.strictEqual(liveDataService.detectRealTimeQuery('What live data and tools do you have access to?'), 'LIVE_CAPABILITIES');
+  });
+
   test('Returns null for standard narrative queries (Zero false positives)', () => {
     assert.strictEqual(liveDataService.detectRealTimeQuery('Who is the moderator of the panel?'), null);
     assert.strictEqual(liveDataService.detectRealTimeQuery('Explain Use Case 3 acoustic sensors'), null);

@@ -619,36 +619,178 @@ body {
   color: #7dd3fc;
 }
 
-/* Conversational Flow Banner for Business Audience */
-.conversational-flow-banner {
-  margin-top: 10px;
-  padding: 10px 14px;
-  background: rgba(6, 26, 56, 0.92);
-  border: 1px solid rgba(56, 189, 248, 0.35);
-  border-radius: 9px;
-  font-family: var(--font-sans);
+/* Conversational Flow Status Bar (Non-Technical Ribbon) */
+.chat-flow-statusbar {
+  background: rgba(2, 22, 54, 0.95);
+  border: 1px solid rgba(0, 229, 255, 0.28);
+  border-left: 4px solid #00e5ff;
+  border-radius: 12px;
+  padding: 8px 14px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
-  animation: slide-up 0.2s ease forwards;
+  transition: all 0.25s ease;
+  margin-bottom: 12px;
+  flex-shrink: 0;
 }
 
-.conversational-flow-banner.tool-flow {
-  border-left: 4px solid #00e5ff;
-  background: linear-gradient(90deg, rgba(0, 229, 255, 0.12) 0%, rgba(6, 26, 56, 0.95) 100%);
-  border-color: rgba(0, 229, 255, 0.4);
+/* Optional Bottom Docking */
+.chat-flow-statusbar.dock-bottom {
+  order: 2;
+  margin-top: 10px;
+  margin-bottom: 6px;
 }
 
-.conversational-flow-banner.rag-flow {
-  border-left: 4px solid #a855f7;
-  background: linear-gradient(90deg, rgba(168, 85, 247, 0.12) 0%, rgba(6, 26, 56, 0.95) 100%);
-  border-color: rgba(168, 85, 247, 0.4);
+.chat-flow-statusbar.tool-flow {
+  border-left-color: #00e5ff;
+  background: linear-gradient(90deg, rgba(0, 229, 255, 0.12) 0%, rgba(2, 22, 54, 0.96) 100%);
+  border-color: rgba(0, 229, 255, 0.45);
 }
 
-.conversational-flow-banner.direct-flow {
-  border-left: 4px solid #38bdf8;
-  background: linear-gradient(90deg, rgba(56, 189, 248, 0.09) 0%, rgba(6, 26, 56, 0.95) 100%);
+.chat-flow-statusbar.rag-flow {
+  border-left-color: #a855f7;
+  background: linear-gradient(90deg, rgba(168, 85, 247, 0.12) 0%, rgba(2, 22, 54, 0.96) 100%);
+  border-color: rgba(168, 85, 247, 0.45);
+}
+
+.chat-flow-statusbar.direct-flow {
+  border-left-color: #38bdf8;
+  background: linear-gradient(90deg, rgba(56, 189, 248, 0.08) 0%, rgba(2, 22, 54, 0.96) 100%);
+  border-color: rgba(56, 189, 248, 0.35);
+}
+
+.chat-flow-statusbar.processing {
+  border-left-color: #fbbf24;
+  background: linear-gradient(90deg, rgba(251, 191, 36, 0.1) 0%, rgba(2, 22, 54, 0.96) 100%);
+  border-color: rgba(251, 191, 36, 0.4);
+}
+
+.statusbar-row-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.statusbar-stepper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  flex-wrap: wrap;
+}
+
+.statusbar-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.3px;
+}
+
+.statusbar-pill.watt {
+  background: rgba(6, 155, 215, 0.2);
+  border: 1px solid rgba(6, 155, 215, 0.55);
+  color: #7dd3fc;
+}
+
+.statusbar-pill.playbook {
+  background: rgba(0, 230, 118, 0.18);
+  border: 1px solid rgba(0, 230, 118, 0.55);
+  color: #69f0ae;
+}
+
+.statusbar-pill.target.idle {
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  color: #94a3b8;
+}
+
+.statusbar-pill.target.target-tool {
+  background: rgba(0, 229, 255, 0.22);
+  border: 1px solid #00e5ff;
+  color: #00e5ff;
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.35);
+}
+
+.statusbar-pill.target.target-rag {
+  background: rgba(168, 85, 247, 0.22);
+  border: 1px solid #c084fc;
+  color: #d8b4fe;
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
+}
+
+.statusbar-pill.target.target-direct {
+  background: rgba(56, 189, 248, 0.16);
+  border: 1px solid rgba(56, 189, 248, 0.45);
+  color: #7dd3fc;
+}
+
+.statusbar-pill.target.processing {
+  background: rgba(251, 191, 36, 0.15);
+  border: 1px solid rgba(251, 191, 36, 0.5);
+  color: #fde68a;
+  animation: pulse-dot 1.5s infinite;
+}
+
+.statusbar-arrow {
+  color: #00e5ff;
+  font-size: 10px;
+  opacity: 0.8;
+}
+
+.statusbar-tag {
+  font-size: 9.5px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  background: rgba(0, 229, 255, 0.12);
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  color: #38bdf8;
+  padding: 2px 7px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+.statusbar-sentence {
+  font-size: 11px;
+  color: #bae6fd;
+  line-height: 1.35;
+  font-family: var(--font-sans);
+}
+
+.statusbar-sentence strong {
+  color: #ffffff;
+}
+
+.live-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  color: #69f0ae;
+  background: rgba(0, 230, 118, 0.12);
+  border: 1px solid rgba(0, 230, 118, 0.4);
+  padding: 2px 7px;
+  border-radius: 10px;
+  letter-spacing: 0.5px;
+}
+
+.live-status-pill .pill-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--coned-green-bright);
+  box-shadow: 0 0 6px var(--coned-green-bright);
+  animation: pulse-dot 2.5s infinite ease-in-out;
 }
 
 .flow-stepper {

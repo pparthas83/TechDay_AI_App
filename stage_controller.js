@@ -379,34 +379,14 @@ class StageController {
     const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const metaTag = role === 'audience' ? 'AUDIENCE' : (meta.sender || 'WATT // AI MODERATOR');
     
-    // Construct Badges & Conversational Flow Banner for Business Audience
+    // Construct Badges & Update Conversational Flow Status Bar
     let toolBadge = '';
-    let flowBanner = '';
     const routing = meta.routing || meta.telemetry?.routing;
 
     if (role === 'watt') {
       const flow = this.getConversationalFlow(routing, meta);
       toolBadge = `<span class="bubble-tool-badge ${flow.type.replace('-flow', '-badge')}">${this.escapeHtml(flow.badge)}</span>`;
-      flowBanner = `
-        <div class="conversational-flow-banner ${flow.type}">
-          <div class="flow-stepper">
-            <span class="flow-node flow-watt">
-              <span class="flow-node-icon">⚡</span> Watt
-            </span>
-            <span class="flow-arrow">➔</span>
-            <span class="flow-node flow-playbook">
-              <span class="flow-node-icon">🧠</span> GECX Playbook
-            </span>
-            <span class="flow-arrow">➔</span>
-            <span class="flow-node flow-target ${flow.targetClass}">
-              <span class="flow-node-icon">${flow.icon}</span> ${this.escapeHtml(flow.targetLabel)}
-            </span>
-          </div>
-          <div class="flow-summary-text">
-            ${flow.sentence}
-          </div>
-        </div>
-      `;
+      this.updateFlowStatusBar(flow);
     }
 
     bubble.innerHTML = `
@@ -416,11 +396,34 @@ class StageController {
         <span>${timeStr}</span>
       </div>
       <div class="bubble-text">${this.escapeHtml(text)}</div>
-      ${flowBanner}
     `;
 
     this.dialogueStream.appendChild(bubble);
     this.scrollToBottom();
+  }
+
+  updateFlowStatusBar(flow) {
+    const bar = document.getElementById('chat-flow-statusbar');
+    if (!bar) return;
+
+    // Reset modifier classes
+    bar.className = `chat-flow-statusbar ${flow.type}`;
+
+    const targetPill = document.getElementById('statusbar-target-pill');
+    if (targetPill) {
+      targetPill.className = `statusbar-pill target ${flow.targetClass}`;
+      targetPill.innerHTML = `<span class="flow-node-icon">${flow.icon}</span> ${this.escapeHtml(flow.targetLabel)}`;
+    }
+
+    const modeTag = document.getElementById('statusbar-mode-tag');
+    if (modeTag) {
+      modeTag.textContent = flow.badge.replace(/^[^a-zA-Z0-9]+/, ''); // e.g. "LIVE TOOL", "CON EDISON DOCS"
+    }
+
+    const sentence = document.getElementById('statusbar-sentence');
+    if (sentence) {
+      sentence.innerHTML = flow.sentence;
+    }
   }
 
   getConversationalFlow(routing, meta) {
@@ -503,11 +506,28 @@ class StageController {
     }
     this.removeThinking();
 
+    // Update Status Bar to active processing mode
+    const bar = document.getElementById('chat-flow-statusbar');
+    if (bar) {
+      bar.className = 'chat-flow-statusbar processing';
+      const targetPill = document.getElementById('statusbar-target-pill');
+      if (targetPill) {
+        targetPill.className = 'statusbar-pill target processing';
+        targetPill.innerHTML = '<span class="flow-node-icon">⏳</span> Evaluating Intent & Tools...';
+      }
+      const modeTag = document.getElementById('statusbar-mode-tag');
+      if (modeTag) modeTag.textContent = 'ROUTING';
+      const sentence = document.getElementById('statusbar-sentence');
+      if (sentence) {
+        sentence.innerHTML = 'Watt is consulting <strong>Con Edison GECX Playbook</strong> & evaluating tool routes...';
+      }
+    }
+
     const thinkingDiv = document.createElement('div');
     thinkingDiv.id = 'dialogue-thinking-indicator';
     thinkingDiv.className = 'dialogue-thinking';
     thinkingDiv.innerHTML = `
-      <span>Watt is talking to GECX Playbook & checking tools...</span>
+      <span>Watt is consulting GECX Playbook...</span>
       <span class="thinking-dots"><span></span><span></span><span></span></span>
     `;
     this.dialogueStream.appendChild(thinkingDiv);

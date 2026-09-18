@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Con Edison Tech Day, October 7, 2026</title>
-  <link rel="stylesheet" href="styles.css?v=202610_guide_live_apis">
+  <link rel="stylesheet" href="styles.css?v=202610_guide_intuitive_paren">
   <!-- Three.js + GLTFLoader -->
   <script src="lib/three.min.js"></script>
   <script>
@@ -235,12 +235,8 @@
             <span>✨</span>
             <span>Who is Watt?</span>
           </div>
-          <p style="margin: 0; color: #94a3b8; line-height: 1.6;">
-            Watt is Con Edison's official Keynote AI Moderator for Tech Day (October 7, 2026), co-developed by Con Edison Enterprise Technology Solutions (ETS) and Google Cloud, powered by 
-            <span class="guide-api-tag">Gemini 2.0 (Vertex AI)</span>,
-            <span class="guide-api-tag">Dialogflow CX Playbooks (GECX)</span>,
-            and
-            <span class="guide-api-tag">Cloud Text-to-Speech (Neural2)</span>.
+          <p style="margin: 0; color: #94a3b8; line-height: 1.5;">
+            Con Edison's Keynote AI Moderator for Tech Day, co-developed with Google Cloud <span class="guide-api-paren">(Dialogflow CX Playbooks, Gemini 2.0, Neural2 TTS)</span>.
           </p>
         </div>
 
@@ -251,41 +247,11 @@
             <span>What Watt Can Do (Live Tools &amp; Knowledge)</span>
           </div>
           <ul class="guide-list">
-            <li>
-              <div class="guide-list-item-header">
-                <strong>Live NYISO Electric Grid Telemetry</strong>
-                <span class="guide-api-tag">API: api.nyiso.com (OASIS Real-Time Fuel Mix)</span>
-              </div>
-              Queries current New York state megawatt load, clean fuel generation, and zero-carbon clean energy percentage (hydro, nuclear, wind, solar).
-            </li>
-            <li>
-              <div class="guide-list-item-header">
-                <strong>National Weather Service (NWS / NOAA)</strong>
-                <span class="guide-api-tag">API: api.weather.gov/alerts (Zone NYZ072)</span>
-              </div>
-              Reports real-time NYC weather alerts, coastal flood/wind advisories, and atmospheric storm conditions.
-            </li>
-            <li>
-              <div class="guide-list-item-header">
-                <strong>Con Edison Outage Telemetry</strong>
-                <span class="guide-api-tag">API: outagemap.coned.com (OMS Operations Stream)</span>
-              </div>
-              Retrieves public operations interruption data, borough outage counts, and 99.99% system reliability metrics.
-            </li>
-            <li>
-              <div class="guide-list-item-header">
-                <strong>Clean Heat &amp; LL97 Rebate Calculator</strong>
-                <span class="guide-api-tag">API: coned.com/cleanheat (DOB LL97 Carbon Engine)</span>
-              </div>
-              Computes cold-climate heat pump sizing (tons), Con Edison rebates ($/ton), DAC bonuses, and Local Law 97 carbon penalty savings for any square footage.
-            </li>
-            <li>
-              <div class="guide-list-item-header">
-                <strong>5 Keynote Panel Topics (Enterprise Datastores)</strong>
-                <span class="guide-api-tag">API: Vertex AI Datastores &amp; Dialogflow CX</span>
-              </div>
-              Deep technical mastery across Customer Billing Agent, Fleet Telematics Idling Reduction, Subsurface Manhole Acoustic Safety, Weather Modeling Grid Resilience, and Clean Heat Optimization.
-            </li>
+            <li><strong>Live Electric Grid</strong> <span class="guide-api-paren">(api.nyiso.com)</span>: Real-time NY state load, clean generation, and zero-carbon fuel mix.</li>
+            <li><strong>Weather Advisories</strong> <span class="guide-api-paren">(api.weather.gov)</span>: Real-time NOAA storm alerts, coastal flood warnings, and wind advisories.</li>
+            <li><strong>Outage Operations</strong> <span class="guide-api-paren">(outagemap.coned.com)</span>: Active borough interruption counts and 99.99% system reliability.</li>
+            <li><strong>Clean Heat Calculator</strong> <span class="guide-api-paren">(coned.com/cleanheat)</span>: Heat pump sizing, ConEd rebates, and Local Law 97 carbon savings.</li>
+            <li><strong>5 Keynote Topics</strong> <span class="guide-api-paren">(Vertex AI Datastores)</span>: Deep technical grounding on Billing Agent, Fleet Idling, Manhole Acoustics, Storm Resilience, and Clean Heat.</li>
           </ul>
         </div>
 
@@ -293,12 +259,12 @@
         <div class="guide-section">
           <div class="guide-section-title cannot-do">
             <span>🛡️</span>
-            <span>Enterprise Guardrails &amp; Boundaries (What Watt Cannot Do)</span>
+            <span>Enterprise Guardrails (What Watt Cannot Do)</span>
           </div>
           <ul class="guide-list">
-            <li><strong>No Customer Private Data (PII):</strong> Watt does not access or display individual customer billing accounts, credit card numbers, or personal identifying information.</li>
-            <li><strong>No Grid Switching Operations:</strong> Watt delivers read-only telemetry for demonstration purposes and cannot execute physical breaker switching or dispatch field crews.</li>
-            <li><strong>No General Internet Browsing:</strong> Watt is strictly grounded in Con Edison utility engineering, NYISO operations, NOAA weather, and panel topics — refusing sports, entertainment, or unrelated web trivia.</li>
+            <li><strong>Zero Customer PII:</strong> Does not access personal accounts or customer identifying data.</li>
+            <li><strong>Read-Only Telemetry:</strong> Cannot execute physical breaker switching or dispatch field crews.</li>
+            <li><strong>Utility Grounding:</strong> Rejects off-topic general web trivia to stay focused on utility operations.</li>
           </ul>
         </div>
       </div>

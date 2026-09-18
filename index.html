@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Con Edison Tech Day, October 7, 2026</title>
-  <link rel="stylesheet" href="styles.css?v=202610_rigid_panels">
+  <link rel="stylesheet" href="styles.css?v=202610_guide_live_apis">
   <!-- Three.js + GLTFLoader -->
   <script src="lib/three.min.js"></script>
   <script>
@@ -235,8 +235,12 @@
             <span>✨</span>
             <span>Who is Watt?</span>
           </div>
-          <p style="margin: 0; color: #94a3b8;">
-            Watt is Con Edison's official Keynote AI Moderator for Tech Day (October 7, 2026), co-developed by Con Edison Enterprise Technology Solutions (ETS) and Google Cloud, powered by Gemini and Dialogflow CX Playbooks (GECX).
+          <p style="margin: 0; color: #94a3b8; line-height: 1.6;">
+            Watt is Con Edison's official Keynote AI Moderator for Tech Day (October 7, 2026), co-developed by Con Edison Enterprise Technology Solutions (ETS) and Google Cloud, powered by 
+            <span class="guide-api-tag">Gemini 2.0 (Vertex AI)</span>,
+            <span class="guide-api-tag">Dialogflow CX Playbooks (GECX)</span>,
+            and
+            <span class="guide-api-tag">Cloud Text-to-Speech (Neural2)</span>.
           </p>
         </div>
 
@@ -247,11 +251,41 @@
             <span>What Watt Can Do (Live Tools &amp; Knowledge)</span>
           </div>
           <ul class="guide-list">
-            <li><strong>Live NYISO Electric Grid Telemetry:</strong> Queries current New York state megawatt load, clean fuel generation, and zero-carbon clean energy percentage (hydro, nuclear, wind, solar).</li>
-            <li><strong>National Weather Service (NWS / NOAA):</strong> Reports real-time NYC weather alerts, coastal flood/wind advisories, and atmospheric storm conditions.</li>
-            <li><strong>Con Edison Outage Telemetry:</strong> Retrieves public operations interruption data, borough outage counts, and 99.99% system reliability metrics.</li>
-            <li><strong>Clean Heat &amp; LL97 Rebate Calculator:</strong> Computes cold-climate heat pump sizing (tons), Con Edison rebates ($/ton), DAC bonuses, and Local Law 97 carbon penalty savings for any square footage.</li>
-            <li><strong>5 Keynote Panel Topics:</strong> Deep technical mastery across Customer Billing Agent, Fleet Telematics Idling Reduction, Subsurface Manhole Acoustic Safety, Weather Modeling Grid Resilience, and Clean Heat Optimization.</li>
+            <li>
+              <div class="guide-list-item-header">
+                <strong>Live NYISO Electric Grid Telemetry</strong>
+                <span class="guide-api-tag">API: api.nyiso.com (OASIS Real-Time Fuel Mix)</span>
+              </div>
+              Queries current New York state megawatt load, clean fuel generation, and zero-carbon clean energy percentage (hydro, nuclear, wind, solar).
+            </li>
+            <li>
+              <div class="guide-list-item-header">
+                <strong>National Weather Service (NWS / NOAA)</strong>
+                <span class="guide-api-tag">API: api.weather.gov/alerts (Zone NYZ072)</span>
+              </div>
+              Reports real-time NYC weather alerts, coastal flood/wind advisories, and atmospheric storm conditions.
+            </li>
+            <li>
+              <div class="guide-list-item-header">
+                <strong>Con Edison Outage Telemetry</strong>
+                <span class="guide-api-tag">API: outagemap.coned.com (OMS Operations Stream)</span>
+              </div>
+              Retrieves public operations interruption data, borough outage counts, and 99.99% system reliability metrics.
+            </li>
+            <li>
+              <div class="guide-list-item-header">
+                <strong>Clean Heat &amp; LL97 Rebate Calculator</strong>
+                <span class="guide-api-tag">API: coned.com/cleanheat (DOB LL97 Carbon Engine)</span>
+              </div>
+              Computes cold-climate heat pump sizing (tons), Con Edison rebates ($/ton), DAC bonuses, and Local Law 97 carbon penalty savings for any square footage.
+            </li>
+            <li>
+              <div class="guide-list-item-header">
+                <strong>5 Keynote Panel Topics (Enterprise Datastores)</strong>
+                <span class="guide-api-tag">API: Vertex AI Datastores &amp; Dialogflow CX</span>
+              </div>
+              Deep technical mastery across Customer Billing Agent, Fleet Telematics Idling Reduction, Subsurface Manhole Acoustic Safety, Weather Modeling Grid Resilience, and Clean Heat Optimization.
+            </li>
           </ul>
         </div>
 

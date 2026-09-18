@@ -1333,8 +1333,8 @@ body {
 
 .guide-modal-card {
   width: 90%;
-  max-width: 680px;
-  max-height: 85vh;
+  max-width: 720px;
+  max-height: 90vh;
   background: #091222;
   border: 1px solid rgba(0, 229, 255, 0.35);
   border-radius: 14px;
@@ -1346,7 +1346,7 @@ body {
 }
 
 .guide-modal-header {
-  padding: 16px 20px;
+  padding: 14px 20px;
   background: rgba(0, 45, 98, 0.4);
   border-bottom: 1px solid rgba(0, 229, 255, 0.2);
   display: flex;
@@ -1401,28 +1401,45 @@ body {
 }
 
 .guide-modal-body {
-  padding: 20px;
+  padding: 16px 20px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
   font-size: 12px;
-  line-height: 1.55;
+  line-height: 1.5;
   color: #cbd5e1;
+}
+
+.guide-modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.guide-modal-body::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.4);
+}
+
+.guide-modal-body::-webkit-scrollbar-thumb {
+  background: rgba(0, 229, 255, 0.25);
+  border-radius: 3px;
+}
+
+.guide-modal-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 229, 255, 0.45);
 }
 
 .guide-section {
   background: rgba(15, 23, 42, 0.6);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
-  padding: 14px 16px;
+  padding: 11px 15px;
 }
 
 .guide-section-title {
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.6px;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -1441,7 +1458,31 @@ body {
   padding-left: 18px;
   display: flex;
   flex-direction: column;
+  gap: 8px;
+}
+
+.guide-list-item-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
   gap: 6px;
+  margin-bottom: 2px;
+}
+
+.guide-api-tag {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-mono, "SF Mono", Consolas, monospace);
+  font-size: 10px;
+  font-weight: 600;
+  color: #38bdf8;
+  background: rgba(14, 165, 233, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  border-radius: 4px;
+  padding: 1.5px 6px;
+  letter-spacing: 0.2px;
+  vertical-align: middle;
+  white-space: nowrap;
 }
 
 .guide-list li strong {

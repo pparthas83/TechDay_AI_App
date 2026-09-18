@@ -424,14 +424,15 @@ body {
   padding-bottom: 12px;
   border-bottom: 1px solid rgba(0, 229, 255, 0.16);
   margin-bottom: 10px;
-  gap: 12px;
+  gap: 8px;
 }
 
 .chat-header-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
 }
+
 
 /* Speaking Wave Animation */
 .speaking-wave {
@@ -619,155 +620,71 @@ body {
   color: #7dd3fc;
 }
 
-/* Conversational Flow Status Bar (Non-Technical Ribbon) */
-.chat-flow-statusbar {
-  background: rgba(2, 22, 54, 0.95);
-  border: 1px solid rgba(0, 229, 255, 0.28);
-  border-left: 4px solid #00e5ff;
-  border-radius: 12px;
-  padding: 8px 14px;
+/* Header Inline Conversational Flow Track (Pure text, zero boxes, Strategy B) */
+.header-flow-track {
+  flex: 1;
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   gap: 4px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
-  transition: all 0.25s ease;
-  margin-bottom: 12px;
-  flex-shrink: 0;
-}
-
-/* Optional Bottom Docking */
-.chat-flow-statusbar.dock-bottom {
-  order: 2;
-  margin-top: 10px;
-  margin-bottom: 6px;
-}
-
-.chat-flow-statusbar.tool-flow {
-  border-left-color: #00e5ff;
-  background: linear-gradient(90deg, rgba(0, 229, 255, 0.12) 0%, rgba(2, 22, 54, 0.96) 100%);
-  border-color: rgba(0, 229, 255, 0.45);
-}
-
-.chat-flow-statusbar.rag-flow {
-  border-left-color: #a855f7;
-  background: linear-gradient(90deg, rgba(168, 85, 247, 0.12) 0%, rgba(2, 22, 54, 0.96) 100%);
-  border-color: rgba(168, 85, 247, 0.45);
-}
-
-.chat-flow-statusbar.direct-flow {
-  border-left-color: #38bdf8;
-  background: linear-gradient(90deg, rgba(56, 189, 248, 0.08) 0%, rgba(2, 22, 54, 0.96) 100%);
-  border-color: rgba(56, 189, 248, 0.35);
-}
-
-.chat-flow-statusbar.processing {
-  border-left-color: #fbbf24;
-  background: linear-gradient(90deg, rgba(251, 191, 36, 0.1) 0%, rgba(2, 22, 54, 0.96) 100%);
-  border-color: rgba(251, 191, 36, 0.4);
-}
-
-.statusbar-row-main {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.statusbar-stepper {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 11px;
-  font-weight: 700;
-  flex-wrap: wrap;
-}
-
-.statusbar-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 3px 9px;
-  border-radius: 6px;
-  font-family: var(--font-mono);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-size: 10.5px;
-  letter-spacing: 0.3px;
+  letter-spacing: -0.12px;
+  white-space: nowrap;
+  min-width: 0;
+  padding: 0 2px;
 }
 
-.statusbar-pill.watt {
-  background: rgba(6, 155, 215, 0.2);
-  border: 1px solid rgba(6, 155, 215, 0.55);
-  color: #7dd3fc;
+.flow-node {
+  color: #526075;
+  font-weight: 500;
+  transition: color 0.4s ease, text-shadow 0.4s ease, opacity 0.4s ease;
+  white-space: nowrap;
 }
 
-.statusbar-pill.playbook {
-  background: rgba(0, 230, 118, 0.18);
-  border: 1px solid rgba(0, 230, 118, 0.55);
-  color: #69f0ae;
+.flow-arrow {
+  color: #3b4759;
+  font-size: 8.5px;
+  margin: 0 1px;
+  transition: color 0.4s ease, text-shadow 0.4s ease;
+  user-select: none;
 }
 
-.statusbar-pill.target.idle {
-  background: rgba(56, 189, 248, 0.12);
-  border: 1px solid rgba(56, 189, 248, 0.3);
-  color: #94a3b8;
-}
 
-.statusbar-pill.target.target-tool {
-  background: rgba(0, 229, 255, 0.22);
-  border: 1px solid #00e5ff;
-  color: #00e5ff;
-  box-shadow: 0 0 10px rgba(0, 229, 255, 0.35);
-}
-
-.statusbar-pill.target.target-rag {
-  background: rgba(168, 85, 247, 0.22);
-  border: 1px solid #c084fc;
-  color: #d8b4fe;
-  box-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
-}
-
-.statusbar-pill.target.target-direct {
-  background: rgba(56, 189, 248, 0.16);
-  border: 1px solid rgba(56, 189, 248, 0.45);
-  color: #7dd3fc;
-}
-
-.statusbar-pill.target.processing {
-  background: rgba(251, 191, 36, 0.15);
-  border: 1px solid rgba(251, 191, 36, 0.5);
-  color: #fde68a;
-  animation: pulse-dot 1.5s infinite;
-}
-
-.statusbar-arrow {
-  color: #00e5ff;
-  font-size: 10px;
-  opacity: 0.8;
-}
-
-.statusbar-tag {
-  font-size: 9.5px;
-  font-family: var(--font-mono);
+/* Thinking / In-Flight: Watt & Playbook pulse in Red, target shows progress */
+.header-flow-track.thinking #flow-node-watt1,
+.header-flow-track.thinking #flow-node-playbook {
+  color: #ff334b;
   font-weight: 700;
-  background: rgba(0, 229, 255, 0.12);
-  border: 1px solid rgba(0, 229, 255, 0.3);
-  color: #38bdf8;
-  padding: 2px 7px;
-  border-radius: 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  flex-shrink: 0;
+  text-shadow: 0 0 8px rgba(255, 51, 75, 0.45);
+  animation: flow-pulse-red 1.2s infinite ease-in-out;
+}
+.header-flow-track.thinking #flow-arrow-1 {
+  color: #ff334b;
+  text-shadow: 0 0 6px rgba(255, 51, 75, 0.45);
+}
+.header-flow-track.thinking #flow-node-target {
+  color: #94a3b8;
+  font-style: italic;
 }
 
-.statusbar-sentence {
-  font-size: 11px;
-  color: #bae6fd;
-  line-height: 1.35;
-  font-family: var(--font-sans);
+/* Active State: Full round-trip lit in glowing Red */
+.header-flow-track.active .flow-node {
+  color: #ff334b;
+  font-weight: 700;
+  text-shadow: 0 0 8px rgba(255, 51, 75, 0.45);
+}
+.header-flow-track.active .flow-arrow {
+  color: #ff334b;
+  font-weight: 700;
+  text-shadow: 0 0 6px rgba(255, 51, 75, 0.45);
 }
 
-.statusbar-sentence strong {
-  color: #ffffff;
+@keyframes flow-pulse-red {
+  0%, 100% { opacity: 0.65; }
+  50% { opacity: 1; }
 }
+
 
 .live-status-pill {
   display: inline-flex;
@@ -793,82 +710,8 @@ body {
   animation: pulse-dot 2.5s infinite ease-in-out;
 }
 
-.flow-stepper {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
-  font-size: 12px;
-}
 
-.flow-node {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 3px 10px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  color: #e2e8f0;
-  font-weight: 600;
-  letter-spacing: 0.2px;
-}
 
-.flow-node.flow-watt {
-  background: rgba(0, 229, 255, 0.15);
-  border-color: rgba(0, 229, 255, 0.55);
-  color: #ffffff;
-}
-
-.flow-node.flow-playbook {
-  background: rgba(14, 165, 233, 0.18);
-  border-color: rgba(56, 189, 248, 0.55);
-  color: #ffffff;
-}
-
-.flow-node.flow-target.target-tool {
-  background: rgba(0, 229, 255, 0.24);
-  border-color: #00e5ff;
-  color: #00ffff;
-  font-weight: 700;
-  box-shadow: 0 0 12px rgba(0, 229, 255, 0.4);
-}
-
-.flow-node.flow-target.target-rag {
-  background: rgba(168, 85, 247, 0.24);
-  border-color: #c084fc;
-  color: #f3e8ff;
-  font-weight: 700;
-  box-shadow: 0 0 12px rgba(168, 85, 247, 0.4);
-}
-
-.flow-node.flow-target.target-direct {
-  background: rgba(56, 189, 248, 0.18);
-  border-color: #38bdf8;
-  color: #bae6fd;
-  font-weight: 700;
-}
-
-.flow-arrow {
-  color: #38bdf8;
-  font-size: 13px;
-  font-weight: 700;
-  opacity: 0.95;
-  user-select: none;
-}
-
-.flow-summary-text {
-  font-size: 11.5px;
-  color: #bae6fd;
-  line-height: 1.4;
-  letter-spacing: 0.15px;
-  margin-top: 2px;
-}
-
-.flow-summary-text strong {
-  color: #ffffff;
-  font-weight: 700;
-}
 
 .tool-pulse-beacon {
   width: 6px;

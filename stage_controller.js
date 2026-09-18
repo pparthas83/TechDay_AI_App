@@ -27,6 +27,7 @@ class StageController {
     this.topicBadge = document.getElementById('topic-badge');
     this.micBtn = document.getElementById('mic-btn');
     this.agendaNav = document.getElementById('agenda-nav');
+    this.flowResetTimer = null;
 
     this.initAudioRouting();
     this.initSpeechRecognition();
@@ -65,7 +66,9 @@ class StageController {
         this.avatar.clearSpokenText();
       }
       this.updatePlayState();
+      this.scheduleFlowReset(6000);
     });
+
 
     this.audioElement.addEventListener('error', (e) => {
       console.warn('[Audio] Failed or blocked playback:', e);
@@ -356,7 +359,9 @@ class StageController {
         this.avatar.clearSpokenText();
       }
       this.updatePlayState();
+      this.scheduleFlowReset(6000);
     };
+
 
     window.speechSynthesis.speak(utterance);
   }
@@ -379,14 +384,17 @@ class StageController {
     const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const metaTag = role === 'audience' ? 'AUDIENCE' : (meta.sender || 'WATT // AI MODERATOR');
     
-    // Construct Badges & Update Conversational Flow Status Bar
+    // Construct Badges & Update Header Conversational Flow Track (Strategy B)
     let toolBadge = '';
     const routing = meta.routing || meta.telemetry?.routing;
 
     if (role === 'watt') {
       const flow = this.getConversationalFlow(routing, meta);
       toolBadge = `<span class="bubble-tool-badge ${flow.type.replace('-flow', '-badge')}">${this.escapeHtml(flow.badge)}</span>`;
-      this.updateFlowStatusBar(flow);
+      this.setHeaderFlowActive(flow);
+      if (!this.isPlaying) {
+        this.scheduleFlowReset(6000);
+      }
     }
 
     bubble.innerHTML = `
@@ -402,27 +410,52 @@ class StageController {
     this.scrollToBottom();
   }
 
-  updateFlowStatusBar(flow) {
-    const bar = document.getElementById('chat-flow-statusbar');
-    if (!bar) return;
+  setHeaderFlowIdle() {
+    const track = document.getElementById('header-flow-track');
+    if (!track) return;
+    track.className = 'header-flow-track idle';
 
-    // Reset modifier classes
-    bar.className = `chat-flow-statusbar ${flow.type}`;
-
-    const targetPill = document.getElementById('statusbar-target-pill');
-    if (targetPill) {
-      targetPill.className = `statusbar-pill target ${flow.targetClass}`;
-      targetPill.innerHTML = `<span class="flow-node-icon">${flow.icon}</span> ${this.escapeHtml(flow.targetLabel)}`;
+    const nodeTarget = document.getElementById('flow-node-target');
+    if (nodeTarget) {
+      nodeTarget.textContent = 'Enterprise Tools & Datastores';
     }
+  }
 
-    const modeTag = document.getElementById('statusbar-mode-tag');
-    if (modeTag) {
-      modeTag.textContent = flow.badge.replace(/^[^a-zA-Z0-9]+/, ''); // e.g. "LIVE TOOL", "CON EDISON DOCS"
+  setHeaderFlowInFlight() {
+    this.cancelFlowReset();
+    const track = document.getElementById('header-flow-track');
+    if (!track) return;
+    track.className = 'header-flow-track thinking';
+
+    const nodeTarget = document.getElementById('flow-node-target');
+    if (nodeTarget) {
+      nodeTarget.textContent = 'Evaluating Intent & Tools...';
     }
+  }
 
-    const sentence = document.getElementById('statusbar-sentence');
-    if (sentence) {
-      sentence.innerHTML = flow.sentence;
+  setHeaderFlowActive(flow) {
+    this.cancelFlowReset();
+    const track = document.getElementById('header-flow-track');
+    if (!track) return;
+    track.className = 'header-flow-track active';
+
+    const nodeTarget = document.getElementById('flow-node-target');
+    if (nodeTarget) {
+      nodeTarget.textContent = flow.targetText;
+    }
+  }
+
+  scheduleFlowReset(delayMs = 6000) {
+    this.cancelFlowReset();
+    this.flowResetTimer = setTimeout(() => {
+      this.setHeaderFlowIdle();
+    }, delayMs);
+  }
+
+  cancelFlowReset() {
+    if (this.flowResetTimer) {
+      clearTimeout(this.flowResetTimer);
+      this.flowResetTimer = null;
     }
   }
 
@@ -433,38 +466,32 @@ class StageController {
       return {
         type: 'tool-flow',
         badge: '⚡ LIVE TOOL',
-        icon: '📊',
-        targetLabel: toolLabel,
-        targetClass: 'target-tool',
-        sentence: `<strong>Flow:</strong> Watt is talking to GECX Playbook ➔ Playbook reached out to <strong>${this.escapeHtml(toolLabel)}</strong>`
+        targetText: `GECX Tool (${toolLabel})`,
+        icon: '📊'
       };
     } else if (routing?.mode === 'DATASTORE_RAG' || meta?.telemetry?.usedDataStore) {
       return {
         type: 'rag-flow',
         badge: '📚 CON EDISON DOCS',
-        icon: '📚',
-        targetLabel: 'Official Policy Documents',
-        targetClass: 'target-rag',
-        sentence: `<strong>Flow:</strong> Watt is talking to GECX Playbook ➔ Playbook checked <strong>Con Edison Official Documents</strong>`
+        targetText: 'GECX Datastore (ConEd Docs)',
+        icon: '📚'
       };
     } else {
       return {
         type: 'direct-flow',
         badge: '🧠 GECX PLAYBOOK',
-        icon: '💬',
-        targetLabel: 'Conversational Reasoning',
-        targetClass: 'target-direct',
-        sentence: `<strong>Flow:</strong> Watt is talking to GECX Playbook ➔ Playbook answered via <strong>Conversational Reasoning</strong>`
+        targetText: 'Conversational Response',
+        icon: '💬'
       };
     }
   }
 
   getFriendlyToolName(rawName = '') {
     const s = String(rawName).toLowerCase();
-    if (s.includes('nyiso') || s.includes('grid')) return 'Live NYISO Grid Telemetry';
-    if (s.includes('weather') || s.includes('nws')) return 'National Weather Service';
-    if (s.includes('heat') || s.includes('rebate') || s.includes('calc')) return 'Clean Heat Rebate Calculator';
-    if (s.includes('outage')) return 'Outage Management System';
+    if (s.includes('nyiso') || s.includes('grid')) return 'Live NYISO Grid';
+    if (s.includes('weather') || s.includes('nws')) return 'NWS Weather';
+    if (s.includes('heat') || s.includes('rebate') || s.includes('calc')) return 'Clean Heat Calc';
+    if (s.includes('outage')) return 'Outages Telemetry';
     return rawName || 'Enterprise Tool';
   }
 
@@ -506,22 +533,8 @@ class StageController {
     }
     this.removeThinking();
 
-    // Update Status Bar to active processing mode
-    const bar = document.getElementById('chat-flow-statusbar');
-    if (bar) {
-      bar.className = 'chat-flow-statusbar processing';
-      const targetPill = document.getElementById('statusbar-target-pill');
-      if (targetPill) {
-        targetPill.className = 'statusbar-pill target processing';
-        targetPill.innerHTML = '<span class="flow-node-icon">⏳</span> Evaluating Intent & Tools...';
-      }
-      const modeTag = document.getElementById('statusbar-mode-tag');
-      if (modeTag) modeTag.textContent = 'ROUTING';
-      const sentence = document.getElementById('statusbar-sentence');
-      if (sentence) {
-        sentence.innerHTML = 'Watt is consulting <strong>Con Edison GECX Playbook</strong> & evaluating tool routes...';
-      }
-    }
+    // Set Header Flow Track to In-Flight (Strategy B)
+    this.setHeaderFlowInFlight();
 
     const thinkingDiv = document.createElement('div');
     thinkingDiv.id = 'dialogue-thinking-indicator';
@@ -533,6 +546,7 @@ class StageController {
     this.dialogueStream.appendChild(thinkingDiv);
     this.scrollToBottom();
   }
+
 
   removeThinking() {
     if (this.avatar && typeof this.avatar.setThinking === 'function') {
@@ -606,12 +620,15 @@ class StageController {
         throw new Error(data.error);
       } else {
         this.removeThinking();
+        this.scheduleFlowReset(2000);
       }
     } catch (err) {
       console.error('[GECX Chat] Query error:', err);
       this.removeThinking();
       this.addDialogueMessage('watt', 'I apologize, I could not complete that query right now.');
+      this.scheduleFlowReset(3000);
     }
+
   }
 
   togglePlayPause() {

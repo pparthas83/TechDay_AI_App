@@ -106,12 +106,24 @@
       <section class="right-panel">
         
         <div class="chat-interface-card" id="chat-interface-card">
-          <!-- Chat Header: Fixed Branding, Audio Wave & Intelligence Engine -->
+          <!-- Chat Header: Fixed Branding, Conversational Flow Track & Intelligence Engine -->
           <div class="chat-interface-header">
             <div class="chat-header-title">
               <span class="chat-label">WATT // LIVE CHAT</span>
               <span class="chat-sub">Ask via mic [M] or text</span>
             </div>
+
+            <!-- Conversational Flow Track: Strategy B (Pure Text, Header Center) -->
+            <div class="header-flow-track idle" id="header-flow-track" aria-live="polite">
+              <span class="flow-node" id="flow-node-watt1">Watt</span>
+              <span class="flow-arrow" id="flow-arrow-1">➔</span>
+              <span class="flow-node" id="flow-node-playbook">GECX Playbook (Gemini AI)</span>
+              <span class="flow-arrow" id="flow-arrow-2">➔</span>
+              <span class="flow-node" id="flow-node-target">Enterprise Tools & Datastores</span>
+              <span class="flow-arrow" id="flow-arrow-3">➔</span>
+              <span class="flow-node" id="flow-node-watt2">Watt</span>
+            </div>
+
             <div class="chat-header-actions">
               <div id="speaking-wave" class="speaking-wave" title="Audio Activity">
                 <span></span><span></span><span></span><span></span><span></span>
@@ -122,22 +134,6 @@
             </div>
           </div>
 
-          <!-- Conversational Flow Status Bar: Dedicated Non-Technical Orchestration Ribbon -->
-          <div class="chat-flow-statusbar" id="chat-flow-statusbar" role="status" aria-label="Orchestration Flow">
-            <div class="statusbar-row-main">
-              <div class="statusbar-stepper">
-                <span class="statusbar-pill watt">⚡ Watt</span>
-                <span class="statusbar-arrow">➔</span>
-                <span class="statusbar-pill playbook">🧠 GECX Playbook</span>
-                <span class="statusbar-arrow">➔</span>
-                <span class="statusbar-pill target idle" id="statusbar-target-pill">🏢 Enterprise Tools & Docs</span>
-              </div>
-              <span class="statusbar-tag" id="statusbar-mode-tag">READY</span>
-            </div>
-            <div class="statusbar-sentence" id="statusbar-sentence">
-              Watt is connected to <strong>Con Edison GECX Playbook</strong> & ready for live questions.
-            </div>
-          </div>
 
           <!-- Chat Stream: Scrollable Message Feed -->
           <div class="dialogue-stream-wrapper" id="dialogue-stream-wrapper">

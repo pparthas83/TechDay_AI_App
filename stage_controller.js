@@ -66,7 +66,6 @@ class StageController {
         this.avatar.clearSpokenText();
       }
       this.updatePlayState();
-      this.scheduleFlowReset(6000);
     });
 
 
@@ -92,6 +91,7 @@ class StageController {
 
     this.speechRecognition.onstart = () => {
       this.isListening = true;
+      this.setHeaderFlowIdle();
       if (this.micBtn) this.micBtn.classList.add('active');
     };
 
@@ -122,6 +122,7 @@ class StageController {
       this.speechRecognition.stop();
     } else {
       if (this.isPlaying) this.audioElement.pause();
+      this.setHeaderFlowIdle();
       try {
         this.speechRecognition.start();
       } catch (err) {
@@ -359,7 +360,6 @@ class StageController {
         this.avatar.clearSpokenText();
       }
       this.updatePlayState();
-      this.scheduleFlowReset(6000);
     };
 
 
@@ -392,9 +392,6 @@ class StageController {
       const flow = this.getConversationalFlow(routing, meta);
       toolBadge = `<span class="bubble-tool-badge ${flow.type.replace('-flow', '-badge')}">${this.escapeHtml(flow.badge)}</span>`;
       this.setHeaderFlowActive(flow);
-      if (!this.isPlaying) {
-        this.scheduleFlowReset(6000);
-      }
     }
 
     bubble.innerHTML = `
@@ -411,13 +408,30 @@ class StageController {
   }
 
   setHeaderFlowIdle() {
+    this.cancelFlowReset();
     const track = document.getElementById('header-flow-track');
     if (!track) return;
     track.className = 'header-flow-track idle';
 
-    const nodeTarget = document.getElementById('flow-node-target');
-    if (nodeTarget) {
-      nodeTarget.textContent = 'Enterprise Tools & Datastores';
+    const reasoning = document.getElementById('branch-reasoning');
+    const datastores = document.getElementById('branch-datastores');
+    const apis = document.getElementById('branch-apis');
+    const fork = document.getElementById('flow-branch-fork');
+
+    if (reasoning) {
+      reasoning.className = 'branch-node';
+      reasoning.textContent = 'Reasoning';
+    }
+    if (datastores) {
+      datastores.className = 'branch-node';
+      datastores.textContent = 'Datastores';
+    }
+    if (apis) {
+      apis.className = 'branch-node';
+      apis.textContent = 'Live APIs';
+    }
+    if (fork) {
+      fork.className = 'flow-branch-fork';
     }
   }
 
@@ -427,9 +441,21 @@ class StageController {
     if (!track) return;
     track.className = 'header-flow-track thinking';
 
-    const nodeTarget = document.getElementById('flow-node-target');
-    if (nodeTarget) {
-      nodeTarget.textContent = 'Evaluating Intent & Tools...';
+    const reasoning = document.getElementById('branch-reasoning');
+    const datastores = document.getElementById('branch-datastores');
+    const apis = document.getElementById('branch-apis');
+
+    if (reasoning) {
+      reasoning.className = 'branch-node';
+      reasoning.textContent = 'Evaluating';
+    }
+    if (datastores) {
+      datastores.className = 'branch-node';
+      datastores.textContent = 'Intent';
+    }
+    if (apis) {
+      apis.className = 'branch-node';
+      apis.textContent = '& Tools...';
     }
   }
 
@@ -439,9 +465,57 @@ class StageController {
     if (!track) return;
     track.className = 'header-flow-track active';
 
-    const nodeTarget = document.getElementById('flow-node-target');
-    if (nodeTarget) {
-      nodeTarget.textContent = flow.targetText;
+    const reasoning = document.getElementById('branch-reasoning');
+    const datastores = document.getElementById('branch-datastores');
+    const apis = document.getElementById('branch-apis');
+
+    if (flow.branch === 'apis') {
+      if (apis) {
+        apis.className = 'branch-node active-branch';
+        apis.textContent = `✦ Live APIs (${flow.toolLabel || 'Live Tool'})`;
+      }
+      if (reasoning) {
+        reasoning.className = 'branch-node dimmed-branch';
+        reasoning.textContent = 'Reasoning';
+      }
+      if (datastores) {
+        datastores.className = 'branch-node dimmed-branch';
+        datastores.textContent = 'Datastores';
+      }
+    } else if (flow.branch === 'datastores') {
+      if (datastores) {
+        datastores.className = 'branch-node active-branch';
+        datastores.textContent = '✦ Datastores (Docs)';
+      }
+      if (reasoning) {
+        reasoning.className = 'branch-node dimmed-branch';
+        reasoning.textContent = 'Reasoning';
+      }
+      if (apis) {
+        apis.className = 'branch-node dimmed-branch';
+        apis.textContent = 'Live APIs';
+      }
+    } else {
+      // reasoning / direct playbook
+      if (reasoning) {
+        reasoning.className = 'branch-node active-branch';
+        reasoning.textContent = '✦ Reasoning';
+      }
+      if (datastores) {
+        datastores.className = 'branch-node dimmed-branch';
+        datastores.textContent = 'Datastores';
+      }
+      if (apis) {
+        apis.className = 'branch-node dimmed-branch';
+        apis.textContent = 'Live APIs';
+      }
+    }
+  }
+
+  onUserInput() {
+    const track = document.getElementById('header-flow-track');
+    if (track && (track.classList.contains('active') || track.classList.contains('thinking'))) {
+      this.setHeaderFlowIdle();
     }
   }
 
@@ -465,22 +539,26 @@ class StageController {
       const toolLabel = this.getFriendlyToolName(tool.displayName || tool.toolName);
       return {
         type: 'tool-flow',
+        branch: 'apis',
+        toolLabel: toolLabel,
         badge: '⚡ LIVE TOOL',
-        targetText: `GECX Tool (${toolLabel})`,
+        targetText: `Live APIs (${toolLabel})`,
         icon: '📊'
       };
     } else if (routing?.mode === 'DATASTORE_RAG' || meta?.telemetry?.usedDataStore) {
       return {
         type: 'rag-flow',
+        branch: 'datastores',
         badge: '📚 CON EDISON DOCS',
-        targetText: 'GECX Datastore (ConEd Docs)',
+        targetText: 'Datastores (Docs)',
         icon: '📚'
       };
     } else {
       return {
         type: 'direct-flow',
+        branch: 'reasoning',
         badge: '🧠 GECX PLAYBOOK',
-        targetText: 'Conversational Response',
+        targetText: 'Reasoning',
         icon: '💬'
       };
     }

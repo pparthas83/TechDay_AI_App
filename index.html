@@ -108,24 +108,33 @@
         <div class="chat-interface-card" id="chat-interface-card">
           <!-- Chat Header: Fixed Branding, Conversational Flow Track & Intelligence Engine -->
           <div class="chat-interface-header">
-            <!-- Conversational Flow Track: Strategy B (Pure Text, Full Left-to-Center Header) -->
-            <div class="header-flow-track idle" id="header-flow-track" aria-live="polite">
-              <span class="flow-node" id="flow-node-watt1">Watt</span>
-              <span class="flow-arrow" id="flow-arrow-1">➔</span>
-              <span class="flow-node" id="flow-node-playbook">GECX Playbook (Gemini AI)</span>
-              <span class="flow-arrow" id="flow-arrow-2">➔</span>
-              <span class="flow-node" id="flow-node-target">Enterprise Tools & Datastores</span>
-              <span class="flow-arrow" id="flow-arrow-3">➔</span>
-              <span class="flow-node" id="flow-node-watt2">Watt</span>
-            </div>
-
-            <div class="chat-header-actions">
-              <div id="speaking-wave" class="speaking-wave" title="Audio Activity">
-                <span></span><span></span><span></span><span></span><span></span>
-              </div>
+            <!-- Left Engine Module: GECX Status Badge + Voice Activity Visualizer -->
+            <div class="chat-header-engine-cluster">
               <span class="live-status-pill" title="Autonomous GECX Playbook Engine Active">
                 <span class="pill-dot"></span>GECX
               </span>
+              <div id="speaking-wave" class="speaking-wave" title="Audio Activity">
+                <span></span><span></span><span></span><span></span><span></span>
+              </div>
+            </div>
+
+            <div class="header-flow-divider" aria-hidden="true"></div>
+
+            <!-- Conversational Flow Track: Watt -> GECX -> [3 Branching Paths] -> Watt -->
+            <div class="header-flow-track idle" id="header-flow-track" aria-live="polite">
+              <span class="flow-node" id="flow-node-watt1">Watt</span>
+              <span class="flow-arrow" id="flow-arrow-1">➔</span>
+              <span class="flow-node" id="flow-node-gecx">GECX</span>
+              <span class="flow-arrow" id="flow-arrow-2">➔</span>
+              <div class="flow-branch-fork" id="flow-branch-fork">
+                <span class="branch-node" id="branch-reasoning">Reasoning</span>
+                <span class="branch-sep">|</span>
+                <span class="branch-node" id="branch-datastores">Datastores</span>
+                <span class="branch-sep">|</span>
+                <span class="branch-node" id="branch-apis">Live APIs</span>
+              </div>
+              <span class="flow-arrow" id="flow-arrow-3">➔</span>
+              <span class="flow-node" id="flow-node-watt2">Watt</span>
             </div>
           </div>
 
@@ -198,9 +207,10 @@
       // Enforce GECX Playbook backend
       controller.setBackend('gecx');
 
-      // Chat input form submission
+      // Chat input form submission & typing reset
       const chatForm = document.getElementById('chat-form');
       const chatInput = document.getElementById('chat-input');
+      chatInput.addEventListener('input', () => controller.onUserInput());
       chatForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const text = chatInput.value.trim();

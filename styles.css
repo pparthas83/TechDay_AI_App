@@ -419,20 +419,13 @@ body {
 
 .chat-interface-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   padding-bottom: 12px;
   border-bottom: 1px solid rgba(0, 229, 255, 0.16);
   margin-bottom: 10px;
-  gap: 12px;
+  gap: 10px;
   min-height: 36px;
-}
-
-.chat-header-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
 }
 
 
@@ -623,7 +616,22 @@ body {
   color: #7dd3fc;
 }
 
-/* Header Inline Conversational Flow Track (Pure text, zero boxes, Strategy B) */
+/* Header Inline Conversational Flow Track (3 Branching Paths, Neon ConEd Safety Orange #FF8200) */
+.chat-header-engine-cluster {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.header-flow-divider {
+  width: 1px;
+  height: 16px;
+  background: rgba(0, 229, 255, 0.22);
+  margin: 0 4px;
+  flex-shrink: 0;
+}
+
 .header-flow-track {
   flex: 1;
   display: flex;
@@ -631,7 +639,7 @@ body {
   justify-content: flex-start;
   gap: 6px;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 11.5px;
+  font-size: 11px;
   letter-spacing: 0.1px;
   white-space: nowrap;
   min-width: 0;
@@ -643,7 +651,7 @@ body {
 .flow-node {
   color: #526075;
   font-weight: 500;
-  transition: color 0.4s ease, text-shadow 0.4s ease, opacity 0.4s ease;
+  transition: color 0.35s ease, text-shadow 0.35s ease, opacity 0.35s ease;
   white-space: nowrap;
 }
 
@@ -651,42 +659,85 @@ body {
   color: #3b4759;
   font-size: 9px;
   margin: 0 1px;
-  transition: color 0.4s ease, text-shadow 0.4s ease;
+  transition: color 0.35s ease, text-shadow 0.35s ease;
   user-select: none;
 }
 
+.flow-branch-fork {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1.5px 7px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  transition: all 0.35s ease;
+  white-space: nowrap;
+}
 
+.branch-node {
+  color: #526075;
+  font-weight: 500;
+  transition: color 0.35s ease, text-shadow 0.35s ease, opacity 0.35s ease;
+  white-space: nowrap;
+}
 
-/* Thinking / In-Flight: Watt & Playbook pulse in Red, target shows progress */
+.branch-sep {
+  color: #334155;
+  font-size: 9px;
+  margin: 0 1px;
+  user-select: none;
+}
+
+/* Thinking / In-Flight: Watt & GECX pulse in Neon Orange, fork evaluates */
 .header-flow-track.thinking #flow-node-watt1,
-.header-flow-track.thinking #flow-node-playbook {
-  color: #ff334b;
+.header-flow-track.thinking #flow-node-gecx {
+  color: #ff9e1f;
   font-weight: 700;
-  text-shadow: 0 0 8px rgba(255, 51, 75, 0.45);
-  animation: flow-pulse-red 1.2s infinite ease-in-out;
+  text-shadow: 0 0 8px rgba(255, 130, 0, 0.55);
+  animation: flow-pulse-orange 1.2s infinite ease-in-out;
 }
 .header-flow-track.thinking #flow-arrow-1 {
-  color: #ff334b;
-  text-shadow: 0 0 6px rgba(255, 51, 75, 0.45);
+  color: #ff9e1f;
+  text-shadow: 0 0 6px rgba(255, 130, 0, 0.55);
 }
-.header-flow-track.thinking #flow-node-target {
+.header-flow-track.thinking .flow-branch-fork {
+  border-color: rgba(255, 130, 0, 0.35);
+  animation: flow-pulse-orange 1.2s infinite ease-in-out;
+}
+.header-flow-track.thinking .branch-node {
   color: #94a3b8;
   font-style: italic;
 }
 
-/* Active State: Full round-trip lit in glowing Red */
+/* Active State: Full round-trip lit in glowing Con Edison Safety Amber / Neon Orange (#FF8200 / #ff9e1f) */
 .header-flow-track.active .flow-node {
-  color: #ff334b;
+  color: #ff9e1f;
   font-weight: 700;
-  text-shadow: 0 0 8px rgba(255, 51, 75, 0.45);
+  text-shadow: 0 0 8px rgba(255, 130, 0, 0.55), 0 0 16px rgba(255, 130, 0, 0.25);
 }
 .header-flow-track.active .flow-arrow {
-  color: #ff334b;
+  color: #ff9e1f;
   font-weight: 700;
-  text-shadow: 0 0 6px rgba(255, 51, 75, 0.45);
+  text-shadow: 0 0 6px rgba(255, 130, 0, 0.55);
+}
+.header-flow-track.active .flow-branch-fork {
+  background: rgba(255, 130, 0, 0.08);
+  border: 1px solid rgba(255, 130, 0, 0.38);
+  box-shadow: 0 0 12px rgba(255, 130, 0, 0.18);
+}
+.header-flow-track.active .branch-node.active-branch {
+  color: #ff9e1f;
+  font-weight: 700;
+  text-shadow: 0 0 8px rgba(255, 130, 0, 0.65), 0 0 14px rgba(255, 130, 0, 0.35);
+}
+.header-flow-track.active .branch-node.dimmed-branch {
+  color: #475569;
+  font-weight: 500;
+  opacity: 0.5;
 }
 
-@keyframes flow-pulse-red {
+@keyframes flow-pulse-orange {
   0%, 100% { opacity: 0.65; }
   50% { opacity: 1; }
 }

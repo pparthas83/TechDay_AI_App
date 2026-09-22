@@ -27,12 +27,13 @@ async function generateAll() {
       input: { text: cleanText },
       voice: {
         languageCode: 'en-US',
-        name: 'en-US-Journey-F'
+        name: 'en-US-Studio-O'
       },
       audioConfig: {
         audioEncoding: 'MP3',
-        speakingRate: 0.88,
-        pitch: 0.0
+        speakingRate: 1.0,
+        pitch: 0.0,
+        effectsProfileId: ['headphone-class-device']
       }
     };
 

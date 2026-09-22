@@ -274,8 +274,8 @@ class StageController {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           text: text,
-          voice: 'en-US-Neural2-F',
-          rate: 1.02
+          voice: 'en-US-Studio-O',
+          rate: 1.0
         })
       });
 

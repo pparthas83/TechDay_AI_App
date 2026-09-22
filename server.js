@@ -52,8 +52,8 @@ try {
       if (fs.existsSync(audioFilePath)) {
         const buf = fs.readFileSync(audioFilePath);
         const cleanText = topic.script.replace(/[\*\_`#]/g, '').trim();
-        const cacheKey = crypto.createHash('md5').update(`en-US-Journey-F_0.88_${cleanText}`).digest('hex');
-        audioCache.set(cacheKey, buf);
+        audioCache.set(crypto.createHash('md5').update(`en-US-Studio-O_1_${cleanText}`).digest('hex'), buf);
+        audioCache.set(crypto.createHash('md5').update(`en-US-Studio-O_1.0_${cleanText}`).digest('hex'), buf);
       }
     });
     console.log(`[Cache] Pre-warmed audioCache with ${audioCache.size} topic audio tracks.`);
@@ -177,7 +177,7 @@ app.post('/api/tools/clean-heat-calc', (req, res) => {
 });
 
 // Core Text-to-Speech synthesis helper with caching
-async function synthesizeSpeechBuffer(text, voice = 'en-US-Neural2-F', rate = 1.02) {
+async function synthesizeSpeechBuffer(text, voice = 'en-US-Studio-O', rate = 1.0) {
   if (!text || typeof text !== 'string' || !text.trim()) return null;
   const cleanText = text.replace(/[\*\_`#]/g, '').trim();
   const cacheKey = crypto.createHash('md5').update(`${voice}_${rate}_${cleanText}`).digest('hex');
@@ -199,8 +199,9 @@ async function synthesizeSpeechBuffer(text, voice = 'en-US-Neural2-F', rate = 1.
       },
       audioConfig: {
         audioEncoding: 'MP3',
-        speakingRate: parseFloat(rate) || 1.02,
-        pitch: 0.0
+        speakingRate: parseFloat(rate) || 1.0,
+        pitch: 0.0,
+        effectsProfileId: ['headphone-class-device']
       }
     };
 
@@ -223,7 +224,7 @@ async function synthesizeSpeechBuffer(text, voice = 'en-US-Neural2-F', rate = 1.
 
 // Google Cloud Text-to-Speech synthesis endpoint
 app.post('/api/tts', async (req, res) => {
-  const { text, voice = 'en-US-Neural2-F', rate = 1.02 } = req.body;
+  const { text, voice = 'en-US-Studio-O', rate = 1.0 } = req.body;
   if (!text || typeof text !== 'string' || !text.trim()) {
     return res.status(400).json({ error: 'Text string is required' });
   }

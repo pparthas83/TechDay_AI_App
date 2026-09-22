@@ -402,9 +402,9 @@ class StageController {
 
     bubble.innerHTML = `
       <div class="bubble-meta">
-        <span>${metaTag}</span>
+        <span class="bubble-sender">${metaTag}</span>
         ${toolBadge}
-        <span>${timeStr}</span>
+        <span class="bubble-time">${timeStr}</span>
       </div>
       <div class="bubble-text">${this.escapeHtml(text)}</div>
     `;

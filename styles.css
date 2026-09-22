@@ -631,20 +631,40 @@ body {
 .dialogue-bubble {
   display: flex;
   flex-direction: column;
-  max-width: 88%;
+  width: fit-content;
+  max-width: 92%;
   border-radius: 14px;
   padding: 10px 14px;
   animation: slide-up 0.25s ease forwards;
+  box-sizing: border-box;
 }
 
 .dialogue-bubble .bubble-meta {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 10px;
   font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.8px;
-  margin-bottom: 5px;
+  font-size: 9.5px;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+  white-space: nowrap;
+  flex-wrap: nowrap;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.dialogue-bubble .bubble-meta .bubble-sender {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.dialogue-bubble .bubble-meta .bubble-time {
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-left: auto;
+  font-size: 9px;
+  opacity: 0.85;
 }
 
 .dialogue-bubble .bubble-text {
@@ -690,30 +710,38 @@ body {
   align-items: center;
   gap: 4px;
   padding: 2px 7px;
-  border-radius: 8px;
-  font-size: 9.5px;
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 9px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.4px;
+  line-height: 1.2;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
+.bubble-tool-badge.tool-badge,
 .bubble-tool-badge.tool-active-badge {
-  background: rgba(0, 229, 255, 0.2);
-  border: 1px solid #00e5ff;
+  background: rgba(0, 229, 255, 0.16);
+  border: 1px solid rgba(0, 229, 255, 0.5);
   color: #00e5ff;
-  box-shadow: 0 0 8px rgba(0, 229, 255, 0.35);
+  box-shadow: 0 0 8px rgba(0, 229, 255, 0.25);
 }
 
+.bubble-tool-badge.rag-badge,
 .bubble-tool-badge.rag-active-badge {
-  background: rgba(168, 85, 247, 0.2);
-  border: 1px solid #a855f7;
-  color: #c084fc;
+  background: rgba(168, 85, 247, 0.16);
+  border: 1px solid rgba(168, 85, 247, 0.5);
+  color: #d8b4fe;
+  box-shadow: 0 0 8px rgba(168, 85, 247, 0.25);
 }
 
 .bubble-tool-badge.direct-badge {
-  background: rgba(56, 189, 248, 0.12);
-  border: 1px solid rgba(56, 189, 248, 0.3);
+  background: rgba(56, 189, 248, 0.14);
+  border: 1px solid rgba(56, 189, 248, 0.45);
   color: #7dd3fc;
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.2);
 }
 
 /* Header Inline Conversational Flow Track (3 Branching Paths, Neon ConEd Safety Orange #FF8200) */

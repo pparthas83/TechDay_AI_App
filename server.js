@@ -81,6 +81,10 @@ app.use(express.static(path.join(__dirname), {
 app.use('/assets', express.static(path.join(__dirname, 'public', 'assets')));
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
+app.get('/favicon.ico', (req, res) => res.sendFile(path.join(__dirname, 'favicon.ico')));
+app.get('/favicon.svg', (req, res) => res.sendFile(path.join(__dirname, 'favicon.svg')));
+app.get('/favicon.png', (req, res) => res.sendFile(path.join(__dirname, 'favicon.png')));
+
 app.get('/babylon', (req, res) => {
   res.sendFile(path.join(__dirname, 'babylon_hologram.html'));
 });

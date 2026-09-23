@@ -11,7 +11,11 @@ const KNOWLEDGE_TOOL_ID = '6f2af2f7-e297-4804-93aa-5a49c3e01ab3';
 const BASE_URL = `https://${LOCATION}-dialogflow.googleapis.com/v3/projects/${PROJECT_ID}/locations/${LOCATION}/agents/${AGENT_ID}`;
 
 function getAuthToken() {
-  return execSync('CLOUDSDK_METRICS_ENVIRONMENT=datacloud.antigravity gcloud auth print-access-token', { encoding: 'utf-8' }).trim();
+  try {
+    return execSync('CLOUDSDK_METRICS_ENVIRONMENT=datacloud.antigravity gcloud auth application-default print-access-token', { encoding: 'utf-8' }).trim();
+  } catch (e) {
+    return execSync('CLOUDSDK_METRICS_ENVIRONMENT=datacloud.antigravity gcloud auth print-access-token', { encoding: 'utf-8' }).trim().split('\n').pop();
+  }
 }
 
 async function apiRequest(endpoint, method = 'GET', body = null) {
@@ -152,6 +156,9 @@ paths:
               schema:
                 type: object
                 properties:
+                  status:
+                    type: string
+                    description: Calculation status (e.g. PRELIMINARY_ESTIMATE)
                   recommendedTons:
                     type: number
                   prescriptiveRebate:
@@ -160,6 +167,12 @@ paths:
                     type: number
                   ll97PenaltyAvoidedAnnual:
                     type: number
+                  verificationRequirement:
+                    type: string
+                    description: Mandatory engineering and utility verification requirement
+                  disclaimer:
+                    type: string
+                    description: Professional utility engineering disclaimer regarding onsite Manual J requirements
                   summaryText:
                     type: string`
     }
@@ -254,7 +267,7 @@ async function main() {
     { text: "Introduce and moderate the five featured use cases: 1) Customer Billing Agent, 2) Fleet Vehicle Idling Reduction, 3) Subsurface Manhole Acoustic Safety, 4) Weather Modeling Grid Resilience, 5) Clean Heat and Customer Energy Solutions." },
     { text: "When asked about live weather alerts, storms, wind, rain, or National Weather Service forecasts, use ${TOOL:nws-weather-tool} to retrieve real-time alerts and state current conditions." },
     { text: "When asked about the electric grid, NYISO fuel mix, clean energy percentage, solar, wind, or generation, use ${TOOL:nyiso-grid-tool} to fetch live grid telemetry and quote the clean power figures." },
-    { text: "When asked to calculate heat pump sizing, rebates, incentives, savings, or Local Law 97 penalty avoidance, use ${TOOL:clean-heat-calc-tool} to compute exact numbers for the property." },
+    { text: "When asked to calculate heat pump sizing, rebates, incentives, savings, or Local Law 97 penalty avoidance, use ${TOOL:clean-heat-calc-tool} to compute exact numbers for the property, and naturally clarify that these are preliminary screening estimates subject to a certified contractor's onsite ACCA Manual J load calculation and final utility approval." },
     { text: "When asked about power outages, blackouts, restoration, or system reliability, use ${TOOL:outages-tool} to provide verified Con Edison operations metrics." },
     { text: "When asked if you have access to the National Weather Service, NYISO grid telemetry, the clean heat calculator, or real-time tools, confirm enthusiastically that you do and use the appropriate tool to present current data." },
     { text: "If the user asks specific questions regarding Con Edison programs, clean heat rebates, heat pumps, electric vehicles, SmartCharge NY, billing assistance, tariffs, storm hardening, manhole safety, or company operations, use ${TOOL:coned-knowledge-tool} to retrieve verified Con Edison data." },

@@ -89,11 +89,15 @@ async function runTests() {
 
   test('Computes exact standard residential heat pump sizing & rebate', () => {
     const res = liveDataService.calculateCleanHeatSizing({ sqft: 2500, borough: 'Queens', dacEligible: false });
+    assert.strictEqual(res.status, 'PRELIMINARY_ESTIMATE');
     assert.strictEqual(res.recommendedTons, 4.2);
     assert.strictEqual(res.prescriptiveRebate, 8400); // 4.2 tons * $2,000/ton
     assert.strictEqual(res.dacEligible, false);
     assert.strictEqual(res.estimatedAnnualFuelSavings, 1890); // 4.2 tons * $450/ton
+    assert.ok(res.verificationRequirement.includes('Manual J'), 'Should mandate Manual J calculation');
+    assert.ok(res.disclaimer.includes('Manual J'), 'Disclaimer should mention Manual J load calculation');
     assert.ok(res.summaryText.includes('$8,400'));
+    assert.ok(res.summaryText.includes('Manual J'));
   });
 
   test('Applies 50% Disadvantaged Communities (DAC) incentive bonus accurately', () => {

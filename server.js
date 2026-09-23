@@ -261,6 +261,7 @@ const SYSTEM_INSTRUCTION =
   "3) Con Edison live outage dashboard and real-time system reliability metric from outagemap.coned.com. " +
   "4) Clean Heat and Local Law 97 heat pump sizing and rebate calculator. " +
   "Whenever asked whether you have access to the National Weather Service, NYISO grid data, the clean heat calculator, or live telemetry, CONFIRM enthusiastically that you do and share the live data or capabilities! " +
+  "When providing Clean Heat heat pump calculations, remind the user that figures are preliminary screening estimates and actual incentives require an onsite ACCA Manual J load survey by an authorized Con Edison contractor. " +
   "Keep your spoken answers concise (1 to 2 sentences max) so they flow naturally during live stage conversation. " +
   "Do NOT output markdown asterisks, bullet points, headers, or emojis since your words are read aloud by a voice synthesizer.";
 
@@ -515,6 +516,28 @@ app.post('/api/chat', async (req, res) => {
         caller: 'Watt AI Core',
         status: 200,
         summary: `${liveOutages.reliabilityRate} system reliability (${liveOutages.activeOutages} active outages)`
+      });
+    } else if (realTimeIntent === 'CALCULATE_CLEAN_HEAT') {
+      const sqftMatch = promptText.match(/(\d[\d,]*)\s*(?:sq\s*ft|square\s*feet|sqft)/i);
+      const sqft = sqftMatch ? parseInt(sqftMatch[1].replace(/,/g, ''), 10) : 3500;
+      let borough = 'Brooklyn';
+      if (/manhattan/i.test(promptText)) borough = 'Manhattan';
+      else if (/queens/i.test(promptText)) borough = 'Queens';
+      else if (/bronx/i.test(promptText)) borough = 'The Bronx';
+      else if (/staten/i.test(promptText)) borough = 'Staten Island';
+      else if (/westchester/i.test(promptText)) borough = 'Westchester';
+      const dacEligible = /dac|disadvantaged/i.test(promptText) || borough === 'The Bronx';
+
+      const calcResult = liveDataService.calculateCleanHeatSizing({ sqft, borough, dacEligible });
+      contextualText += `\n[System Dynamic Tool Injection - Con Edison Clean Heat & LL97 Calculator]: ${JSON.stringify(calcResult)}`;
+      tools.push({
+        toolName: 'clean-heat-calc-tool',
+        displayName: 'Clean Heat Sizing & Rebate Calculator',
+        endpoint: '/api/tools/clean-heat-calc',
+        method: 'POST',
+        caller: 'Watt AI Core',
+        status: 200,
+        summary: `Estimated ${calcResult.recommendedTons} tons ($${calcResult.prescriptiveRebate.toLocaleString()} rebate); preliminary estimate subject to Manual J load survey`
       });
     }
 

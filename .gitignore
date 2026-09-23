@@ -5,3 +5,5 @@ yarn-error.log
 *.log
 .env
 scratch/
+*.docx
+*.pptx

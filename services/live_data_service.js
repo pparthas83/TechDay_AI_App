@@ -302,7 +302,10 @@ async function fetchLiveOutages() {
         const systemReliabilityPct = customersServed > 0
           ? parseFloat((((customersServed - customersAffected) / customersServed) * 100).toFixed(3))
           : 99.99;
-        const reliabilityRate = `${systemReliabilityPct.toFixed(2)}%`;
+        // Con Edison standard: do not claim 100.00% if active customer outages exist
+        const reliabilityRate = customersAffected > 0 && systemReliabilityPct >= 99.99
+          ? '99.99%'
+          : `${systemReliabilityPct.toFixed(2)}%`;
 
         const boroughSummary = {
           manhattan: 0,
@@ -415,12 +418,15 @@ function calculateCleanHeatSizing({
   const totalIncentives = conedRebate + dacBonus + federalCredit;
 
   return {
+    status: 'PRELIMINARY_ESTIMATE',
     recommendedTons: estimatedTons,
     prescriptiveRebate: isDac ? conedRebate + dacBonus : conedRebate,
     dacEligible: isDac,
     isCommercialLL97: isCommercial,
     estimatedAnnualFuelSavings,
     ll97PenaltyAvoidedAnnual,
+    verificationRequirement: 'Onsite ACCA Manual J heating load calculation and Con Edison Participating Contractor filing',
+    disclaimer: 'Preliminary engineering screening estimate. Actual equipment sizing, rebate eligibility, and final incentive amounts require an onsite ACCA Manual J heating load calculation and submission through a Con Edison Participating Contractor.',
     inputs: { sqft: parsedSqft, buildingType: isCommercial ? 'commercial' : 'residential', currentFuel, borough, dacEligible: isDac },
     system: {
       type: "Cold-Climate Air-Source Heat Pump (ccASHP)",
@@ -438,7 +444,7 @@ function calculateCleanHeatSizing({
       annualCo2ReductionMetricTons: co2SavingsTonsPerYear,
       ll97AnnualPenaltyAvoidedUSD: ll97PenaltyAvoidedAnnual
     },
-    summaryText: `For a ${parsedSqft.toLocaleString()} sq ft property in ${borough}, an estimated ${estimatedTons}-ton cold-climate heat pump qualifies for $${(isDac ? conedRebate + dacBonus : conedRebate).toLocaleString()} in Con Edison Clean Heat rebates${isDac ? ' (including 50% DAC bonus)' : ''}, reducing carbon emissions by ${co2SavingsTonsPerYear} metric tons annually and saving an estimated $${estimatedAnnualFuelSavings.toLocaleString()} in annual heating costs${isCommercial ? `, avoiding up to $${ll97PenaltyAvoidedAnnual.toLocaleString()} in annual Local Law 97 penalties` : ''}.`
+    summaryText: `For a ${parsedSqft.toLocaleString()} sq ft property in ${borough}, an estimated ${estimatedTons}-ton cold-climate heat pump qualifies for $${(isDac ? conedRebate + dacBonus : conedRebate).toLocaleString()} in Con Edison Clean Heat rebates${isDac ? ' (including 50% DAC bonus)' : ''}, reducing carbon emissions by ${co2SavingsTonsPerYear} metric tons annually and saving an estimated $${estimatedAnnualFuelSavings.toLocaleString()} in annual heating costs${isCommercial ? `, avoiding up to $${ll97PenaltyAvoidedAnnual.toLocaleString()} in annual Local Law 97 penalties` : ''}. (Note: Preliminary screening estimate; actual sizing and incentives are finalized through an onsite ACCA Manual J load calculation by an authorized Con Edison contractor.)`
   };
 }
 

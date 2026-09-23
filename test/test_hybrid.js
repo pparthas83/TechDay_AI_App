@@ -137,8 +137,10 @@ async function runTests() {
   await testAsync('Fetches Con Edison Live Outage Operations Telemetry', async () => {
     const outages = await liveDataService.fetchLiveOutages();
     assert.ok(outages.status, 'Outages should have status');
-    assert.strictEqual(outages.customersServed, 3500000);
-    assert.ok(outages.reliabilityRate.includes('99.'));
+    assert.ok(outages.customersServed >= 3500000, 'Customers served should be >= 3.5M');
+    assert.ok(typeof outages.activeOutages === 'number', 'Active outages should be numeric');
+    assert.ok(typeof outages.affectedCustomers === 'number', 'Affected customers should be numeric');
+    assert.ok(outages.reliabilityRate.includes('99.'), 'Reliability rate should be 99.x%');
   });
 
   // ---------------------------------------------------------

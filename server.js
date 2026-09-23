@@ -149,9 +149,9 @@ function getToolShortName(toolName) {
 function getToolSummary(toolName, data) {
   if (!data) return '200 OK';
   if (toolName === 'nws-weather-tool') return data.headline || 'No active severe weather alerts for NYC';
-  if (toolName === 'nyiso-grid-tool') return `${data.cleanPercentage || 54}% Clean Energy (${data.summary || 'Nominal'})`;
+  if (toolName === 'nyiso-grid-tool') return `${data.cleanPercentage ?? 54}% Clean Energy (${data.totalLoadMW ? data.totalLoadMW.toLocaleString() + ' MW Load' : (data.summary || 'Nominal')})`;
   if (toolName === 'clean-heat-calc-tool') return data.summaryText || 'Rebate and tonnage calculated';
-  if (toolName === 'outages-tool') return `${data.reliabilityRate || '99.99%'} reliability (${data.activeOutages || 48} active outages)`;
+  if (toolName === 'outages-tool') return `${data.reliabilityRate || '99.98%'} reliability (${data.activeOutages ?? 0} active outages)`;
   return '200 OK';
 }
 
@@ -258,7 +258,7 @@ const SYSTEM_INSTRUCTION =
   "You HAVE direct live API access to: " +
   "1) National Weather Service (NOAA) for NYC active weather alerts and storm warnings. " +
   "2) NYISO real-time grid generation telemetry for fuel mix and clean power percentage. " +
-  "3) Con Edison live outage dashboard and 99.99% system reliability metric. " +
+  "3) Con Edison live outage dashboard and real-time system reliability metric from outagemap.coned.com. " +
   "4) Clean Heat and Local Law 97 heat pump sizing and rebate calculator. " +
   "Whenever asked whether you have access to the National Weather Service, NYISO grid data, the clean heat calculator, or live telemetry, CONFIRM enthusiastically that you do and share the live data or capabilities! " +
   "Keep your spoken answers concise (1 to 2 sentences max) so they flow naturally during live stage conversation. " +
@@ -369,9 +369,10 @@ app.post('/api/chat', async (req, res) => {
       let triggeredTools = toolExecutionLog.filter(t => t.timestamp >= (turnStartTime - 300) && t.timestamp <= (turnEndTime + 300));
 
       // As an extra safeguard for cross-instance or timing jitter:
-      // If GECX replied with live telemetry data, ensure the tool event is recorded
+      // If GECX replied with live telemetry data, ensure the tool event is recorded with dynamic real-time data
       if (triggeredTools.length === 0) {
         if (/(\d+%\s*clean energy|clean energy percentage|nyiso|generation load|\b\d+[\d,]*\s*megawatts|hydro.*nuclear)/i.test(cleanReply)) {
+          const liveGrid = await liveDataService.fetchNYISOGridFuelMix();
           triggeredTools.push({
             toolName: 'nyiso-grid-tool',
             displayName: 'NYISO Real-Time Grid Telemetry',
@@ -379,9 +380,10 @@ app.post('/api/chat', async (req, res) => {
             method: 'GET',
             caller: 'Google-Dialogflow (Playbook)',
             status: 200,
-            summary: '54% Clean Energy (6,620 MW Renewables)'
+            summary: `${liveGrid.cleanPercentage}% Clean Energy (${(liveGrid.renewablesTotalMW || 0).toLocaleString()} MW Renewables)`
           });
         } else if (/(\bweather advisories\b|\bactive.*warning\b|national weather service|\bnws\b)/i.test(cleanReply)) {
+          const liveWeather = await liveDataService.fetchNWSWeatherAlerts();
           triggeredTools.push({
             toolName: 'nws-weather-tool',
             displayName: 'National Weather Service (NWS Alerts)',
@@ -389,7 +391,7 @@ app.post('/api/chat', async (req, res) => {
             method: 'GET',
             caller: 'Google-Dialogflow (Playbook)',
             status: 200,
-            summary: 'Nominal atmospheric conditions; no active storm warnings'
+            summary: liveWeather.headline || 'Nominal atmospheric conditions; no active storm warnings'
           });
         } else if (/(\bheat pump\b.*rebate|\brebate\b.*\$|\bclean heat\b.*rebate|\blocal law 97\b)/i.test(cleanReply)) {
           triggeredTools.push({
@@ -401,7 +403,8 @@ app.post('/api/chat', async (req, res) => {
             status: 200,
             summary: 'Rebate and tonnage calculated for property'
           });
-        } else if (/(\boutages affecting\b|\bsystem reliability\b|\bactive outages\b|99\.99%)/i.test(cleanReply)) {
+        } else if (/(\boutages affecting\b|\bsystem reliability\b|\bactive outages\b|99\.\d+%\s*system reliability|\boutages?\b)/i.test(cleanReply)) {
+          const liveOutages = await liveDataService.fetchLiveOutages();
           triggeredTools.push({
             toolName: 'outages-tool',
             displayName: 'Con Edison Outage Operations Dashboard',
@@ -409,7 +412,7 @@ app.post('/api/chat', async (req, res) => {
             method: 'GET',
             caller: 'Google-Dialogflow (Playbook)',
             status: 200,
-            summary: '99.99% system reliability (48 active outages)'
+            summary: `${liveOutages.reliabilityRate} system reliability (${liveOutages.activeOutages} active outages)`
           });
         }
       }
@@ -471,13 +474,70 @@ app.post('/api/chat', async (req, res) => {
     }
   }
 
-  // 2. ROUTE TO GEMINI 3.6 FLASH
+  // Helper to dynamically augment prompt with live telemetry if query is real-time
+  const augmentPromptWithLiveTelemetry = async (promptText) => {
+    const realTimeIntent = liveDataService.detectRealTimeQuery(promptText);
+    let contextualText = promptText;
+    const tools = [];
+
+    if (realTimeIntent === 'LIVE_WEATHER') {
+      const liveWeather = await liveDataService.fetchNWSWeatherAlerts();
+      contextualText += `\n[System Live Telemetry Injection - National Weather Service (api.weather.gov)]: ${JSON.stringify(liveWeather)}`;
+      tools.push({
+        toolName: 'nws-weather-tool',
+        displayName: 'National Weather Service (NWS Alerts)',
+        endpoint: '/api/live/weather',
+        method: 'GET',
+        caller: 'Watt AI Core',
+        status: 200,
+        summary: liveWeather.headline || 'Nominal atmospheric conditions; no active storm warnings'
+      });
+    } else if (realTimeIntent === 'LIVE_GRID_MIX') {
+      const liveGrid = await liveDataService.fetchNYISOGridFuelMix();
+      contextualText += `\n[System Live Telemetry Injection - NYISO Grid Fuel Mix (mis.nyiso.com)]: ${JSON.stringify(liveGrid)}`;
+      tools.push({
+        toolName: 'nyiso-grid-tool',
+        displayName: 'NYISO Real-Time Grid Telemetry',
+        endpoint: '/api/live/grid',
+        method: 'GET',
+        caller: 'Watt AI Core',
+        status: 200,
+        summary: `${liveGrid.cleanPercentage}% Clean Energy (${(liveGrid.renewablesTotalMW || 0).toLocaleString()} MW Renewables)`
+      });
+    } else if (realTimeIntent === 'LIVE_OUTAGES') {
+      const liveOutages = await liveDataService.fetchLiveOutages();
+      contextualText += `\n[System Live Telemetry Injection - Con Edison Outage Map (outagemap.coned.com)]: ${JSON.stringify(liveOutages)}`;
+      tools.push({
+        toolName: 'outages-tool',
+        displayName: 'Con Edison Outage Operations Dashboard',
+        endpoint: '/api/live/outages',
+        method: 'GET',
+        caller: 'Watt AI Core',
+        status: 200,
+        summary: `${liveOutages.reliabilityRate} system reliability (${liveOutages.activeOutages} active outages)`
+      });
+    }
+
+    return { contextualText, tools };
+  };
+
+  // 2. ROUTE TO GEMINI 3.6 FLASH (or GECX Fallback)
   try {
-    const geminiReply = await queryGemini(trimmedPrompt);
+    const { contextualText, tools: geminiTools } = await augmentPromptWithLiveTelemetry(trimmedPrompt);
+    const geminiReply = await queryGemini(contextualText);
     console.log(`[Gemini Chat] User: "${trimmedPrompt}" -> Watt (Gemini 3.6): "${geminiReply}"`);
+
+    const routing = {
+      mode: geminiTools.length > 0 ? 'REALTIME_DETERMINISTIC_TOOL' : 'DIRECT_MODEL',
+      badgeText: geminiTools.length > 0 ? '⚡ Dynamic Real-Time Telemetry' : '⚡ Gemini 3.6',
+      toolCount: geminiTools.length,
+      tools: geminiTools
+    };
+
     const payload = await buildChatResponse(geminiReply, {
       backend: 'Gemini 3.6 Flash',
-      engine: 'gemini'
+      engine: 'gemini',
+      routing
     });
     return res.json(payload);
   } catch (err) {

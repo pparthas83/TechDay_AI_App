@@ -1,11 +1,5 @@
 # OmniGrid AI: Autonomous Multimodal Utility Intelligence Platform
 ## Architecture Blueprint & Industry Generalization Proposal for Google Cloud Demo Hub
-
-**Target Audience:** Google Cloud Demo Hub Team (Patrick, Peter & Industry Solutions Engineering)  
-**Author:** Pradeep Sarathy (Principal Enterprise Architect & Solutions Engineering)  
-**Date:** September 2026  
-**Document Version:** 1.0.0 (Production Release)  
-
 ---
 
 ### Executive Summary

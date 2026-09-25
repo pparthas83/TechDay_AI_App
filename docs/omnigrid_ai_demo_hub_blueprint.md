@@ -147,11 +147,3 @@ OmniGrid AI is built natively on Google Cloud’s premier AI and infrastructure 
 | **Cloud Run** | Fully managed serverless container runtime providing auto-scaling with zero cold-start latency. |
 
 ---
-
-### Appendix: Deployed Assets & Verification Endpoints
-
-* **Live Cloud Run Service**: `coned-tech-day` (Revision `coned-tech-day-00039-65x`)  
-* **GCP Project**: `pradeep-demo-1`  
-* **Region**: `us-central1`  
-* **Source Repository**: `github.com/pparthas83/TechDay_AI_App` (Branch: `main`)  
-* **Automated Test Coverage**: 31 automated tests spanning GECX session management, phoneme-viseme math, deterministic LL97/Clean Heat algorithms, and live SLA timeouts (100% passing).

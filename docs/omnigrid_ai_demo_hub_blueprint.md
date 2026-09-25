@@ -145,31 +145,6 @@ OmniGrid AI is built natively on Google Cloud’s premier AI and infrastructure 
 | **Cloud Text-to-Speech (Studio Voices)** | High-fidelity studio voice synthesis (`en-US-Studio-O`) delivering natural human intonation. |
 | **Custom Phoneme-Viseme Engine** | Deterministic mathematical audio-to-morph-target mapping driving photorealistic 3D avatar facial articulation in Babylon.js. |
 | **Cloud Run** | Fully managed serverless container runtime providing auto-scaling with zero cold-start latency. |
-| **BigQuery & Looker** | End-to-end token observability, latency tracking, cost attribution, and business ROI analytics. |
-
----
-
-### 6. 15-Minute Demo Hub Pitch Script
-
-Use this exact structure when walking through the platform with Patrick, Peter, and the Demo Hub team:
-
-* **Minute 0–3: The Industry Challenge**
-  * Introduce the tension between massive grid transition demands and legacy customer systems.
-  * Show how traditional static chatbots fail because they cannot inspect the electric grid in real time.
-* **Minute 4–6: Live Grid & Outage Telemetry (Operational OT)**
-  * Ask Watt: *"Watt, what is the current clean energy percentage on the electric grid right now?"*
-  * **Highlight**: Show the UI badge turn `⚡ NYISO Grid Engine` and listen to Watt quote live zero-carbon megawatt generation.
-  * Ask Watt: *"Can you check current power outages and system reliability across the territory?"*
-  * **Highlight**: Watt queries live Storm Center telemetry and confirms 99.99% reliability with active customer outage counts.
-* **Minute 7–10: Decarbonization & Clean Heat Engine (Customer Solutions)**
-  * Ask Watt: *"Calculate the clean heat rebate and sizing for a 3,500 sq ft brownstone in Brooklyn."*
-  * **Highlight**: Show the dynamic tool invocation, the calculation of equipment tonnage and prescriptive rebates, and point out Watt’s native compliance verbiage: *"This is a preliminary screening estimate; final rebates require an onsite ACCA Manual J load calculation conducted by an authorized contractor."*
-* **Minute 11–13: The Generalization Blueprint**
-  * Walk through the `utility.config.json` architecture.
-  * Demonstrate how switching one configuration flag swaps the branding to a generic Midwest or West Coast utility connected to PJM or CAISO.
-* **Minute 14–15: Google Cloud Differentiation & Next Steps**
-  * Emphasize the unique synthesis: **GECX Playbooks + Gemini 3.6 + Cloud TTS Studio Voices + Cloud Run**.
-  * Propose adding OmniGrid AI as an official Industry Solutions asset on the Google Cloud Demo Hub.
 
 ---
 

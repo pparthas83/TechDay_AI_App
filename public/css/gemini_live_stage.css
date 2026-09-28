@@ -1,0 +1,159 @@
+/* Con Edison Tech Day: Gemini 3.8 Live Avatar Specific Styles */
+
+/* Live Avatar Stage Container */
+.live-avatar-stage-box {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at center, rgba(6, 155, 215, 0.08) 0%, rgba(2, 16, 38, 0.95) 75%);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: inset 0 0 40px rgba(6, 155, 215, 0.2);
+}
+
+/* Avatar Synthetic Video Display */
+.avatar-video-viewport {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-video-element {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+  filter: contrast(1.05) saturate(1.1);
+  transition: transform 0.3s ease;
+}
+
+/* Canvas for Real-Time Neural Avatar Synthetic Rendering */
+.avatar-canvas-element {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+}
+
+/* Glowing Holographic Halo during Speech */
+.avatar-speech-aura {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(6, 155, 215, 0.25) 0%, transparent 70%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  z-index: 1;
+}
+
+.avatar-speech-aura.speaking {
+  opacity: 1;
+  animation: auraPulse 1.8s infinite alternate ease-in-out;
+}
+
+@keyframes auraPulse {
+  0% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.4; }
+  100% { transform: translate(-50%, -50%) scale(1.15); opacity: 0.8; }
+}
+
+/* Live Telemetry Overlay in Avatar Viewport */
+.avatar-telemetry-overlay {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 10;
+}
+
+.synthid-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: rgba(4, 22, 50, 0.85);
+  border: 1px solid rgba(52, 168, 83, 0.5);
+  color: #81c995;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  backdrop-filter: blur(8px);
+}
+
+.synthid-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #34a853;
+  box-shadow: 0 0 6px #34a853;
+  animation: pulseDot 2s infinite ease-in-out;
+}
+
+.latency-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: rgba(4, 22, 50, 0.85);
+  border: 1px solid rgba(6, 155, 215, 0.4);
+  color: #8ec5ea;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.72rem;
+  backdrop-filter: blur(8px);
+}
+
+.latency-indicator {
+  color: #00e676;
+}
+
+/* Interruption Floating Trigger */
+.interruption-overlay-btn {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(234, 67, 53, 0.2);
+  border: 1px solid rgba(234, 67, 53, 0.6);
+  color: #ff8a80;
+  border-radius: 24px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+}
+
+.interruption-overlay-btn:hover {
+  background: rgba(234, 67, 53, 0.4);
+  border-color: #ea4335;
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+/* Flow Track Branch Highlights for Live Avatar */
+.header-flow-track .branch-node.active-branch {
+  color: #00e676;
+  text-shadow: 0 0 8px rgba(0, 230, 118, 0.6);
+  font-weight: 700;
+}

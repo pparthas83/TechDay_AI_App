@@ -1,0 +1,15 @@
+{
+  "name": "gemini-live-avatar-sandbox",
+  "version": "1.0.0",
+  "description": "Isolated evaluation harness for Gemini 3.8 Live with Live Avatar",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test/test_sandbox.js"
+  },
+  "dependencies": {
+    "express": "^4.22.2",
+    "ws": "^8.18.0"
+  },
+  "private": true
+}

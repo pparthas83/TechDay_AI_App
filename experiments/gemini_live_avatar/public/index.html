@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gemini 3.8 Live with Live Avatar — Sandbox Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto+Mono:wght@400;500&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-brand">
+      <span class="brand-badge">EVALUATION SANDBOX</span>
+      <h1>Gemini 3.8 Live with Live Avatar</h1>
+      <span class="project-tag" id="projectTag">Project: pradeep-demo-1 (us-central1)</span>
+    </div>
+    <div class="header-actions">
+      <a href="https://console.cloud.google.com/agent-platform/studio/multimodal-live?project=pradeep-demo-1" target="_blank" class="btn-console" rel="noopener noreferrer">
+        Open Cloud Studio ↗
+      </a>
+      <span class="status-indicator online" id="connectionStatus">Isolated Port 8888</span>
+    </div>
+  </header>
+
+  <main class="main-layout">
+    <!-- Left Column: Avatar Streaming Viewport -->
+    <section class="avatar-panel" aria-label="Live Avatar Viewport">
+      <div class="video-container" id="videoContainer">
+        <!-- Live synthetic video stream placeholder -->
+        <div class="avatar-canvas-wrapper">
+          <div class="avatar-visual" id="avatarVisual">
+            <div class="pulse-aura" id="pulseAura"></div>
+            <div class="avatar-face-circle" id="avatarFaceCircle">
+              <span class="avatar-initials" id="avatarInitials">NV</span>
+            </div>
+            <div class="synthid-badge" title="Content watermarked with DeepMind SynthID">
+              <span class="synthid-icon">🛡️</span> SynthID Verified
+            </div>
+          </div>
+        </div>
+
+        <div class="live-overlay">
+          <div class="overlay-top">
+            <span class="badge-mode" id="modelModeBadge">GEMINI 3.8 LIVE</span>
+            <span class="badge-latency" id="latencyBadge">RTT: ~120ms</span>
+          </div>
+          <div class="overlay-bottom">
+            <div class="audio-wave-bar" id="audioWaveBar">
+              <span class="bar"></span>
+              <span class="bar"></span>
+              <span class="bar"></span>
+              <span class="bar"></span>
+              <span class="bar"></span>
+            </div>
+            <span class="dialogue-state" id="dialogueState">Status: Ready</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Controls bar below avatar -->
+      <div class="controls-bar">
+        <button class="btn-control primary" id="btnToggleMic">
+          <span class="btn-icon">🎙️</span>
+          <span id="btnMicText">Start Live Mic Session</span>
+        </button>
+        <button class="btn-control danger" id="btnInterrupt" disabled>
+          <span class="btn-icon">✋</span> Interrupt Avatar
+        </button>
+        <button class="btn-control secondary" id="btnTestTool">
+          <span class="btn-icon">⚡</span> Trigger Async Tool
+        </button>
+      </div>
+    </section>
+
+    <!-- Right Column: Settings, Avatars & Telemetry Logs -->
+    <section class="telemetry-panel" aria-label="Session Controls & Diagnostics">
+      <article class="config-card">
+        <h2>Preset Avatar Selection</h2>
+        <div class="avatar-grid" id="avatarGrid">
+          <!-- Dynamically populated from /api/avatars -->
+        </div>
+      </article>
+
+      <article class="config-card">
+        <h2>Architecture Highlights</h2>
+        <ul class="feature-list">
+          <li><strong>Native Audio-Visual Synthesis:</strong> Face and speech generated in a single multimodal pass.</li>
+          <li><strong>Zero Disruption Tool Calling:</strong> Executes background CRM/utility APIs without pausing continuous presence.</li>
+          <li><strong>97 Languages Supported:</strong> Automatic accent and facial articulation adaptation.</li>
+          <li><strong>Zero Impact on Production:</strong> Completely decoupled from <code>coned-tech-day</code> Cloud Run service.</li>
+        </ul>
+      </article>
+
+      <article class="config-card terminal-card">
+        <div class="terminal-header">
+          <h2>Live Stream Telemetry & Events</h2>
+          <button class="btn-clear" id="btnClearLog">Clear</button>
+        </div>
+        <pre class="terminal-body" id="eventLog"><code>[00:00:00] Sandbox initialized on port 8888
+[00:00:00] Ready for WebSocket connection to /ws/live</code></pre>
+      </article>
+    </section>
+  </main>
+
+  <script type="module" src="js/client.js"></script>
+</body>
+</html>

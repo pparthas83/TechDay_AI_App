@@ -157,9 +157,9 @@ flowchart TD
 npm install
 
 # Optional environment overrides
-export GCP_PROJECT_ID="pradeep-demo-1"
+export GCP_PROJECT_ID=""
 export GECX_LOCATION="us-central1"
-export GECX_AGENT_ID="668bd4db-b76d-4f1b-be6b-8e290bb741bd"
+export GECX_AGENT_ID=""
 
 npm start
 # Server starts on http://localhost:8080 using server.js with GECX integration

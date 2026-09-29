@@ -1,44 +1,50 @@
-# Con Edison Tech Day 2026: AI in Action Panel Moderator ("Watt")
+# Con Edison Tech Day 2026: AI in Action Keynote Moderator ("Nova")
 
-An interactive, holographic 3D AI Moderator application designed for the **Con Edison Tech Day: "AI in Action at Con Edison"** keynote and panel showcase.
+An interactive, holographic 3D AI Moderator application designed for the **Con Edison Tech Day: "AI in Action at Con Edison"** keynote and panel showcase (October 7, 2026).
 
-The AI moderator, **Watt** (Candidate B persona: smart, youthful tech lead in Con Edison tech wear with glasses), guides the audience through the partnership between Con Edison Business and Enterprise Technology Solutions (ETS) across five core AI use cases.
+The AI moderator, **Nova**, is powered by Con Edison’s new **Gemini Enterprise Customer Experience (GECX)** platform—the same cutting-edge platform currently driving the employee Service Desk call center. Introduced by **Christian Mairhofer** (AI Solutions Lead for ETS), Nova guides the audience through the 40-minute keynote segment (11:00 – 11:40 AM) moderating four core enterprise business use cases before transitioning attendees to the Demo Booths in The Hub (Noon – 3:00 PM).
 
 ---
 
 ## 🚀 Key Features
 
-1. **3D Photo-Realistic Avatar (Candidate B - "Watt")**:
+1. **3D Photo-Realistic Avatar Stage**:
    - WebGL 3D avatar rendered via Three.js with studio 3-point lighting and electric blue rim illumination.
    - **Articulatory Phoneme-to-Viseme Lip-Sync**: G2P phonetic parsing maps spoken text into 12 Apple ARKit blendshape groups with real-time co-articulation interpolation and Web Audio RMS dynamic modulation (see [How the Phoneme-to-Viseme Lip Sync Engine Works](HOW_THE_PHONEME_TO_VISEME_LIP_SYNC_ENGINE_WORKS.md)).
    - Procedural life simulation: natural eye blinking cycles, gaze saccades, smiling baseline, emphasis eyebrow gestures, and rhythmic breathing motion.
 
-2. **Google Cloud Text-to-Speech (Journey-F Voice)**:
-   - Powered by Google Cloud's `en-US-Journey-F` ultra-realistic conversational female voice model.
-   - Articulate, cheerful, youthful, and strictly professional (zero slang) with a calibrated stage pacing rate (0.88x).
+2. **Dual-Mode Stage Presentation Architecture**:
+   - **Keynote Stage Mode (Default)**: Full-stage visual layout optimized for large auditorium displays and LED video walls. Features sleek lower-third presenter cards, glowing active speaker HUD, AV slide standby animation, and zero chat window clutter.
+   - **Demo Booth Mode**: Interactive conversational mode with full chat history, real-time tool telemetry inspector, and microphone input for deep dive technical exploration.
+   - **Instant Toggle**: Switch seamlessly using the header `[🖥️ STAGE MODE]` / `[💬 BOOTH MODE]` button or the `[V]` hotkey.
+
+3. **Google Cloud Text-to-Speech (Studio Voice)**:
+   - Powered by Google Cloud's `en-US-Studio-O` high-fidelity Studio Voice model.
+   - Professional, articulate, youthful, and cheerful tone (never uses slang) with a calibrated stage pacing rate (0.88x) and `headphone-class-device` audio DSP profile.
    - In-memory MD5 caching on the Express backend provides instantaneous (<25ms) speech playback.
 
-3. **Exclusive GECX Playbook Intelligence**:
-   - All conversations and stage Q&A route directly to **Google Enterprise Customer Experience (GECX)** / Dialogflow CX Playbooks (`projects/[project]/locations/us-central1/agents/668bd4db-b76d-4f1b-be6b-8e290bb741bd`).
-   - Grounded in playbook goals, instructions, session management, and extensible tools.
-   - UI features a highlighted, luminous GECX Playbook status badge with an active pulsing cyan LED.
+4. **Exclusive GECX Playbook Intelligence**:
+   - All conversations and stage Q&A route directly to **Google Enterprise Customer Experience (GECX)** / Dialogflow CX Playbooks (`projects/[project]/locations/us-central1/agents/668bd4db-b76d-4f1b-be6b-8e290bb741bd/playbooks/2b294c58-7cfb-4aa6-bc72-3a591ce18841`).
+   - Grounded in playbook goals, instructions, session management, and extensible OpenAPI tools.
+   - Header features a luminous GECX Playbook status badge with an active pulsing cyan LED.
 
-4. **Con Edison Panel Agenda & Use Cases**:
-   - **`00 INTRO`**: Keynote Welcome & Opening Remarks (Watt)
-   - **`01 BILLING`**: Customer Operations & Generative Billing Agent (Customer Operations Team)
-   - **`02 IDLING`**: Fleet Vehicle Idling Reduction AI (Fleet Modernization Team)
-   - **`03 MANHOLE`**: Subsurface Manhole Safety & Acoustic Sensing (Subsurface Engineering Team)
-   - **`04 WEATHER`**: Severe Weather Modeling & Grid Resilience (Electric Operations & Meteorology Team)
-   - **`05 CLEAN HEAT`**: Customer Energy Solutions & Clean Heat AI (Clean Energy Solutions Team)
-   - **`06 Q&A`**: Interactive Audience & Panel Q&A (Watt powered by GECX Playbook)
+5. **Con Edison Keynote Agenda & Business Use Cases**:
+   - **`00 KICKOFF`**: Keynote Opening & Introduction (Nova introduced by Christian Mairhofer)
+   - **`01 MANHOLES`**: Electric Manholes AI (Presenters: Jayne Sosland & Mario Noyola)
+   - **`02 OUTAGES`**: Outage Management Processes (Presenters: Tom Langlois & Kevin Wasserman)
+   - **`03 IDLING & STEAM`**: Vehicle Idling Fines and Steam Operations (Presenters: Christian Mairhofer, Alyssa Sotto, Joe McLain)
+   - **`04 BILLING`**: Customer Billing Processes (Presenters: Marilyn Silva & Mario Noyola)
+   - **`05 WRAP-UP`**: Concluding Remarks, round of applause, transition to Demo Booths in The Hub (Noon – 3:00 PM), and stage handoff to Dina.
 
-5. **Presenter Stage HUD & Hotkeys**:
+6. **Presenter Stage HUD & Hotkeys**:
    - **`Spacebar`**: Toggle Play / Pause speech.
    - **`→` (Right Arrow)**: Advance to next topic.
    - **`←` (Left Arrow)**: Return to previous topic.
+   - **`0` – `5`**: Direct jump to specific keynote topic.
+   - **`V`**: Toggle between Keynote Stage Mode and Demo Booth Mode.
    - **`M`**: Toggle live microphone for audience voice Q&A (Web Speech API).
-   - **`F` / Stage Mode**: Fullscreen clean broadcast view for stage projectors or giant LED walls.
-   - **URL Direct Hash**: Jump or bookmark any use case directly (e.g., `#billing`, `#weather`, `#manhole`).
+   - **`?`**: Open the Nova Capabilities & System Guide overlay.
+   - **URL Direct Hash**: Jump or bookmark any use case directly (e.g., `#manholes`, `#outages`, `#idling`, `#billing`).
 
 ---
 
@@ -47,17 +53,19 @@ The AI moderator, **Watt** (Candidate B persona: smart, youthful tech lead in Co
 ```
                ┌────────────────────────────────────────────────────────┐
                │          FRONTEND: 3D HOLOGRAPHIC AVATAR STAGE         │
-               │  - Candidate B ("Watt") WebGL / Three.js Engine        │
+               │  - Nova 3D WebGL / Three.js Engine                     │
                │  - Audio FFT Analyser -> ARKit Morph Viseme Lip-Sync   │
-               │  - Stage HUD, Highlighted GECX Indicator & Lower-Thirds│
+               │  - Stage Mode / Booth Mode View Toggle                 │
+               │  - Lower-Third Presenter Card & AV Standby Overlay     │
                └───────────────────────────┬────────────────────────────┘
                                            │ Spoken / Text Input (Q&A)
                                            ▼
                ┌────────────────────────────────────────────────────────┐
                │               TIER 2: EXPRESS BACKEND (Cloud Run)      │
-               │  - /api/agenda : 5 Con Edison Use Cases & Descriptions │
-               │  - /api/tts    : Google Cloud TTS (en-US-Journey-F)    │
+               │  - /api/agenda : 6 Keynote Topics, Presenters & Times  │
+               │  - /api/tts    : Google Cloud TTS (en-US-Studio-O)     │
                │  - /api/chat   : GECX Dialogflow CX Sessions Router    │
+               │  - /api/tools  : Native OpenAPI Tool Connectors        │
                └───────────────────────────┬────────────────────────────┘
                                            │
                                            │ [GECX Enterprise Routing]
@@ -65,67 +73,49 @@ The AI moderator, **Watt** (Candidate B persona: smart, youthful tech lead in Co
                ┌────────────────────────────────────────────────────────┐
                │                      GECX BACKEND                      │
                │            (Dialogflow CX / Vertex AI Agents)          │
-               │  - Watt - Tech Day Moderator Playbook                  │
+               │  - Nova - Tech Day Moderator Playbook                  │
                │  - Session Management & Intent Resolution              │
-               │  - Grounded Vertex AI Search Data Stores               │
-               │  - Enterprise OpenAPI & Webhook Tools                  │
+               │  - OpenAPI 3.0 Real-Time System Tools                  │
+               │  - Con Edison Official Knowledge Base Grounding        │
                └────────────────────────────────────────────────────────┘
 ```
 
-### Why GECX for Con Edison Enterprise?
-* **Enterprise Grounding**: GECX connects natively to Vertex AI Search data stores containing Con Edison internal documentation, operating procedures, and technical specifications.
-* **Stage Automation via Tools**: GECX Playbooks can emit custom payloads enabling conversational triggers to steer slides and stage lighting directly.
-* **Direct Tie to Featured Use Case #1**: The Customer Operations Generative Billing Agent is itself built on GECX, establishing a unified architectural showcase.
-
 ---
 
-## 🔍 How Knowledge Repositories Work in GECX
+## 🔍 How Knowledge Repositories & Tools Work in GECX
 
 In GECX (Google Enterprise Customer Experience / Dialogflow CX), conversational agents ground their responses through **Playbook Tools**. Rather than querying public search indiscriminately, GECX Playbooks orchestrate specialized tool connectors based on the user's intent:
 
 ```mermaid
 flowchart TD
-    Playbook["GECX Playbook<br>('Watt Moderator')"]
+    Playbook["GECX Playbook<br>('Nova - Tech Day Moderator')"]
     
-    DataStore["Data Store Tool<br>(Vertex AI Search)"]
-    WebGrounding["Web Grounding Tool<br>(Enterprise Web Search)"]
-    WebhookTool["Webhook / API Tool<br>(Con Edison REST APIs)"]
+    KnowledgeTool["ConEd Knowledge Tool<br>(Clean Heat, Billing, Tariffs, Specs)"]
+    WeatherTool["NWS Weather Tool<br>(NYC Storm Advisories & Alerts)"]
+    GridTool["NYISO Grid Tool<br>(Fuel Mix & Clean Energy %)"]
+    CalcTool["Clean Heat Calculator<br>(Sizing, Rebates & LL97)"]
+    OutageTool["Outages Tool<br>(Reliability & Operations Metrics)"]
     
-    GCS["GCS Bucket<br>(PDFs, Reports, Specs)"]
-    BQ["BigQuery / FAQ<br>(Structured Tables)"]
-    ConEdWeb["Official Con Edison Web<br>(coned.com/en)"]
-    GridTelemetry["Operational Systems<br>(Live Grid / Outages / Fleet)"]
-
-    Playbook -->|"Tool Call"| DataStore
-    Playbook -->|"Tool Call"| WebGrounding
-    Playbook -->|"Tool Call"| WebhookTool
-
-    DataStore --> GCS
-    DataStore --> BQ
-    WebGrounding --> ConEdWeb
-    WebhookTool --> GridTelemetry
+    Playbook -->|"Tool Call"| KnowledgeTool
+    Playbook -->|"Tool Call"| WeatherTool
+    Playbook -->|"Tool Call"| GridTool
+    Playbook -->|"Tool Call"| CalcTool
+    Playbook -->|"Tool Call"| OutageTool
 
     classDef primary fill:#1a73e8,stroke:#1557b0,color:#ffffff,stroke-width:2px;
     classDef tool fill:#174ea6,stroke:#1a73e8,color:#ffffff;
-    classDef repo fill:#202124,stroke:#5f6368,color:#ffffff;
 
     class Playbook primary;
-    class DataStore,WebGrounding,WebhookTool tool;
-    class GCS,BQ,ConEdWeb,GridTelemetry repo;
+    class KnowledgeTool,WeatherTool,GridTool,CalcTool,OutageTool tool;
 ```
 
-### Knowledge Grounding Capabilities:
+### Connected Playbook Tools:
 
-1. **Vertex AI Search Data Store (Private Enterprise Repository)**:
-   - Connects to private Google Cloud Storage (GCS) buckets containing Con Edison technical documentation, slide decks, talk tracks, and program guides.
-   - Extracts semantic embeddings and provides grounded citations with verifiable references.
-   - Eliminates hallucination by constraining Watt's generative answers to official utility material.
-
-2. **Web Grounding Tool (Curated Domain Search)**:
-   - Connects to authorized enterprise domains (e.g. `coned.com/en`) to pull real-time external facts, energy market updates, or regulatory filings with web source links.
-
-3. **Webhook / API Tools (Dynamic System Integration)**:
-   - Directly executes REST calls to operational telemetry endpoints (e.g. OMS/outage status, grid load MW, acoustic sensor health, or fleet telematics) to retrieve live runtime state.
+1. **`coned-knowledge-tool`**: Searches official Con Edison knowledge base for customer billing, clean heat heat-pump rebates, EV charging tariffs, outage management, and grid resilience.
+2. **`nws-weather-tool`**: Fetches real-time National Weather Service severe weather alerts and storm advisories for New York City.
+3. **`nyiso-grid-tool`**: Fetches real-time NYISO electric grid fuel mix, generation load, and zero-carbon clean energy percentage for NY.
+4. **`clean-heat-calc-tool`**: Calculates heat pump sizing tonnage, Con Edison clean heat rebates, and Local Law 97 penalty avoidance for residential and commercial buildings.
+5. **`outages-tool`**: Fetches real-time Con Edison outage statistics, customer restoration numbers, and 99.99% system reliability metrics.
 
 ---
 
@@ -133,22 +123,25 @@ flowchart TD
 
 ```
 ├── avatar_stage.js          # Three.js 3D avatar engine, lighting, visemes & procedural life
-├── stage_controller.js      # Presentation state machine, Google Cloud TTS audio & hotkeys
-├── index.html               # Main holographic stage broadcast interface
-├── styles.css               # Con Edison glassmorphism HUD, lower-thirds & stage animations
-├── server.js                # Express backend with native GECX Dialogflow CX integration
+├── stage_controller.js      # Keynote presentation controller, 6 topics, hotkeys & AV overlay
+├── index.html               # Main holographic stage broadcast interface & Stage/Booth views
+├── styles.css               # Stage HUD, lower-thirds, non-wrapping header lockup & animations
+├── server.js                # Express backend with dual GECX Playbook and Gemini routing
 ├── gecx_service.js          # GECX SDK client, session path builder & payload parser
 ├── test/
-│   └── test_gecx.js         # Comprehensive GECX test suite (8 tests)
+│   ├── test_gecx.js         # GECX test suite (9 tests)
+│   ├── test_visemes.js      # Phoneme-viseme lip-sync tests (9 tests)
+│   └── test_hybrid.js       # Enterprise hybrid test suite (13 tests)
 ├── package.json             # Node.js dependencies (@google-cloud/dialogflow-cx, etc.)
 ├── Dockerfile               # Production container definition for Cloud Run
 ├── public/
-│   ├── agenda.json          # Master talk tracks, use case metadata, topic descriptions
-│   └── assets/avatars/
-│       ├── brunette.glb     # Selected Candidate B avatar (4.6 MB)
-│       └── avaturn.glb      # Alternate candidate avatar
-└── lib/
-    └── three.min.js         # Three.js core library
+│   ├── agenda.json          # Master keynote agenda, 4 use cases, presenters, talk tracks
+│   └── assets/
+│       ├── audio/           # Google Studio Voice pre-rendered MP3 audio (topic_0.mp3 - topic_5.mp3)
+│       └── avatars/         # 3D avatar assets
+└── scripts/
+    ├── generate_agenda_audio.js # Google Cloud TTS Studio Voice generation script
+    └── provision_gecx_tools.js  # Dialogflow CX Playbook and OpenAPI tool provisioning script
 ```
 
 ---
@@ -164,9 +157,9 @@ flowchart TD
 npm install
 
 # Optional environment overrides
-export GCP_PROJECT_ID="{project_name}"
+export GCP_PROJECT_ID="pradeep-demo-1"
 export GECX_LOCATION="us-central1"
-export GECX_AGENT_ID="{GECX_AGENT_ID}"
+export GECX_AGENT_ID="668bd4db-b76d-4f1b-be6b-8e290bb741bd"
 
 npm start
 # Server starts on http://localhost:8080 using server.js with GECX integration
@@ -182,22 +175,16 @@ curl http://localhost:8080/api/gecx/agent
 
 ## 🧪 Testing & Validation
 
-The repository includes a dedicated test suite validating GECX service initialization, regional endpoints, canonical session path construction, response parsing, and live connectivity to Google Cloud:
+The repository includes a comprehensive 3-part test suite validating GECX service initialization, canonical session path construction, live Dialogflow CX connectivity, articulatory viseme lip-sync mathematics, and hybrid real-time tools:
 
 ```bash
 npm test
 ```
 
-### Test Suite Coverage:
-1. `GECXService initializes with default project and location`
-2. `GECXService properly formats regional API endpoints (global, us-central1, us-east1)`
-3. `formatSessionPath generates canonical CX resource string`
-4. `formatSessionPath supports environment qualification (draft, prod)`
-5. `detectIntent rejects invalid or empty utterances`
-6. `parseResponse extracts and sanitizes spoken text messages`
-7. `parseResponse extracts custom stage actions and metadata payloads`
-8. `Live Con Edison Moderator Agent connectivity and intent resolution`
-9. `Live Panel Topic Query resolution via GECX Playbook`
+### Test Suite Coverage (31 Tests Total):
+- **`test_gecx.js` (9 Tests)**: Service initialization, regional endpoints, session paths, input rejection, response sanitization, stage action payload parsing, live agent connectivity, and live topic query resolution.
+- **`test_visemes.js` (9 Tests)**: ARKit viseme parsing, bilabial closures, rounded lip funnels, front spread vowels, co-articulation interpolation, zero mouth pucker enforcement, silent trailing vowel suppression, and continuous phonation.
+- **`test_hybrid.js` (13 Tests)**: Real-time intent detection, deterministic heat pump & Local Law 97 calculation engine, live NWS/NYISO/outages telemetry connectors, and 1.5-second SLA timeout fallback protection.
 
 ---
 
@@ -206,7 +193,7 @@ npm test
 To deploy the service to Google Cloud Run:
 
 ```bash
-gcloud run deploy coned-tech-day \
+gcloud run deploy coned-techday-nova \
   --source . \
   --region us-central1 \
   --allow-unauthenticated \
@@ -214,6 +201,8 @@ gcloud run deploy coned-tech-day \
   --memory 1Gi \
   --cpu 1
 ```
+
+Once deployed, the service provides an isolated, production-grade endpoint (`https://<service>-<hash>-<region>.a.run.app`).
 
 ---
 

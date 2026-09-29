@@ -161,9 +161,9 @@ async function main() {
     const result = await service.detectIntent(testUtterance, `unit-test-${Date.now()}`);
 
     assert.ok(result.reply && typeof result.reply === 'string', 'Reply must be non-empty string');
-    assert.ok(result.reply.toLowerCase().includes('watt') || result.reply.toLowerCase().includes('con edison'), 'Reply should identify Watt or Con Edison');
+    assert.ok(result.reply.toLowerCase().includes('nova') || result.reply.toLowerCase().includes('watt') || result.reply.toLowerCase().includes('con edison'), 'Reply should identify Nova or Con Edison');
     assert.ok(result.match.confidence > 0, 'Match confidence should be greater than 0');
-    console.log(`    [Live Watt GECX Output]: "${result.reply.substring(0, 110)}..." (Match: ${result.match.matchType})`);
+    console.log(`    [Live Nova GECX Output]: "${result.reply.substring(0, 110)}..." (Match: ${result.match.matchType})`);
   });
 
   // Test 9: Live Con Edison Panel Topic Query

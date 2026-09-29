@@ -16,6 +16,17 @@ if (!fs.existsSync(outputDir)) {
 async function generateAll() {
   console.log(`Starting audio pre-generation for ${agenda.use_cases.length} topics...`);
 
+  // Remove any stale topic audio files > current max topic
+  const currentMax = agenda.use_cases.length - 1;
+  const existingFiles = fs.readdirSync(outputDir);
+  for (const file of existingFiles) {
+    const match = file.match(/^topic_(\d+)\.mp3$/);
+    if (match && parseInt(match[1], 10) > currentMax) {
+      console.log(`Removing obsolete audio file: ${file}`);
+      fs.unlinkSync(path.join(outputDir, file));
+    }
+  }
+
   for (const topic of agenda.use_cases) {
     const filename = `topic_${topic.number}.mp3`;
     const outputPath = path.join(outputDir, filename);
@@ -23,11 +34,13 @@ async function generateAll() {
     console.log(`Synthesizing [${topic.number}] ${topic.title}...`);
     const cleanText = topic.script.replace(/[\*\_`#]/g, '').trim();
 
+    const input = topic.ssml ? { ssml: topic.ssml } : { text: cleanText };
+
     const request = {
-      input: { text: cleanText },
+      input,
       voice: {
         languageCode: 'en-US',
-        name: 'en-US-Studio-O'
+        name: agenda.moderator?.voice || 'en-US-Studio-O'
       },
       audioConfig: {
         audioEncoding: 'MP3',
@@ -47,7 +60,7 @@ async function generateAll() {
     }
   }
 
-  console.log('All 7 topic audio files successfully generated!');
+  console.log(`All ${agenda.use_cases.length} topic audio files successfully generated!`);
 }
 
 generateAll();

@@ -27,7 +27,15 @@ class StageController {
     this.topicBadge = document.getElementById('topic-badge');
     this.micBtn = document.getElementById('mic-btn');
     this.agendaNav = document.getElementById('agenda-nav');
+    this.viewModeToggle = document.getElementById('view-mode-toggle');
+    this.avStandbyBanner = document.getElementById('av-standby-banner');
+    this.standbyPresenters = document.getElementById('standby-presenters');
+    this.isStageMode = true;
     this.flowResetTimer = null;
+
+    if (this.viewModeToggle) {
+      this.viewModeToggle.addEventListener('click', () => this.toggleViewMode());
+    }
 
     this.initAudioRouting();
     this.initSpeechRecognition();
@@ -67,8 +75,18 @@ class StageController {
         this.avatar.clearSpokenText();
       }
       this.updatePlayState();
-    });
 
+      // Check if this topic triggers AV presenter or applause standby
+      if (this.agenda && this.agenda.use_cases && this.agenda.use_cases[this.currentIndex]) {
+        const currentTopic = this.agenda.use_cases[this.currentIndex];
+        if (currentTopic.pauseType === 'presenter_pause') {
+          const presenters = currentTopic.speaker ? currentTopic.speaker.name : 'Presenters on Stage';
+          this.showAvStandby(`Presenters: ${presenters}`);
+        } else if (currentTopic.pauseType === 'applause_pause') {
+          this.showAvStandby('Hand-off to Dina // The Hub (Lobby Booths 12:00 – 3:00 PM)');
+        }
+      }
+    });
 
     this.audioElement.addEventListener('error', (e) => {
       console.warn('[Audio] Failed or blocked playback:', e);
@@ -170,14 +188,14 @@ class StageController {
     if (!this.agendaNav || !this.agenda) return;
     this.agendaNav.innerHTML = '';
 
-    const labels = ['INTRO', 'BILLING', 'IDLING', 'MANHOLE', 'WEATHER', 'CLEAN HEAT', 'Q&A'];
+    const labels = ['KICKOFF', 'MANHOLES', 'OUTAGES', 'IDLING & STEAM', 'BILLING', 'WRAP-UP'];
     this.agenda.use_cases.forEach((topic, idx) => {
       const pill = document.createElement('button');
       pill.type = 'button';
-      const isCleanHeat = idx === 5;
-      pill.className = `agenda-pill ${idx === this.currentIndex ? 'active' : ''} ${isCleanHeat ? 'pill-clean-heat' : ''}`;
+      const isWrapUp = idx === 5;
+      pill.className = `agenda-pill ${idx === this.currentIndex ? 'active' : ''} ${isWrapUp ? 'pill-clean-heat' : ''}`;
       pill.setAttribute('data-idx', idx);
-      const numStr = idx === 0 ? '00' : idx === 6 ? '06' : `0${idx}`;
+      const numStr = `0${idx}`;
       pill.innerHTML = `
         <span class="pill-status-dot"></span>
         <span class="pill-num">${numStr}</span>
@@ -199,18 +217,23 @@ class StageController {
   async goToTopic(index, autoPlay = true) {
     if (!this.agenda || index < 0 || index >= this.agenda.use_cases.length) return;
     this.currentIndex = index;
+    this.hideAvStandby();
 
     const topic = this.agenda.use_cases[index];
 
     // Update topic header & badge
     if (this.topicBadge) {
-      if (index === 0) this.topicBadge.textContent = 'KEYNOTE INTRO';
-      else if (index === 6) this.topicBadge.textContent = 'OPEN DISCUSSION';
-      else this.topicBadge.textContent = `USE CASE ${index} OF 5`;
+      if (index === 0) this.topicBadge.textContent = 'KEYNOTE KICKOFF';
+      else if (index === 5) this.topicBadge.textContent = 'WRAP-UP & DEMO BOOTHS';
+      else this.topicBadge.textContent = `USE CASE ${index} OF 4`;
     }
 
     // Update Lower Third
     if (this.lowerThird) {
+      const speakerTag = document.getElementById('speaker-tag');
+      if (speakerTag) {
+        speakerTag.textContent = (index === 0 || index === 5) ? 'AI CHATBOT MODERATOR' : 'FEATURED PRESENTERS';
+      }
       this.speakerName.textContent = topic.speaker.name;
       this.speakerTitle.textContent = topic.speaker.title;
       this.speakerOrg.textContent = topic.speaker.organization;
@@ -239,6 +262,7 @@ class StageController {
     if (this.isPlaying) {
       this.audioElement.pause();
     }
+    this.hideAvStandby();
 
     try {
       this.currentSpokenText = text;
@@ -262,6 +286,7 @@ class StageController {
     if (this.isPlaying) {
       this.audioElement.pause();
     }
+    this.hideAvStandby();
 
     try {
       this.currentSpokenText = text;
@@ -303,6 +328,7 @@ class StageController {
     if (this.isPlaying) {
       this.audioElement.pause();
     }
+    this.hideAvStandby();
 
     try {
       this.currentSpokenText = text;
@@ -388,13 +414,13 @@ class StageController {
     bubble.className = `dialogue-bubble ${role}`;
 
     const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    const metaTag = role === 'audience' ? 'AUDIENCE' : (meta.sender || 'WATT // AI MODERATOR');
+    const metaTag = role === 'audience' ? 'AUDIENCE' : (meta.sender || 'NOVA // AI MODERATOR');
     
     // Construct Badges & Update Header Conversational Flow Track (Strategy B)
     let toolBadge = '';
     const routing = meta.routing || meta.telemetry?.routing;
 
-    if (role === 'watt') {
+    if (role === 'watt' || role === 'nova') {
       const flow = this.getConversationalFlow(routing, meta);
       toolBadge = `<span class="bubble-tool-badge ${flow.type.replace('-flow', '-badge')}">${this.escapeHtml(flow.badge)}</span>`;
       this.setHeaderFlowActive(flow);
@@ -595,7 +621,7 @@ class StageController {
     toast.innerHTML = `
       <div style="display:flex; align-items:center; gap:8px;">
         <span class="tool-pulse-beacon"></span>
-        <span>⚡ <strong>Conversational Flow:</strong> Watt is talking to GECX Playbook ➔ Reaching out to <strong>${this.escapeHtml(toolName)}</strong></span>
+        <span>⚡ <strong>Conversational Flow:</strong> Nova is talking to GECX Playbook ➔ Reaching out to <strong>${this.escapeHtml(toolName)}</strong></span>
       </div>
     `;
 
@@ -624,7 +650,7 @@ class StageController {
     thinkingDiv.id = 'dialogue-thinking-indicator';
     thinkingDiv.className = 'dialogue-thinking';
     thinkingDiv.innerHTML = `
-      <span>Watt is consulting GECX Playbook...</span>
+      <span>Nova is consulting GECX Playbook...</span>
       <span class="thinking-dots"><span></span><span></span><span></span></span>
     `;
     this.dialogueStream.appendChild(thinkingDiv);
@@ -658,6 +684,7 @@ class StageController {
   async askGemini(promptText) {
     if (!promptText || !promptText.trim()) return;
     const cleanPrompt = promptText.trim();
+    this.hideAvStandby();
 
     try {
       // 1. Render audience question bubble
@@ -681,7 +708,7 @@ class StageController {
 
       if (data.reply) {
         const meta = {
-          sender: data.backend ? `WATT // ${data.backend.toUpperCase()}` : 'WATT // GECX PLAYBOOK',
+          sender: data.backend ? `NOVA // ${data.backend.toUpperCase()}` : 'NOVA // GECX PLAYBOOK',
           telemetry: data.telemetry,
           routing: data.routing || data.telemetry?.routing
         };
@@ -697,7 +724,7 @@ class StageController {
           // Fallback if no audio bundled
           await this.speakText(data.reply, () => {
             this.removeThinking();
-            this.addDialogueMessage('watt', data.reply, meta);
+            this.addDialogueMessage('nova', data.reply, meta);
           });
         }
       } else if (data.error) {
@@ -709,7 +736,7 @@ class StageController {
     } catch (err) {
       console.error('[GECX Chat] Query error:', err);
       this.removeThinking();
-      this.addDialogueMessage('watt', 'I apologize, I could not complete that query right now.');
+      this.addDialogueMessage('nova', 'I apologize, I could not complete that query right now.');
       this.scheduleFlowReset(3000);
     }
 
@@ -815,6 +842,44 @@ class StageController {
     this.guideModal.style.display = show ? 'flex' : 'none';
   }
 
+  toggleViewMode() {
+    this.isStageMode = !this.isStageMode;
+    const middleSection = document.getElementById('middle-section');
+    const modeText = document.getElementById('mode-text');
+    const toggleBtn = document.getElementById('view-mode-toggle');
+
+    if (this.isStageMode) {
+      if (middleSection) middleSection.classList.add('stage-mode');
+      if (modeText) modeText.textContent = 'STAGE MODE';
+      if (toggleBtn) toggleBtn.classList.remove('demo-active');
+    } else {
+      if (middleSection) middleSection.classList.remove('stage-mode');
+      if (modeText) modeText.textContent = 'DEMO BOOTH MODE';
+      if (toggleBtn) toggleBtn.classList.add('demo-active');
+    }
+
+    // Trigger window resize so Babylon.js/Three.js engine updates viewport dimensions smoothly
+    window.dispatchEvent(new Event('resize'));
+    if (this.avatar && typeof this.avatar.onResize === 'function') {
+      setTimeout(() => this.avatar.onResize(), 100);
+    }
+  }
+
+  showAvStandby(presenterText) {
+    if (this.avStandbyBanner) {
+      if (this.standbyPresenters) {
+        this.standbyPresenters.textContent = presenterText;
+      }
+      this.avStandbyBanner.style.display = 'flex';
+    }
+  }
+
+  hideAvStandby() {
+    if (this.avStandbyBanner) {
+      this.avStandbyBanner.style.display = 'none';
+    }
+  }
+
   setupKeyBindings() {
     window.addEventListener('keydown', (e) => {
       const isInputFocused = ['INPUT', 'TEXTAREA'].includes(e.target.tagName);
@@ -832,9 +897,12 @@ class StageController {
       } else if ((e.key === 'm' || e.key === 'M') && !isInputFocused) {
         e.preventDefault();
         this.toggleMicrophone();
-      } else if (e.key >= '0' && e.key <= '6' && !isInputFocused) {
+      } else if (e.key >= '0' && e.key <= '5' && !isInputFocused) {
         e.preventDefault();
         this.goToTopic(parseInt(e.key), true);
+      } else if ((e.key === 'v' || e.key === 'V') && !isInputFocused) {
+        e.preventDefault();
+        this.toggleViewMode();
       } else if ((e.key === '?' || (e.shiftKey && e.key === '/')) && !isInputFocused) {
         e.preventDefault();
         this.toggleGuideModal(true);

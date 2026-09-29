@@ -77,7 +77,11 @@
           </div>
         </div>
         <div class="header-brand-right">
-          <button id="guide-toggle-btn" class="guide-toggle-btn" title="View Watt Capabilities & System Guide [?]" aria-label="System Guide">
+          <button id="view-mode-toggle" class="mode-toggle-btn" title="Toggle Stage Mode vs Demo Mode" aria-label="Toggle View Mode">
+            <span class="mode-icon">🖥️</span>
+            <span id="mode-text">STAGE MODE</span>
+          </button>
+          <button id="guide-toggle-btn" class="guide-toggle-btn" title="View Nova Capabilities & System Guide [?]" aria-label="System Guide">
             <span class="guide-icon-circle">?</span>
             <span>GUIDE</span>
           </button>
@@ -85,17 +89,26 @@
       </div>
     </header>
 
-    <!-- Middle Section: Two Vertical Panels -->
-    <main class="middle-section">
+    <!-- Middle Section: Two Vertical Panels (Defaults to Full Stage Mode) -->
+    <main class="middle-section stage-mode" id="middle-section">
       
       <!-- Left Middle Panel: GLB Avatar Stage -->
       <section class="left-panel">
         <div class="panel-header-badge">
           <div class="avatar-status-indicator">
             <span class="status-pulse-dot"></span>
-            <span class="avatar-title">WATT // AI MODERATOR</span>
+            <span class="avatar-title">NOVA // AI MODERATOR</span>
           </div>
-          <div id="topic-badge" class="topic-pill">KEYNOTE INTRO</div>
+          <div id="topic-badge" class="topic-pill">KEYNOTE KICKOFF</div>
+        </div>
+
+        <!-- AV Presentation Standby Banner -->
+        <div id="av-standby-banner" class="av-standby-banner" style="display: none;">
+          <span class="standby-pulse-dot"></span>
+          <div class="standby-content">
+            <div class="standby-title">PRESENTATION ACTIVE // AV STANDBY</div>
+            <div id="standby-presenters" class="standby-presenters">Presenters on Stage</div>
+          </div>
         </div>
 
         <!-- 3D Avatar Canvas Container -->
@@ -103,9 +116,9 @@
 
         <!-- Speaker Lower-Third Banner Overlay -->
         <div id="lower-third" class="speaker-overlay-card">
-          <div class="speaker-tag">FEATURED PRESENTER</div>
-          <div id="speaker-name" class="speaker-name">Watt</div>
-          <div id="speaker-title" class="speaker-title">Con Edison AI Moderator</div>
+          <div class="speaker-tag" id="speaker-tag">AI CHATBOT MODERATOR</div>
+          <div id="speaker-name" class="speaker-name">Nova</div>
+          <div id="speaker-title" class="speaker-title">Con Edison AI Chatbot Moderator</div>
           <div id="speaker-org" class="speaker-org">Enterprise AI & Technology Solutions</div>
         </div>
       </section>
@@ -128,9 +141,9 @@
 
             <div class="header-flow-divider" aria-hidden="true"></div>
 
-            <!-- Conversational Flow Track: Watt -> GECX -> [3 Branching Paths] -> Watt -->
+            <!-- Conversational Flow Track: Nova -> GECX -> [3 Branching Paths] -> Nova -->
             <div class="header-flow-track idle" id="header-flow-track" aria-live="polite">
-              <span class="flow-node" id="flow-node-watt1">Watt</span>
+              <span class="flow-node" id="flow-node-nova1">Nova</span>
               <span class="flow-arrow" id="flow-arrow-1">➔</span>
               <span class="flow-node" id="flow-node-gecx">GECX</span>
               <span class="flow-arrow" id="flow-arrow-2">➔</span>
@@ -142,7 +155,7 @@
                 <span class="branch-node" id="branch-apis">Live APIs</span>
               </div>
               <span class="flow-arrow" id="flow-arrow-3">➔</span>
-              <span class="flow-node" id="flow-node-watt2">Watt</span>
+              <span class="flow-node" id="flow-node-nova2">Nova</span>
             </div>
           </div>
 
@@ -152,12 +165,12 @@
             <div class="dialogue-stream" id="dialogue-stream">
               <div class="dialogue-empty-state" id="dialogue-empty-state">
                 <div class="empty-icon">💬</div>
-                <div class="empty-title">Ask Watt Anything</div>
+                <div class="empty-title">Ask Nova Anything</div>
                 <div class="empty-desc">Speak into the microphone [M] or click a starter prompt below:</div>
 
                 <!-- 1-Click Starter Kit Prompt Cards -->
                 <div class="starter-kit-container" id="starter-kit-container">
-                  <div class="starter-kit-label">EXPLORE WATT'S LIVE CAPABILITIES</div>
+                  <div class="starter-kit-label">EXPLORE NOVA'S LIVE CAPABILITIES</div>
                   <div class="starter-kit-grid">
                     <button type="button" class="starter-chip" data-prompt="What is the current zero-carbon fuel mix on the electric grid?">
                       <span class="chip-icon">⚡</span>
@@ -171,9 +184,9 @@
                       <span class="chip-icon">🏠</span>
                       <span class="chip-text">Clean Heat Rebate Calculator</span>
                     </button>
-                    <button type="button" class="starter-chip" data-prompt="How does telematics and idling reduction AI save fuel for the fleet?">
+                    <button type="button" class="starter-chip" data-prompt="How are AI agents automating research of vehicle idling fines and steam operations?">
                       <span class="chip-icon">🚛</span>
-                      <span class="chip-text">Fleet Idling Reduction AI</span>
+                      <span class="chip-text">Vehicle Idling &amp; Steam Ops</span>
                     </button>
                   </div>
                 </div>
@@ -188,9 +201,9 @@
                 <input
                   id="chat-input"
                   type="text"
-                  placeholder="Ask Watt a question about Con Edison..."
+                  placeholder="Ask Nova a question about Con Edison..."
                   autocomplete="off"
-                  aria-label="Ask Watt a question about Con Edison..."
+                  aria-label="Ask Nova a question about Con Edison..."
                 />
                 <button id="mic-btn" type="button" class="mic-btn" title="Voice Input [M]">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -215,7 +228,7 @@
         <!-- Dynamic Interactive Pills rendered by StageController -->
       </nav>
       <div class="nav-hotkeys-hint">
-        [Click Pill] Jump &amp; Toggle Play/Pause • [Space] Play/Pause • [◀ / ▶] Switch • [M] Mic • [0-6] Direct
+        [Click Pill] Jump &amp; Toggle Play/Pause • [Space] Play/Pause • [◀ / ▶] Switch • [M] Mic • [0-5] Direct • [V] Toggle Stage/Demo View
       </div>
     </footer>
 
@@ -227,7 +240,7 @@
       <div class="guide-modal-header">
         <div class="guide-modal-title-group">
           <span class="guide-icon-circle" style="width: 20px; height: 20px; font-size: 11px;">?</span>
-          <span id="guide-modal-title" class="guide-modal-title">Watt AI Moderator — Capabilities &amp; System Guide</span>
+          <span id="guide-modal-title" class="guide-modal-title">Nova AI Moderator — Capabilities &amp; System Guide</span>
           <span class="guide-modal-badge">GECX Powered</span>
         </div>
         <button id="guide-modal-close" class="guide-modal-close" title="Close Guide [Esc]" aria-label="Close Guide">✕</button>
@@ -238,33 +251,33 @@
         <div class="guide-section">
           <div class="guide-section-title can-do">
             <span>✨</span>
-            <span>Who is Watt?</span>
+            <span>Who is Nova?</span>
           </div>
           <p style="margin: 0; color: #94a3b8; line-height: 1.5;">
-            Con Edison's Keynote AI Moderator for Tech Day, co-developed with Google Cloud <span class="guide-api-paren">(Dialogflow CX Playbooks, Gemini 2.0, Studio Voice TTS)</span>.
+            Con Edison's Keynote AI Moderator for Tech Day 2026, powered by Con Edison's Gemini Enterprise Customer Experience (GECX) platform—the same platform driving the Service Desk call center for Con Edison employees.
           </p>
         </div>
 
-        <!-- Section 2: What Watt CAN Do -->
+        <!-- Section 2: What Nova CAN Do -->
         <div class="guide-section">
           <div class="guide-section-title can-do">
             <span>⚡</span>
-            <span>What Watt Can Do (Live Tools &amp; Knowledge)</span>
+            <span>What Nova Can Do (Live Tools &amp; Knowledge)</span>
           </div>
           <ul class="guide-list">
             <li><strong>Live Electric Grid</strong> <span class="guide-api-paren">(api.nyiso.com)</span>: Real-time NY state load, clean generation, and zero-carbon fuel mix.</li>
             <li><strong>Weather Advisories</strong> <span class="guide-api-paren">(api.weather.gov)</span>: Real-time NOAA storm alerts, coastal flood warnings, and wind advisories.</li>
             <li><strong>Outage Operations</strong> <span class="guide-api-paren">(outagemap.coned.com)</span>: Active borough interruption counts and 99.99% system reliability.</li>
             <li><strong>Clean Heat Calculator</strong> <span class="guide-api-paren">(coned.com/cleanheat)</span>: Heat pump sizing, ConEd rebates, and Local Law 97 carbon savings.</li>
-            <li><strong>5 Keynote Topics</strong> <span class="guide-api-paren">(Vertex AI Datastores)</span>: Deep technical grounding on Billing Agent, Fleet Idling, Manhole Acoustics, Storm Resilience, and Clean Heat.</li>
+            <li><strong>4 Keynote Use Cases</strong>: Electric Manholes, Outage Management Automation, Vehicle Idling Fines &amp; Steam Operations, and Customer Billing Processes.</li>
           </ul>
         </div>
 
-        <!-- Section 3: What Watt CANNOT Do -->
+        <!-- Section 3: What Nova CANNOT Do -->
         <div class="guide-section">
           <div class="guide-section-title cannot-do">
             <span>🛡️</span>
-            <span>Enterprise Guardrails (What Watt Cannot Do)</span>
+            <span>Enterprise Guardrails (What Nova Cannot Do)</span>
           </div>
           <ul class="guide-list">
             <li><strong>Zero Customer PII:</strong> Does not access personal accounts or customer identifying data.</li>

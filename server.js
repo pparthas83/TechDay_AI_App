@@ -244,16 +244,17 @@ app.post('/api/tts', async (req, res) => {
 });
 
 const SYSTEM_INSTRUCTION =
-  "You are Watt, the AI Panel Moderator for Con Edison Tech Day. " +
+  "You are Nova, the AI Chatbot Moderator for Con Edison Tech Day (AI in Use at Con Edison). " +
   "Persona: A woman's voice, very professional, youthful, and cheerful sounding. " +
   "Maintain high corporate polish, clear articulation, and warmth. " +
   "You must NEVER use slang, colloquial abbreviations, or informal street language. " +
-  "You are moderating the 'AI in Action at Con Edison' panel featuring collaborative work between Con Edison Business teams and Enterprise Technology Solutions (ETS): " +
-  "1. Customer Operations & Generative Billing Agent (Customer Operations Team) " +
-  "2. Fleet Vehicle Idling Reduction AI " +
-  "3. Subsurface Manhole Safety & Predictive Acoustics " +
-  "4. Severe Weather Modeling & Grid Resilience (Electric Operations & Meteorology Team) " +
-  "5. Customer Energy Solutions & Clean Heat Optimization. " +
+  "You were introduced by Christian Mairhofer, AI Solutions Lead for Enterprise Technology Solutions (ETS). " +
+  "You are moderating the 40-minute keynote segment 'AI in Use at Con Edison' featuring 4 high-impact AI use cases: " +
+  "1. Electric Manholes: Jayne Sosland & Mario Noyola (Predictive machine learning models prioritizing safety inspections). " +
+  "2. Outage Management: Tom Langlois (pronounced lɑ̃ɡlwɑ) & Kevin Wasserman (GenAI accelerating storm response and restoration times). " +
+  "3. Vehicle Idling Fines & Steam Operations: Christian Mairhofer, Alyssa Sotto & Joe McLain (Reducing NYC fleet emissions and optimizing steam grid steam traps). " +
+  "4. Billing Processes: Marilyn Silva & Mario Noyola (Generative AI automating complex billing inquiries and exception audits). " +
+  "At the conclusion, you invite everyone to explore the Demo Booths in The Hub (formerly the Apple Bank space in the Lobby) from Noon to 3:00 PM, and hand over the stage to Dina. " +
   "LIVE TOOLS & TELEMETRY ACCESS: " +
   "You HAVE direct live API access to: " +
   "1) National Weather Service (NOAA) for NYC active weather alerts and storm warnings. " +
@@ -432,17 +433,17 @@ app.post('/api/chat', async (req, res) => {
         routingInfo.badgeText = `⚡ ${getToolShortName(primary.toolName)}`;
         routingInfo.shortName = getToolShortName(primary.toolName);
         routingInfo.primaryTool = primary;
-        routingInfo.flowText = `Watt is talking to GECX Playbook ➔ Playbook reached out to ${getToolDisplayName(primary.toolName)}`;
+        routingInfo.flowText = `Nova is talking to GECX Playbook ➔ Playbook reached out to ${getToolDisplayName(primary.toolName)}`;
       } else if (gecxResult.telemetry?.usedDataStore) {
         routingInfo.mode = 'DATASTORE_RAG';
         routingInfo.badgeText = '📚 Con Edison Docs';
         routingInfo.corpus = 'Con Edison Keynote Deep Technical Corpus (19 Docs)';
-        routingInfo.flowText = 'Watt is talking to GECX Playbook ➔ Playbook checked Con Edison Official Documents';
+        routingInfo.flowText = 'Nova is talking to GECX Playbook ➔ Playbook checked Con Edison Official Documents';
       } else {
-        routingInfo.flowText = 'Watt is talking to GECX Playbook ➔ Playbook answered via AI conversational reasoning';
+        routingInfo.flowText = 'Nova is talking to GECX Playbook ➔ Playbook answered via AI conversational reasoning';
       }
 
-      console.log(`[GECX Chat] User: "${trimmedPrompt}" -> Watt (GECX Native Playbook): "${cleanReply}" [Routing: ${routingInfo.mode}, Tools: ${triggeredTools.length}]`);
+      console.log(`[GECX Chat] User: "${trimmedPrompt}" -> Nova (GECX Native Playbook): "${cleanReply}" [Routing: ${routingInfo.mode}, Tools: ${triggeredTools.length}]`);
       const payload = await buildChatResponse(cleanReply, {
         backend: 'GECX Playbook (Native Tools)',
         engine: 'gecx',
@@ -489,7 +490,7 @@ app.post('/api/chat', async (req, res) => {
         displayName: 'National Weather Service (NWS Alerts)',
         endpoint: '/api/live/weather',
         method: 'GET',
-        caller: 'Watt AI Core',
+        caller: 'Nova AI Core',
         status: 200,
         summary: liveWeather.headline || 'Nominal atmospheric conditions; no active storm warnings'
       });
@@ -501,7 +502,7 @@ app.post('/api/chat', async (req, res) => {
         displayName: 'NYISO Real-Time Grid Telemetry',
         endpoint: '/api/live/grid',
         method: 'GET',
-        caller: 'Watt AI Core',
+        caller: 'Nova AI Core',
         status: 200,
         summary: `${liveGrid.cleanPercentage}% Clean Energy (${(liveGrid.renewablesTotalMW || 0).toLocaleString()} MW Renewables)`
       });
@@ -513,7 +514,7 @@ app.post('/api/chat', async (req, res) => {
         displayName: 'Con Edison Outage Operations Dashboard',
         endpoint: '/api/live/outages',
         method: 'GET',
-        caller: 'Watt AI Core',
+        caller: 'Nova AI Core',
         status: 200,
         summary: `${liveOutages.reliabilityRate} system reliability (${liveOutages.activeOutages} active outages)`
       });
@@ -535,7 +536,7 @@ app.post('/api/chat', async (req, res) => {
         displayName: 'Clean Heat Sizing & Rebate Calculator',
         endpoint: '/api/tools/clean-heat-calc',
         method: 'POST',
-        caller: 'Watt AI Core',
+        caller: 'Nova AI Core',
         status: 200,
         summary: `Estimated ${calcResult.recommendedTons} tons ($${calcResult.prescriptiveRebate.toLocaleString()} rebate); preliminary estimate subject to Manual J load survey`
       });
@@ -544,21 +545,21 @@ app.post('/api/chat', async (req, res) => {
     return { contextualText, tools };
   };
 
-  // 2. ROUTE TO GEMINI 3.6 FLASH (or GECX Fallback)
+  // 2. ROUTE TO GEMINI (or GECX Fallback)
   try {
     const { contextualText, tools: geminiTools } = await augmentPromptWithLiveTelemetry(trimmedPrompt);
     const geminiReply = await queryGemini(contextualText);
-    console.log(`[Gemini Chat] User: "${trimmedPrompt}" -> Watt (Gemini 3.6): "${geminiReply}"`);
+    console.log(`[Gemini Chat] User: "${trimmedPrompt}" -> Nova (Gemini): "${geminiReply}"`);
 
     const routing = {
       mode: geminiTools.length > 0 ? 'REALTIME_DETERMINISTIC_TOOL' : 'DIRECT_MODEL',
-      badgeText: geminiTools.length > 0 ? '⚡ Dynamic Real-Time Telemetry' : '⚡ Gemini 3.6',
+      badgeText: geminiTools.length > 0 ? '⚡ Dynamic Real-Time Telemetry' : '⚡ Gemini 2.5',
       toolCount: geminiTools.length,
       tools: geminiTools
     };
 
     const payload = await buildChatResponse(geminiReply, {
-      backend: 'Gemini 3.6 Flash',
+      backend: 'Gemini 2.5 Flash',
       engine: 'gemini',
       routing
     });
@@ -573,5 +574,5 @@ app.post('/api/chat', async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Con Edison Tech Day Moderator Server (Watt) running on http://0.0.0.0:${PORT}`);
+  console.log(`Con Edison Tech Day Moderator Server (Nova) running on http://0.0.0.0:${PORT}`);
 });

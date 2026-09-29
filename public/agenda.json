@@ -1,103 +1,118 @@
 {
   "event": "Con Edison Tech Day",
-  "panel_title": "AI in Action at Con Edison",
+  "panel_title": "AI in Use at Con Edison",
+  "segment_time": "11:00 – 11:40 AM",
   "moderator": {
-    "name": "Watt",
-    "role": "Autonomous AI Panel Moderator",
-    "persona": "Youthful, cheerful, strictly professional",
-    "voice": "en-US-Journey-F"
+    "name": "Nova",
+    "role": "Autonomous AI Chatbot Moderator",
+    "persona": "Youthful, cheerful, strictly professional and articulate",
+    "voice": "en-US-Studio-O"
+  },
+  "mc": {
+    "name": "Christian Mairhofer",
+    "title": "AI Solutions Lead",
+    "organization": "Enterprise Technology Solutions (ETS)"
+  },
+  "hand_off": {
+    "name": "Dina",
+    "role": "Next Segment MC"
   },
   "use_cases": [
     {
       "id": "intro",
       "number": 0,
-      "title": "Welcome & Opening Remarks",
+      "tag": "KEYNOTE KICKOFF",
+      "title": "Welcome & Segment Overview",
       "audio": "/assets/audio/topic_0.mp3",
       "speaker": {
-        "name": "Watt",
-        "title": "Con Edison AI Moderator",
-        "organization": "Enterprise AI & Technology Solutions"
+        "name": "Nova",
+        "title": "Con Edison AI Chatbot Moderator",
+        "organization": "Powered by Gemini Enterprise Customer Experience"
       },
-      "script": "Good morning everyone, and a warm welcome to Con Edison Tech Day! I am thrilled to be your moderator today for our featured showcase: AI in Action at Con Edison. This morning, our Business and Enterprise Technology Solutions teams have partnered to bring you five transformative artificial intelligence capabilities already powering our energy grid, our workforce, and our customer experience across New York City and Westchester.",
-      "prompt": "Introduce the panel with cheerful, high-energy professionalism."
+      "script": "Thank you Christian. Good morning, everyone; my name is Nova. I will be your moderator for our AI in Use at Con Edison segment. As Christian said earlier, we are going to highlight examples where Con Edison is solving business problems by leveraging AI. A prime example is running behind the scenes right here: I am powered by Con Edison’s new Gemini Enterprise Customer Experience platform, the same cutting-edge platform currently driving our Service Desk call center to streamline support and deliver real-time resolution for Con Edison employees.",
+      "prompt": "Introduce the AI in Use at Con Edison segment as Nova, acknowledging Christian Mairhofer and highlighting the Gemini Enterprise CX platform driving the Service Desk.",
+      "pauseType": "none"
+    },
+    {
+      "id": "manholes",
+      "number": 1,
+      "tag": "USE CASE 1: ELECTRIC OPERATIONS",
+      "title": "Con Edison Electric Manholes AI",
+      "audio": "/assets/audio/topic_1.mp3",
+      "speaker": {
+        "name": "Jayne Sosland & Mario Noyola",
+        "title": "Electric Operations & Engineering Leads",
+        "organization": "Con Edison Electric Operations"
+      },
+      "script": "Our first example are the agents we are developing to more efficiently manage Con Edison Electric Manholes. Our presenters will be Jayne Sosland and Mario Noyola.",
+      "prompt": "Introduce the Electric Manholes AI agents and presenters Jayne Sosland and Mario Noyola.",
+      "pauseType": "presenter_pause",
+      "pauseLabel": "Presenters on Stage: Jayne Sosland & Mario Noyola"
+    },
+    {
+      "id": "outages",
+      "number": 2,
+      "tag": "USE CASE 2: GRID RESILIENCE",
+      "title": "Outage Management Automation",
+      "audio": "/assets/audio/topic_2.mp3",
+      "speaker": {
+        "name": "Tom Langlois & Kevin Wasserman",
+        "title": "Outage Operations & Grid Modernization Leads",
+        "organization": "Con Edison Electric Operations"
+      },
+      "script": "That was fantastic, thanks for sharing that opportunity. Next, we will look at automation being developed using AI agents for Con Edison Outage Management processes. Our presenters will be Tom Langlois and Kevin Wasserman.",
+      "ssml": "<speak>That was fantastic, thanks for sharing that opportunity. Next, we will look at automation being developed using AI agents for Con Edison Outage Management processes. Our presenters will be Tom <phoneme alphabet=\"ipa\" ph=\"lɑ̃ɡlwɑ\">Langlois</phoneme> and Kevin Wasserman.</speak>",
+      "prompt": "Transition warmly from Manholes and introduce Outage Management AI automation presented by Tom Langlois and Kevin Wasserman.",
+      "pauseType": "presenter_pause",
+      "pauseLabel": "Presenters on Stage: Tom Langlois & Kevin Wasserman"
+    },
+    {
+      "id": "idling_steam",
+      "number": 3,
+      "tag": "USE CASE 3: FLEET & STEAM",
+      "title": "Vehicle Idling Fines & Steam Ops",
+      "audio": "/assets/audio/topic_3.mp3",
+      "speaker": {
+        "name": "Christian Mairhofer, Alyssa Sotto & Joe McLain",
+        "title": "Operations Efficiency & Analytics Leads",
+        "organization": "Con Edison Fleet & Steam Operations"
+      },
+      "script": "Thank you Tom and Kevin. Our next example will review how we are driving efficiency in two different areas – Automating research of Vehicle Idling fines and reducing manual effort for Steam Operations. Our presenters will be Christian Mairhofer, Alyssa Sotto and Joe McLain.",
+      "prompt": "Thank Tom and Kevin, then introduce Vehicle Idling fines automation and Steam Operations presented by Christian Mairhofer, Alyssa Sotto, and Joe McLain.",
+      "pauseType": "presenter_pause",
+      "pauseLabel": "Presenters on Stage: Christian Mairhofer, Alyssa Sotto & Joe McLain"
     },
     {
       "id": "billing",
-      "number": 1,
-      "title": "Customer Operations & Generative Billing Agent",
-      "audio": "/assets/audio/topic_1.mp3",
-      "speaker": {
-        "name": "Customer Operations Team",
-        "title": "Customer Energy & Billing Operations",
-        "organization": "Con Edison Customer Operations"
-      },
-      "script": "Let us begin with Customer Operations. Our Customer Operations and Enterprise Technology teams are deploying an intelligent, conversational generative AI billing agent that analyzes complex billing histories, explains seasonal rate variances in clear plain English, and proactively suggests tailored payment agreements, dramatically reducing wait times for New York families.",
-      "prompt": "Highlight the generative billing agent and customer operations impact."
-    },
-    {
-      "id": "idling",
-      "number": 2,
-      "title": "Fleet Vehicle Idling Reduction AI",
-      "audio": "/assets/audio/topic_2.mp3",
-      "speaker": {
-        "name": "Fleet Modernization Team",
-        "title": "Operations & Logistics Leads",
-        "organization": "Con Edison Fleet Services"
-      },
-      "script": "Moving to our clean urban environment, our next showcase tackles fleet sustainability. Operating thousands of utility bucket trucks across dense city streets requires continuous field readiness. Our Fleet and ETS engineering teams deployed computer vision and telematics AI that detects unnecessary idling in real time, conserving thousands of gallons of fuel and reducing greenhouse gas emissions across all five boroughs.",
-      "prompt": "Explain the vehicle idling reduction initiative and urban emissions savings."
-    },
-    {
-      "id": "manhole",
-      "number": 3,
-      "title": "Subsurface Manhole Safety & Predictive Acoustics",
-      "audio": "/assets/audio/topic_3.mp3",
-      "speaker": {
-        "name": "Subsurface Engineering Team",
-        "title": "Electric Operations & Grid Safety",
-        "organization": "Con Edison Electric Operations"
-      },
-      "script": "Safety is always our highest priority at Con Edison. Our third use case focuses on underground infrastructure protection. By combining Internet of Things sensors inside manhole structures with edge AI acoustic pattern recognition, our systems can detect subtle frequency anomalies and thermal pre-conditions hours before an event occurs, keeping our workers and pedestrians safe.",
-      "prompt": "Detail how acoustic and thermal AI monitors manholes for subsurface safety."
-    },
-    {
-      "id": "weather",
       "number": 4,
-      "title": "Severe Weather Modeling & Grid Resilience",
+      "tag": "USE CASE 4: CUSTOMER OPERATIONS",
+      "title": "Customer Billing Processes AI",
       "audio": "/assets/audio/topic_4.mp3",
       "speaker": {
-        "name": "Electric Operations & Meteorology Team",
-        "title": "Grid Meteorology & Analytics Leads",
-        "organization": "Con Edison Electric Operations"
+        "name": "Marilyn Silva & Mario Noyola",
+        "title": "Customer Experience & Billing Operations",
+        "organization": "Con Edison Customer Operations"
       },
-      "script": "Next, let us turn to weather modeling and grid resilience. Con Edison's Electric Operations and analytics teams have integrated hyper-local microclimate predictive models that simulate wind shear, coastal storm surge, and wet snow load at neighborhood-level granularity, allowing our dispatch centers to preposition repair crews before storms make landfall.",
-      "prompt": "Highlight high-resolution predictive storm modeling and grid resilience."
+      "script": "Thank you Christian, Alyssa and Joe. AI certainly has the power to reduce manual effort. Our final example will illustrate how AI will be helping our customer teams complete billing processes more efficiently. Our presenters will be Marilyn Silva and Mario Noyola.",
+      "prompt": "Thank the previous presenters, then introduce Customer Billing processes AI presented by Marilyn Silva and Mario Noyola.",
+      "pauseType": "presenter_pause",
+      "pauseLabel": "Presenters on Stage: Marilyn Silva & Mario Noyola"
     },
     {
-      "id": "energy_solutions",
+      "id": "conclusion",
       "number": 5,
-      "title": "Customer Energy Solutions & Clean Heat AI",
+      "tag": "SEGMENT WRAP-UP & HAND-OFF",
+      "title": "Applause, Demo Booths & Hand-Off",
       "audio": "/assets/audio/topic_5.mp3",
       "speaker": {
-        "name": "Clean Energy Solutions Team",
-        "title": "Decarbonization & Clean Heat Specialists",
-        "organization": "Con Edison Energy Efficiency"
+        "name": "Nova",
+        "title": "Con Edison AI Chatbot Moderator",
+        "organization": "Handing off to Dina"
       },
-      "script": "Our final use case demonstrates our commitment to New York's clean energy transition. Con Edison's Customer Energy Solutions team is leveraging AI recommendation models to help residential and commercial property owners optimize heat pump conversions, calculate building carbon footprints, and automate smart EV charging to align with off-peak grid capacity.",
-      "prompt": "Highlight customer energy solutions, building heat pump adoption, and EV load balancing."
-    },
-    {
-      "id": "qa",
-      "number": 6,
-      "title": "Audience & Panel Q&A",
-      "audio": "/assets/audio/topic_6.mp3",
-      "speaker": {
-        "name": "Watt",
-        "title": "Con Edison AI Moderator",
-        "organization": "Open Stage Interaction"
-      },
-      "script": "Thank you to all of our incredible presenters! We now invite questions from our audience. You may ask me any question about these AI deployments, our technical architectures, or how business and technology collaborate here at Con Edison.",
-      "prompt": "Transition warmly into the live audience Q&A session."
+      "script": "Thank you everyone for sharing how Con Edison is using AI to better serve our customers and drive greater efficiency. Let’s give a round of applause to our presenters. It was a pleasure moderating the AI in Use at Con Edison segment. Please visit our Demo Booths from Noon to three o’clock in The Hub known previously as the Apple Bank space in the Lobby to learn more about these opportunities and also how voice agents like me are helping at Con Edison. I would like to now turn things back to Dina to introduce our next segment.",
+      "prompt": "Lead applause for all presenters, direct attendees to the Demo Booths in The Hub (Apple Bank space) from 12-3 PM, and hand off the stage to Dina.",
+      "pauseType": "applause_pause",
+      "pauseLabel": "Round of Applause // Hand-off to Dina"
     }
   ]
 }

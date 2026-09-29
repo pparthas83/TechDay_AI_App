@@ -722,13 +722,15 @@ class AvatarStageEngine {
     }
   }
 
+  onResize() {
+    if (!this.container || !this.camera || !this.renderer) return;
+    this.camera.aspect = this.container.clientWidth / this.container.clientHeight;
+    this.camera.updateProjectionMatrix();
+    this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
+  }
+
   setupEvents() {
-    window.addEventListener('resize', () => {
-      if (!this.container) return;
-      this.camera.aspect = this.container.clientWidth / this.container.clientHeight;
-      this.camera.updateProjectionMatrix();
-      this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
-    });
+    window.addEventListener('resize', () => this.onResize());
 
     window.addEventListener('mousemove', (e) => {
       this.mouse.targetX = (e.clientX / window.innerWidth) * 2 - 1;

@@ -145,13 +145,25 @@ const VISEME_MAP = {
 function parseTextToVisemeTimeline(text) {
   if (!text || typeof text !== 'string') return [];
 
+  // Support SSML break tags (<break time="4s"/>) and bracket pauses ([break:4s], [applause:4s])
+  const breakRegex = /<break\s+time=["']?(\d+(?:\.\d+)?)(s|ms)?["']?\s*\/?>|\[(?:break|applause):?\s*(\d+(?:\.\d+)?)(s|ms)?\]/gi;
+  const breakPlaceholders = [];
+  let sanitized = text.replace(breakRegex, (m, g1, u1, g2, u2) => {
+    const val = parseFloat(g1 || g2);
+    const unit = (u1 || u2 || 's').toLowerCase();
+    const sec = unit === 'ms' ? val / 1000 : val;
+    const ph = 'zzzbreak' + String.fromCharCode(97 + breakPlaceholders.length) + 'zzz';
+    breakPlaceholders.push({ placeholder: ph, duration: sec });
+    return ' ' + ph + ' ';
+  });
+
   const numMap = { '0': 'zero', '1': 'one', '2': 'two', '3': 'three', '4': 'four', '5': 'five', '6': 'six', '7': 'seven', '8': 'eight', '9': 'nine' };
-  let sanitized = text.replace(/\d/g, d => ' ' + (numMap[d] || d) + ' ');
+  sanitized = sanitized.replace(/\d/g, d => ' ' + (numMap[d] || d) + ' ');
   sanitized = sanitized.replace(/&/g, ' and ').replace(/@/g, ' at ').replace(/%/g, ' percent ');
   sanitized = sanitized.toLowerCase();
 
   const visemes = [];
-  const tokens = sanitized.match(/[a-z]+|[.,!?:;]+/g) || [];
+  const tokens = sanitized.match(/zzzbreak[a-z]+zzz|[a-z]+|[.,!?:;]+/g) || [];
 
   const rules = [
     { re: /^th/, viseme: 'TH', weight: 1.0 },
@@ -183,6 +195,16 @@ function parseTextToVisemeTimeline(text) {
   ];
 
   for (const token of tokens) {
+    if (token.startsWith('zzzbreak') && token.endsWith('zzz')) {
+      const charCode = token.charCodeAt(8);
+      const idx = charCode - 97;
+      const breakInfo = breakPlaceholders[idx];
+      if (breakInfo && breakInfo.duration > 0) {
+        visemes.push({ viseme: 'PAUSE', weight: breakInfo.duration * 11.0, text: '<break>' });
+      }
+      continue;
+    }
+
     if (/^[.,!?:;]+$/.test(token)) {
       const pauseWeight = token.includes('.') || token.includes('!') || token.includes('?') ? 2.2 : 1.2;
       visemes.push({ viseme: 'PAUSE', weight: pauseWeight, text: token });

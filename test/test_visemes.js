@@ -75,4 +75,14 @@ const interWordPauses = timeline.filter(t => t.text === ' ');
 assert.strictEqual(interWordPauses.length, 0, 'No artificial PAUSE injected between adjacent words');
 console.log('  ✓ PASS: Continuous speech phonation connects words without inter-word clamps');
 
-console.log('All 9 Phoneme Viseme tests in avatar_stage.js passed successfully!\n');
+// Test 10: SSML Break and Applause Pause Support
+const pauseText = 'Let’s give a round of applause to our presenters. <break time="4s"/> It was a pleasure moderating.';
+const pauseTimeline = parseTextToVisemeTimeline(pauseText);
+const breakSegment = pauseTimeline.find(t => t.text === '<break>');
+assert(breakSegment, 'Timeline must include <break> pause segment');
+assert.strictEqual(breakSegment.viseme, 'PAUSE', 'Break segment must map to PAUSE viseme');
+assert(breakSegment.end - breakSegment.start > 0.10, 'A 4s break should occupy a substantial duration slice (>10% of speech)');
+console.log('  ✓ PASS: SSML break tags correctly parse into calibrated resting PAUSE intervals');
+
+console.log('All 10 Phoneme Viseme tests in avatar_stage.js passed successfully!\n');
+

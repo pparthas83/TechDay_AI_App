@@ -34,7 +34,7 @@ The AI moderator, **Nova**, is powered by Con Edison’s new **Gemini Enterprise
    - **`02 IDLING & STEAM`**: Vehicle Idling Fines and Steam Operations (Presenters: Christian Mairhofer, Alyssa Sotto, Joe McLain)
    - **`03 OUTAGES`**: Outage Management Processes (Presenters: Tom Langlois & Kevin Wasserman)
    - **`04 SPARK PLATFORM`**: Spark Platform Multi-Area AI (Presenters: Jayne Sosland & Mario Noyola)
-   - **`05 WRAP-UP`**: Concluding Remarks, round of applause, transition to Demo Booths in The Hub (Noon – 3:00 PM), and stage handoff to Dina.
+   - **`05 WRAP-UP`**: Concluding Remarks, automated 4-second audience applause pause with live AV banner (`👏 ROUND OF APPLAUSE // Celebrating Our Presenters`), transition to Demo Booths in The Hub (Noon – 3:00 PM), and stage handoff to Dina.
 
 6. **Presenter Stage HUD & Hotkeys**:
    - **`Spacebar`**: Toggle Play / Pause speech.
@@ -130,7 +130,7 @@ flowchart TD
 ├── gecx_service.js          # GECX SDK client, session path builder & payload parser
 ├── test/
 │   ├── test_gecx.js         # GECX test suite (9 tests)
-│   ├── test_visemes.js      # Phoneme-viseme lip-sync tests (9 tests)
+│   ├── test_visemes.js      # Phoneme-viseme lip-sync tests (10 tests)
 │   └── test_hybrid.js       # Enterprise hybrid test suite (13 tests)
 ├── package.json             # Node.js dependencies (@google-cloud/dialogflow-cx, etc.)
 ├── Dockerfile               # Production container definition for Cloud Run

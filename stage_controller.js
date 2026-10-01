@@ -61,6 +61,7 @@ class StageController {
 
     this.audioElement.addEventListener('pause', () => {
       this.isPlaying = false;
+      this.isShowingMidApplause = false;
       if (this.avatar) {
         this.avatar.isSpeaking = false;
         this.avatar.clearSpokenText();
@@ -70,6 +71,7 @@ class StageController {
 
     this.audioElement.addEventListener('ended', () => {
       this.isPlaying = false;
+      this.isShowingMidApplause = false;
       if (this.avatar) {
         this.avatar.isSpeaking = false;
         this.avatar.clearSpokenText();
@@ -88,9 +90,29 @@ class StageController {
       }
     });
 
+    this.audioElement.addEventListener('timeupdate', () => {
+      if (this.agenda && this.agenda.use_cases && this.agenda.use_cases[this.currentIndex]) {
+        const currentTopic = this.agenda.use_cases[this.currentIndex];
+        if (currentTopic.applauseBreak) {
+          const t = this.audioElement.currentTime;
+          const { startSec, endSec, label } = currentTopic.applauseBreak;
+          if (t >= startSec && t < endSec) {
+            if (!this.isShowingMidApplause) {
+              this.isShowingMidApplause = true;
+              this.showAvStandby(label || '👏 ROUND OF APPLAUSE // Celebrating Our Presenters');
+            }
+          } else if (this.isShowingMidApplause) {
+            this.isShowingMidApplause = false;
+            this.hideAvStandby();
+          }
+        }
+      }
+    });
+
     this.audioElement.addEventListener('error', (e) => {
       console.warn('[Audio] Failed or blocked playback:', e);
       this.isPlaying = false;
+      this.isShowingMidApplause = false;
       this.updatePlayState();
     });
   }
@@ -426,13 +448,15 @@ class StageController {
       this.setHeaderFlowActive(flow);
     }
 
+    const cleanDisplayText = (text || '').replace(/<[^>]+>/g, '').replace(/\s{2,}/g, ' ').trim();
+
     bubble.innerHTML = `
       <div class="bubble-meta">
         <span class="bubble-sender">${metaTag}</span>
         ${toolBadge}
         <span class="bubble-time">${timeStr}</span>
       </div>
-      <div class="bubble-text">${this.escapeHtml(text)}</div>
+      <div class="bubble-text">${this.escapeHtml(cleanDisplayText)}</div>
     `;
 
     this.dialogueStream.appendChild(bubble);
@@ -775,7 +799,8 @@ class StageController {
   setSubtitle(text, stateClass = 'idle') {
     if (!this.subtitleBox) return;
     this.subtitleBox.className = `narrative-text ${stateClass}`;
-    this.subtitleBox.textContent = text;
+    const cleanText = (text || '').replace(/<[^>]+>/g, '').replace(/\s{2,}/g, ' ').trim();
+    this.subtitleBox.textContent = cleanText;
   }
 
   updatePlayState() {

@@ -109,10 +109,16 @@
         "title": "Con Edison AI Chatbot Moderator",
         "organization": "Handing off to Dina"
       },
-      "script": "Thank you Jayne and Mario and thank you everyone for sharing how Con Edison is using AI to better serve our customers and drive greater efficiency. Let’s give a round of applause to our presenters. It was a pleasure moderating the AI in Use at Con Edison segment. Please visit our Demo Booths from Noon to three o’clock in The Hub known previously as the Apple Bank space in the Lobby to learn more about these opportunities and how voice agents like me are helping at Con Edison. I would like to now turn things back to Dina to introduce our next segment.",
+      "script": "Thank you Jayne and Mario and thank you everyone for sharing how Con Edison is using AI to better serve our customers and drive greater efficiency. Let’s give a round of applause to our presenters. <break time=\"4s\"/> It was a pleasure moderating the AI in Use at Con Edison segment. Please visit our Demo Booths from Noon to three o’clock in The Hub known previously as the Apple Bank space in the Lobby to learn more about these opportunities and how voice agents like me are helping at Con Edison. I would like to now turn things back to Dina to introduce our next segment.",
+      "ssml": "<speak>Thank you Jayne and Mario and thank you everyone for sharing how Con Edison is using AI to better serve our customers and drive greater efficiency. Let’s give a round of applause to our presenters.<break time=\"4s\"/>It was a pleasure moderating the AI in Use at Con Edison segment. Please visit our Demo Booths from Noon to three o’clock in The Hub known previously as the Apple Bank space in the Lobby to learn more about these opportunities and how voice agents like me are helping at Con Edison. I would like to now turn things back to Dina to introduce our next segment.</speak>",
       "prompt": "Thank Jayne and Mario, lead applause for all presenters, direct attendees to the Demo Booths in The Hub (Apple Bank space) from 12-3 PM, and hand off the stage to Dina.",
       "pauseType": "applause_pause",
-      "pauseLabel": "Round of Applause // Hand-off to Dina"
+      "pauseLabel": "Round of Applause // Hand-off to Dina",
+      "applauseBreak": {
+        "startSec": 11.4,
+        "endSec": 15.5,
+        "label": "👏 ROUND OF APPLAUSE // Celebrating Our Presenters"
+      }
     }
   ]
 }

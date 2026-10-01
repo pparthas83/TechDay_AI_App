@@ -30,10 +30,10 @@ The AI moderator, **Nova**, is powered by Con Edison’s new **Gemini Enterprise
 
 5. **Con Edison Keynote Agenda & Business Use Cases**:
    - **`00 KICKOFF`**: Keynote Opening & Introduction (Nova introduced by Christian Mairhofer)
-   - **`01 MANHOLES`**: Electric Manholes AI (Presenters: Jayne Sosland & Mario Noyola)
-   - **`02 OUTAGES`**: Outage Management Processes (Presenters: Tom Langlois & Kevin Wasserman)
-   - **`03 IDLING & STEAM`**: Vehicle Idling Fines and Steam Operations (Presenters: Christian Mairhofer, Alyssa Sotto, Joe McLain)
-   - **`04 BILLING`**: Customer Billing Processes (Presenters: Marilyn Silva & Mario Noyola)
+   - **`01 BILLING`**: Customer Billing Processes (Presenters: Marilyn Silva & Mario Noyola)
+   - **`02 IDLING & STEAM`**: Vehicle Idling Fines and Steam Operations (Presenters: Christian Mairhofer, Alyssa Sotto, Joe McLain)
+   - **`03 OUTAGES`**: Outage Management Processes (Presenters: Tom Langlois & Kevin Wasserman)
+   - **`04 SPARK PLATFORM`**: Spark Platform Multi-Area AI (Presenters: Jayne Sosland & Mario Noyola)
    - **`05 WRAP-UP`**: Concluding Remarks, round of applause, transition to Demo Booths in The Hub (Noon – 3:00 PM), and stage handoff to Dina.
 
 6. **Presenter Stage HUD & Hotkeys**:
@@ -44,7 +44,7 @@ The AI moderator, **Nova**, is powered by Con Edison’s new **Gemini Enterprise
    - **`V`**: Toggle between Keynote Stage Mode and Demo Booth Mode.
    - **`M`**: Toggle live microphone for audience voice Q&A (Web Speech API).
    - **`?`**: Open the Nova Capabilities & System Guide overlay.
-   - **URL Direct Hash**: Jump or bookmark any use case directly (e.g., `#manholes`, `#outages`, `#idling`, `#billing`).
+   - **URL Direct Hash**: Jump or bookmark any use case directly (e.g., `#billing`, `#idling`, `#outages`, `#spark`).
 
 ---
 

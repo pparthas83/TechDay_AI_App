@@ -188,7 +188,7 @@ class StageController {
     if (!this.agendaNav || !this.agenda) return;
     this.agendaNav.innerHTML = '';
 
-    const labels = ['KICKOFF', 'MANHOLES', 'OUTAGES', 'IDLING & STEAM', 'BILLING', 'WRAP-UP'];
+    const labels = ['KICKOFF', 'BILLING', 'IDLING & STEAM', 'OUTAGES', 'SPARK PLATFORM', 'WRAP-UP'];
     this.agenda.use_cases.forEach((topic, idx) => {
       const pill = document.createElement('button');
       pill.type = 'button';

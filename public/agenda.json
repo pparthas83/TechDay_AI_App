@@ -34,69 +34,69 @@
       "pauseType": "none"
     },
     {
-      "id": "manholes",
+      "id": "billing",
       "number": 1,
-      "tag": "USE CASE 1: ELECTRIC OPERATIONS",
-      "title": "Con Edison Electric Manholes AI",
+      "tag": "USE CASE 1: CUSTOMER OPERATIONS",
+      "title": "Customer Billing Processes AI",
       "audio": "/assets/audio/topic_1.mp3",
       "speaker": {
-        "name": "Jayne Sosland & Mario Noyola",
-        "title": "Electric Operations & Engineering Leads",
-        "organization": "Con Edison Electric Operations"
+        "name": "Marilyn Silva & Mario Noyola",
+        "title": "Customer Experience & Billing Operations Leads",
+        "organization": "Con Edison Customer Operations"
       },
-      "script": "Our first example are the agents we are developing to more efficiently manage Con Edison Electric Manholes. Our presenters will be Jayne Sosland and Mario Noyola.",
-      "prompt": "Introduce the Electric Manholes AI agents and presenters Jayne Sosland and Mario Noyola.",
+      "script": "Our first example will illustrate how AI is helping our customer teams complete billing processes more efficiently and better serve our customers. Our presenters will be Marilyn Silva and Mario Noyola.",
+      "prompt": "Introduce Customer Billing processes AI presented by Marilyn Silva and Mario Noyola.",
       "pauseType": "presenter_pause",
-      "pauseLabel": "Presenters on Stage: Jayne Sosland & Mario Noyola"
-    },
-    {
-      "id": "outages",
-      "number": 2,
-      "tag": "USE CASE 2: GRID RESILIENCE",
-      "title": "Outage Management Automation",
-      "audio": "/assets/audio/topic_2.mp3",
-      "speaker": {
-        "name": "Tom Langlois & Kevin Wasserman",
-        "title": "Outage Operations & Grid Modernization Leads",
-        "organization": "Con Edison Electric Operations"
-      },
-      "script": "That was fantastic, thanks for sharing that opportunity. Next, we will look at automation being developed using AI agents for Con Edison Outage Management processes. Our presenters will be Tom Langlois and Kevin Wasserman.",
-      "ssml": "<speak>That was fantastic, thanks for sharing that opportunity. Next, we will look at automation being developed using AI agents for Con Edison Outage Management processes. Our presenters will be Tom <phoneme alphabet=\"ipa\" ph=\"lɑ̃ɡlwɑ\">Langlois</phoneme> and Kevin Wasserman.</speak>",
-      "prompt": "Transition warmly from Manholes and introduce Outage Management AI automation presented by Tom Langlois and Kevin Wasserman.",
-      "pauseType": "presenter_pause",
-      "pauseLabel": "Presenters on Stage: Tom Langlois & Kevin Wasserman"
+      "pauseLabel": "Presenters on Stage: Marilyn Silva & Mario Noyola"
     },
     {
       "id": "idling_steam",
-      "number": 3,
-      "tag": "USE CASE 3: FLEET & STEAM",
+      "number": 2,
+      "tag": "USE CASE 2: FLEET & STEAM",
       "title": "Vehicle Idling Fines & Steam Ops",
-      "audio": "/assets/audio/topic_3.mp3",
+      "audio": "/assets/audio/topic_2.mp3",
       "speaker": {
         "name": "Christian Mairhofer, Alyssa Sotto & Joe McLain",
         "title": "Operations Efficiency & Analytics Leads",
         "organization": "Con Edison Fleet & Steam Operations"
       },
-      "script": "Thank you Tom and Kevin. Our next example will review how we are driving efficiency in two different areas – Automating research of Vehicle Idling fines and reducing manual effort for Steam Operations. Our presenters will be Christian Mairhofer, Alyssa Sotto and Joe McLain.",
-      "prompt": "Thank Tom and Kevin, then introduce Vehicle Idling fines automation and Steam Operations presented by Christian Mairhofer, Alyssa Sotto, and Joe McLain.",
+      "script": "That was fantastic, thank you Marilyn and Mario for sharing that opportunity. Our next example will review how we are driving efficiency in two different areas – Automating research of Vehicle Idling fines and reducing manual effort for Steam Operations. Our presenters will be Christian Mairhofer, Alyssa Sotto and Joe McLain.",
+      "prompt": "Thank Marilyn and Mario, then introduce Vehicle Idling fines automation and Steam Operations presented by Christian Mairhofer, Alyssa Sotto, and Joe McLain.",
       "pauseType": "presenter_pause",
       "pauseLabel": "Presenters on Stage: Christian Mairhofer, Alyssa Sotto & Joe McLain"
     },
     {
-      "id": "billing",
+      "id": "outages",
+      "number": 3,
+      "tag": "USE CASE 3: GRID RESILIENCE",
+      "title": "Outage Management Automation",
+      "audio": "/assets/audio/topic_3.mp3",
+      "speaker": {
+        "name": "Tom Langlois & Kevin Wasserman",
+        "title": "Outage Operations & Grid Modernization Leads",
+        "organization": "Con Edison Electric Operations"
+      },
+      "script": "Thank you Christian, Alyssa and Joe. These are great examples of how we are reducing manual effort so our people can focus on more important tasks. Next, we will look at AI automation for Con Edison Outage Management processes. Our presenters will be Tom Langlois and Kevin Wasserman.",
+      "ssml": "<speak>Thank you Christian, Alyssa and Joe. These are great examples of how we are reducing manual effort so our people can focus on more important tasks. Next, we will look at AI automation for Con Edison Outage Management processes. Our presenters will be Tom <phoneme alphabet=\"ipa\" ph=\"lɑ̃ɡlwɑ\">Langlois</phoneme> and Kevin Wasserman.</speak>",
+      "prompt": "Thank Christian, Alyssa, and Joe, then introduce Outage Management AI automation presented by Tom Langlois and Kevin Wasserman.",
+      "pauseType": "presenter_pause",
+      "pauseLabel": "Presenters on Stage: Tom Langlois & Kevin Wasserman"
+    },
+    {
+      "id": "spark_platform",
       "number": 4,
-      "tag": "USE CASE 4: CUSTOMER OPERATIONS",
-      "title": "Customer Billing Processes AI",
+      "tag": "USE CASE 4: ENTERPRISE AI",
+      "title": "Spark Platform Multi-Area AI",
       "audio": "/assets/audio/topic_4.mp3",
       "speaker": {
-        "name": "Marilyn Silva & Mario Noyola",
-        "title": "Customer Experience & Billing Operations",
-        "organization": "Con Edison Customer Operations"
+        "name": "Jayne Sosland & Mario Noyola",
+        "title": "Enterprise Technology Solutions Leads",
+        "organization": "Con Edison Enterprise Technology Solutions"
       },
-      "script": "Thank you Christian, Alyssa and Joe. AI certainly has the power to reduce manual effort. Our final example will illustrate how AI will be helping our customer teams complete billing processes more efficiently. Our presenters will be Marilyn Silva and Mario Noyola.",
-      "prompt": "Thank the previous presenters, then introduce Customer Billing processes AI presented by Marilyn Silva and Mario Noyola.",
+      "script": "Thank you Tom and Kevin. Our final example will overview our Spark Platform that is helping Con Edison be more efficient and better serve our customers across many multiple areas. Our presenters will be Jayne Sosland and Mario Noyola.",
+      "prompt": "Thank Tom and Kevin, then introduce the Spark Platform presented by Jayne Sosland and Mario Noyola.",
       "pauseType": "presenter_pause",
-      "pauseLabel": "Presenters on Stage: Marilyn Silva & Mario Noyola"
+      "pauseLabel": "Presenters on Stage: Jayne Sosland & Mario Noyola"
     },
     {
       "id": "conclusion",
@@ -109,8 +109,8 @@
         "title": "Con Edison AI Chatbot Moderator",
         "organization": "Handing off to Dina"
       },
-      "script": "Thank you everyone for sharing how Con Edison is using AI to better serve our customers and drive greater efficiency. Let’s give a round of applause to our presenters. It was a pleasure moderating the AI in Use at Con Edison segment. Please visit our Demo Booths from Noon to three o’clock in The Hub known previously as the Apple Bank space in the Lobby to learn more about these opportunities and also how voice agents like me are helping at Con Edison. I would like to now turn things back to Dina to introduce our next segment.",
-      "prompt": "Lead applause for all presenters, direct attendees to the Demo Booths in The Hub (Apple Bank space) from 12-3 PM, and hand off the stage to Dina.",
+      "script": "Thank you Jayne and Mario and thank you everyone for sharing how Con Edison is using AI to better serve our customers and drive greater efficiency. Let’s give a round of applause to our presenters. It was a pleasure moderating the AI in Use at Con Edison segment. Please visit our Demo Booths from Noon to three o’clock in The Hub known previously as the Apple Bank space in the Lobby to learn more about these opportunities and how voice agents like me are helping at Con Edison. I would like to now turn things back to Dina to introduce our next segment.",
+      "prompt": "Thank Jayne and Mario, lead applause for all presenters, direct attendees to the Demo Booths in The Hub (Apple Bank space) from 12-3 PM, and hand off the stage to Dina.",
       "pauseType": "applause_pause",
       "pauseLabel": "Round of Applause // Hand-off to Dina"
     }
